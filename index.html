@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>荷卸し作業テスト</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .question { font-weight: bold; }
+        .options { margin-top: 10px; }
+        button { margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<h2>荷卸し作業テスト</h2>
+
+<div id="name-input">
+    <p>あなたの名前を入力してください：</p>
+    <input type="text" id="username" placeholder="名前を入力">
+    <button onclick="startQuiz()">開始</button>
+</div>
+
+<div id="quiz-container" style="display: none;">
+    <p class="question" id="question"></p>
+    <div class="options" id="options"></div>
+    <button onclick="prevQuestion()">前の問題へ戻る</button>
+    <button onclick="nextQuestion()">次の問題へ</button>
+    <p id="result"></p>
+</div>
+
+<div id="result-container" style="display: none;">
+    <h3>テスト終了！</h3>
+    <p id="final-score"></p>
+</div>
+
+<script>
+    let username = "";
+    let correctAnswers = 0;
+    let currentQuestion = 0;
+
+    const questions = [
+        { q: "前尺を測定する目的は何ですか？", options: ["荷卸し数量を確認するため", "空間容量を確認し、油が入るか判断するため", "タンクの圧力を確認するため", "油種を識別するため"], answer: 1 },
+        { q: "荷卸し前に吐出口のコックを全て閉める目的は？", options: ["油種の一致確認のため", "余計な油が流出しないようにするため", "荷卸し数量を調整するため", "油種の品質を確認するため"], answer: 1 },
+        { q: "積荷と吐出口の油種・数量の一致確認の手順は？", options: ["積荷のラベルを確認する", "ドライバーに油種クリップを見せて確認する", "吐出口の油種を声に出して確認し、ドライバーと一致確認する", "油種を試験紙で検査する"], answer: 2 },
+        { q: "荷卸し作業の順序で最初に荷卸しするのはどの油種ですか？", options: ["レギュラー", "軽油", "灯油", "ハイオク"], answer: 2 },
+        { q: "荷卸し順序の決定で最も重要なポイントは？", options: ["作業スピードを優先する", "灯油を最後にする", "油種のコンタミを防ぐために順番を守る", "荷卸しの前に全てのタンクを空にする"], answer: 2 },
+        { q: "荷卸し順序を決定する際、適切な順番は？", options: ["軽油 → レギュラー → 灯油 → ハイオク", "灯油 → レギュラー → ハイオク → 軽油", "レギュラー → 軽油 → ハイオク → 灯油", "ハイオク → 灯油 → 軽油 → レギュラー"], answer: 1 },
+        { q: "注油口を開けた時に行うべき確認事項は？", options: ["タンクの温度を測定する", "油種クリップとラベルを確認する", "パッキンの異常がないか確認する", "注油口の蓋を交換する"], answer: 2 },
+        { q: "ホースの接続時にドライバーと相互確認する項目は？", options: ["油種クリップ・注油口ラベル", "吐出口の開閉状況", "タンク内の油面", "荷卸しのスピード"], answer: 0 },
+        { q: "吐出口のコックを開放する前に確認すべき項目は？", options: ["サイトグラスで油種の色を確認する", "注油口の蓋が開いているか確認する", "油種クリップの色を変更する", "タンクの圧力を調整する"], answer: 0 },
+        { q: "サイトグラスにて確認する事項は何ですか？", options: ["油種の色", "タンクの温度", "油面の変化", "ホースの長さ"], answer: 0 },
+        { q: "灯油の色は何色ですか？", options: ["無色透明", "橙色", "青色", "淡黄色"], answer: 0 },
+        { q: "レギュラーの色は何色ですか？", options: ["無色透明", "橙色", "青色", "淡黄色"], answer: 1 },
+        { q: "ハイオクの色は何色ですか？", options: ["無色透明", "橙色", "青色", "淡黄色"], answer: 1 },
+        { q: "軽油の色は何色ですか？", options: ["無色透明", "橙色", "赤色", "淡黄色"], answer: 3 },
+        { q: "荷卸し開始時に確認すべき項目は？", options: ["吐出口の開閉状況", "タンクの温度", "油漏れがないか", "ホースの長さ"], answer: 2 },
+        { q: "荷卸し作業中に異常が発生した場合の対応は？", options: ["すぐに荷卸しを停止し、原因を確認する", "立会人がいる場合はそのまま作業を続ける", "ドライバーに確認しながら作業を進める", "まずタンク内の油量を再確認する"], answer: 0 },
+        { q: "荷卸し作業中の安全監視で確認すべき事項は？", options: ["油面計やべーパー", "吐出口の開閉状況", "荷卸しスピード", "ドライバーの名前"], answer: 0 },
+        { q: "荷卸し中に場を離れる際、行うべき対応は？", options: ["吐出口コックを閉止する", "タンクの蓋を閉める", "ホースを取り外す", "ドライバーに荷卸しを任せる"], answer: 0 },
+        { q: "荷卸し終了後、最初に確認すべき項目は？", options: ["配管内の残油がないか", "注油口のパッキンの異常", "油種クリップの色", "吐出口の開閉状況"], answer: 0 },
+        { q: "荷卸し終了後、後尺を測定する目的は？", options: ["荷卸し数量の異常やコンタミを確認するため", "注油口のラベルを確認するため", "ホースの接続状態を確認するため", "トラックの車輪の状態を確認するため"], answer: 0 },
+        { q: "後尺の異常基準は？", options: ["（前尺＋荷卸し数量）×101％＜後尺", "（荷卸し数量）×102％＞前尺", "（前尺＋荷卸し数量）×100％＞後尺", "（後尺）×99％＜前尺"], answer: 0 },
+        { q: "荷卸し終了後にドライバーと相互に確認すべき内容は？", options: ["荷卸し数量と油種の一致", "ホースの接続状態", "タンクの温度", "油種クリップの色"], answer: 0 }
+    ];
+
+    function startQuiz() {
+        username = document.getElementById("username").value;
+        if (username.trim() === "") {
+            alert("名前を入力してください！");
+            return;
+        }
+        document.getElementById("name-input").style.display = "none";
+        document.getElementById("quiz-container").style.display = "block";
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        document.getElementById("question").innerText = questions[currentQuestion].q;
+        const optionsContainer = document.getElementById("options");
+        optionsContainer.innerHTML = "";
+
+        questions[currentQuestion].options.forEach((opt, index) => {
+            const optionElement = document.createElement("div");
+            optionElement.innerHTML = `<input type="radio" name="quiz" value="${index}"> ${opt}`;
+            optionsContainer.appendChild(optionElement);
+        });
+
+        document.getElementById("result").innerText = "";
+    }
+
+    function nextQuestion() {
+        const selectedOption = document.querySelector('input[name="quiz"]:checked');
+        if (selectedOption) {
+            const userAnswer = parseInt(selectedOption.value);
+            if (userAnswer === questions[currentQuestion].answer) {
+                document.getElementById("result").innerText = "正解！";
+                correctAnswers++;
+            } else {
+                document.getElementById("result").innerText = "不正解...";
+            }
+
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                setTimeout(loadQuestion, 1000);
+            } else {
+                showFinalResult();
+            }
+        } else {
+            document.getElementById("result").innerText = "選択肢を選んでください。";
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQuestion > 0) {
+            currentQuestion--;
+            loadQuestion();
+        } else {
+            document.getElementById("result").innerText = "これ以上戻れません！";
+        }
+    }
+
+    function showFinalResult() {
+        document.getElementById("quiz-container").style.display = "none";
+        document.getElementById("result-container").style.display = "block";
+
+        const today = new Date();
+        const dateStr = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日 ${today.getHours()}時${today.getMinutes()}分`;
+
+        document.getElementById("final-score").innerHTML = `
+            <p><strong>名前:</strong> ${username}</p>
+            <p><strong>正答数:</strong> ${correctAnswers} / ${questions.length}</p>
+            <p><strong>解答日:</strong> ${dateStr}</p>
+        `;
+    }
+</script>
+
+</body>
+</html>
+
