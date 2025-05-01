@@ -74,48 +74,38 @@
         #name-input-container button:hover {
             background-color: #0056b3;
         }
+       #result {
+            text-align: center;
+        }
+        #result-summary {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        #update-date {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 10px;
+        }
+        #version {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+        #all-answers {
+            margin-top: 20px;
+            text-align: left;
+        }
+        #download-button {
+            margin-top: 20px;
+        }
 
     </style>
-    <script src="https://unpkg.com/tone"></script>
-    <script>
-        // 効果音の定義
-        let correctSound, incorrectSound;
-        try {
-            correctSound = new Tone.Synth({
-                oscillator: { type: 'triangle' },
-                envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.5 } // 調整
-            }).toDestination();
-            correctSound.volume.value = -6; // 音量を調整
-
-            incorrectSound = new Tone.Synth({
-                oscillator: { type: 'sine' },
-                envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 1 }  // 調整
-            }).toDestination();
-            incorrectSound.volume.value = -6; // 音量を調整
-        } catch (error) {
-            console.error("Tone.jsの初期化に失敗しました:", error);
-            // Tone.jsが使用できない場合、効果音を再生しないようにする
-            window.playCorrectSound = () => {};
-            window.playIncorrectSound = () => {};
-        }
-
-        function playCorrectSound() {
-            if (typeof correctSound !== 'undefined') {
-                correctSound.triggerAttackRelease("C4", "8n");
-            }
-        }
-
-        function playIncorrectSound() {
-            if (typeof incorrectSound !== 'undefined') {
-                incorrectSound.triggerAttackRelease("G2", "4n");
-            }
-        }
-    </script>
 </head>
 <body>
     <h1>荷卸し作業テスト</h1>
-
-    <div id="name-input-container">
+    <div id="update-date">更新日：2025年5月1日</div>
+    <div id="version">バージョン：1.0.1</div>  <div id="name-input-container">
         <label for="name-select">所属店舗を選択してください：</label><br>
         <select id="name-select" name="name" required>
             <option value="">選択してください</option>
@@ -142,7 +132,7 @@
             <option value="三ヶ根">三ヶ根</option>
             <option value="日進">日進</option>
             <option value="阿久比">阿久比</option>
-            <option value="刈谷">刈谷</option>
+            <option value="刈谷">刈谷</刈谷</option>
             <option value="西尾">西尾</option>
             <option value="トレーラー配送部">トレーラー配送部</option>
             <option value="本社事務所">本社事務所</option>
@@ -161,7 +151,9 @@
     </div>
 
     <div id="result" class="hidden">
+        <p id="result-summary"></p>
         <p id="explanation"></p>
+        <div id="all-answers"></div>
         <button id="nextButton" onclick="nextQuestion()">次へ</button>
     </div>
 
@@ -194,18 +186,32 @@
         let currentQuestionIndex = 0;
         let correctAnswers = 0; // 正解数を記録する変数
         let userName = ""; // ユーザー名を保存する変数
+        let userAnswers = []; // ユーザーの回答を保存する配列
+        // スプレッドシートIDとシート名
+        const SPREADSHEET_ID = "15PEK4SbxGgZvaM2evzK6w2qI0qPb8qkggU_J-9oZOGk";  // ★  スプレッドシートID
+        const SHEET_NAME = "シート1";             // ★  シート名
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzOLElW_rP8Z-6_e9u9n1tK-kEaR9NfCCkLh9yD_6_Cj-g6yD/exec"; //★ GASのURL
+        const SHEET_URL = "https://docs.google.com/spreadsheets/d/15PEK4SbxGgZvaM2evzK6w2qI0qPb8qkggU_J-9oZOGk/edit?hl=ja&pli=1&gid=0#gid=0"; //★ スプレッドシートのURL
+
 
         function startQuiz() {
             const nameSelect = document.getElementById("name-select");
             const nameInput = document.getElementById("name-input");
             userName = nameSelect.value + " " + nameInput.value;
-            if (!userName) {
-                alert("所属店舗と名前を入力してください。");
+            if (!nameSelect.value) {
+                alert("所属店舗を選択してください。");
                 return;
             }
+            if (!nameInput.value.trim()) {
+                alert("名前を入力してください。");
+                return;
+            }
+
             document.getElementById("name-input-container").style.display = "none";
             document.getElementById("quiz").style.display = "block";
             loadQuestion();
+            userAnswers = []; // 回答履歴初期化
+            correctAnswers = 0; // 正解数初期化
         }
 
         function loadQuestion() {
@@ -240,11 +246,11 @@
 
             if (parseInt(answer.value) === questionData.answer) {
                 correctAnswers++;
-                playCorrectSound();
                 const correctText = document.createElement("p");
                 correctText.className = "explanation-correct";
                 correctText.innerHTML = `✅ 正解： ${questionData.options[questionData.answer]}`;
                 explanationDiv.appendChild(correctText);
+                userAnswers.push(true); // 正解を記録
 
                 const explanationTitle = document.createElement("p");
                 explanationTitle.className = "explanation-title";
@@ -256,11 +262,11 @@
                 explanationDiv.appendChild(explanationText);
 
             } else {
-                playIncorrectSound();
                 const incorrectText = document.createElement("p");
                 incorrectText.className = "explanation-incorrect";
                 incorrectText.innerHTML = `❌ 不正解です。<br><br>正解は： ${questionData.options[questionData.answer]}`;
                 explanationDiv.appendChild(incorrectText);
+                userAnswers.push(false); // 不正解を記録
 
                 const explanationTitle = document.createElement("p");
                 explanationTitle.className = "explanation-title";
@@ -289,15 +295,31 @@
             }
         }
 
-        function recordResult() {
+       function recordResult() {
             const testResult = {
                 name: userName,
                 date: new Date().toLocaleString(),
                 correct: correctAnswers,
-                total: questions.length
+                total: questions.length,
+                answers: userAnswers // 回答履歴を保存
             };
 
-            fetch('your-api-endpoint', {
+            // 結果表示
+            const resultSummary = document.getElementById("result-summary");
+            resultSummary.innerHTML = `お疲れ様でした！<br>あなたの成績は ${questions.length}問中 ${correctAnswers}問正解でした。<br><a href="${SHEET_URL}" target="_blank">結果はスプレッドシートで確認できます</a>`; // スプレッドシートのURLを表示するよう修正
+
+            // 全問の正誤を表示
+            let allAnswersDiv = document.getElementById("all-answers");
+            let allAnswersHTML = "<h3>あなたの回答</h3><ul>";
+            questions.forEach((question, index) => {
+                const resultText = userAnswers[index] ? "✅ 正解" : "❌ 不正解";
+                allAnswersHTML += `<li>第${index + 1}問：${resultText}</li>`;
+            });
+            allAnswersHTML += "</ul>";
+            allAnswersDiv.innerHTML = allAnswersHTML;
+
+            // Google Apps Scriptに結果を送信
+            fetch(GAS_URL, {  // ★  GASのURL
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -305,21 +327,69 @@
                 body: JSON.stringify(testResult)
             })
             .then(response => {
-                if (response.ok) {
-                    alert("結果を記録しました。お疲れ様でした。");
-                } else {
-                    alert("結果の記録に失敗しました。お疲れ様でした。");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                 // 成功した場合、CSVダウンロードボタンを非表示にするなどの処理もここに記述できます
+                // document.getElementById("download-button").style.display = "none";
             })
             .catch(error => {
                 console.error("Error:", error);
-                alert("結果の記録中にエラーが発生しました。お疲れ様でした。");
+                alert("結果の記録に失敗しました。お疲れ様でした。");
             });
 
             document.getElementById("result").style.display = "none";
             document.getElementById("start").style.display = "block";
             currentQuestionIndex = 0;
             correctAnswers = 0;
+            userAnswers = [];
+        }
+
+
+
+        function downloadCsv() {
+            // localStorageから結果を取得する代わりに、現在の結果を使用
+            const testResult = {
+                name: userName,
+                date: new Date().toLocaleString(),
+                correct: correctAnswers,
+                total: questions.length,
+                answers: userAnswers
+            };
+
+            // CSV形式のデータを作成
+            let csvContent = "参加者,日時,正解数,総問題数,";
+            questions.forEach((question, index) => {
+                csvContent += `第${index + 1}問,`;
+            });
+            csvContent += "\n";
+
+            csvContent += `${testResult.name},${testResult.date},${testResult.correct},${testResult.total},`;
+            testResult.answers.forEach(answer => {
+                csvContent += answer ? "正解," : "不正解,";
+            });
+            csvContent += "\n";
+
+            // BOMを付与してUTF-8で正しく表示されるようにする
+            const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+            const csvBlob = new Blob([bom, csvContent], { type: 'text/csv;charset=utf-8;' });
+            const csvUrl = URL.createObjectURL(csvBlob);
+
+            // ダウンロードリンクを作成してクリック
+            const link = document.createElement("a");
+            link.href = csvUrl;
+            link.setAttribute("download", "test_result.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(csvUrl);
+
+            alert("結果をCSVファイルとしてダウンロードしました。お疲れ様でした。");
         }
     </script>
 </body>
