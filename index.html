@@ -10,6 +10,17 @@
             text-align: center;
             margin: 20px;
         }
+        #name-input-container {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: auto;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
         #quiz, #result {
             display: none;
             padding: 20px;
@@ -20,7 +31,7 @@
             text-align: left;
         }
         #start {
-            display: block;
+            display: none;
         }
         .hidden {
             display: none;
@@ -45,16 +56,104 @@
             margin-top: 15px;
             margin-bottom: 5px;
         }
+        #name-select {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 250px;
+        }
+        #name-input-container button{
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        #name-input-container button:hover {
+            background-color: #0056b3;
+        }
+
     </style>
+    <script src="https://unpkg.com/tone"></script>
+    <script>
+        // 効果音の定義
+        let correctSound, incorrectSound;
+        try {
+            correctSound = new Tone.Synth({
+                oscillator: { type: 'triangle' },
+                envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.5 } // 調整
+            }).toDestination();
+            correctSound.volume.value = -6; // 音量を調整
+
+            incorrectSound = new Tone.Synth({
+                oscillator: { type: 'sine' },
+                envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 1 }  // 調整
+            }).toDestination();
+            incorrectSound.volume.value = -6; // 音量を調整
+        } catch (error) {
+            console.error("Tone.jsの初期化に失敗しました:", error);
+            // Tone.jsが使用できない場合、効果音を再生しないようにする
+            window.playCorrectSound = () => {};
+            window.playIncorrectSound = () => {};
+        }
+
+        function playCorrectSound() {
+            if (typeof correctSound !== 'undefined') {
+                correctSound.triggerAttackRelease("C4", "8n");
+            }
+        }
+
+        function playIncorrectSound() {
+            if (typeof incorrectSound !== 'undefined') {
+                incorrectSound.triggerAttackRelease("G2", "4n");
+            }
+        }
+    </script>
 </head>
 <body>
     <h1>荷卸し作業テスト</h1>
 
-    <div id="start">
+    <div id="name-input-container">
+        <label for="name-select">所属店舗を選択してください：</label><br>
+        <select id="name-select" name="name" required>
+            <option value="">選択してください</option>
+            <option value="緑ヶ丘">緑ヶ丘</option>
+            <option value="花園">花園</option>
+            <option value="八幡">八幡</option>
+            <option value="長浦">長浦</option>
+            <option value="高棚">高棚</option>
+            <option value="豊明東">豊明東</option>
+            <option value="羽根">羽根</option>
+            <option value="東浦スタンド">東浦スタンド</option>
+            <option value="東浦検査場">東浦検査場</option>
+            <option value="大府スタンド">大府スタンド</option>
+            <option value="大府検査場">大府検査場</option>
+            <option value="幸田スタンド">幸田スタンド</option>
+            <option value="三河検査場">三河検査場</option>
+            <option value="常滑スタンド">常滑スタンド</option>
+            <option value="常滑検査場">常滑検査場</option>
+            <option value="豊明">豊明</option>
+            <option value="稲穂">稲穂</option>
+            <option value="東海長口">東海長口</option>
+            <option value="豊田上丘">豊田上丘</option>
+            <option value="岡崎定国">岡崎定国</option>
+            <option value="三ヶ根">三ヶ根</option>
+            <option value="日進">日進</option>
+            <option value="阿久比">阿久比</option>
+            <option value="刈谷">刈谷</option>
+            <option value="西尾">西尾</option>
+            <option value="トレーラー配送部">トレーラー配送部</option>
+            <option value="本社事務所">本社事務所</option>
+            <option value="レッカー">レッカー</option>
+        </select>
+        <label for="name-input">お名前を入力してください：</label><br>
+        <input type="text" id="name-input" name="name" required>
         <button onclick="startQuiz()">テスト開始</button>
     </div>
 
-    <div id="quiz">
+    <div id="quiz" class="hidden">
         <p id="question"></p>
         <div id="options"></div>
         <br>
@@ -63,7 +162,7 @@
 
     <div id="result" class="hidden">
         <p id="explanation"></p>
-        <button id="nextButton" onclick="nextQuestion()" class="hidden">次へ</button>
+        <button id="nextButton" onclick="nextQuestion()">次へ</button>
     </div>
 
     <script>
@@ -93,14 +192,29 @@
         ];
 
         let currentQuestionIndex = 0;
+        let correctAnswers = 0; // 正解数を記録する変数
+        let userName = ""; // ユーザー名を保存する変数
 
         function startQuiz() {
-            document.getElementById("start").style.display = "none";
+            const nameSelect = document.getElementById("name-select");
+            const nameInput = document.getElementById("name-input");
+            userName = nameSelect.value + " " + nameInput.value;
+            if (!userName) {
+                alert("所属店舗と名前を入力してください。");
+                return;
+            }
+            document.getElementById("name-input-container").style.display = "none";
             document.getElementById("quiz").style.display = "block";
             loadQuestion();
         }
 
         function loadQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                // 全ての問題が終了した場合の処理
+                recordResult();
+                return;
+            }
+
             let questionData = questions[currentQuestionIndex];
             document.getElementById("question").innerText = questionData.q;
 
@@ -125,9 +239,11 @@
             explanationDiv.innerHTML = "";
 
             if (parseInt(answer.value) === questionData.answer) {
+                correctAnswers++;
+                playCorrectSound();
                 const correctText = document.createElement("p");
                 correctText.className = "explanation-correct";
-                correctText.innerHTML = `✅　正解： ${questionData.options[questionData.answer]}`;
+                correctText.innerHTML = `✅ 正解： ${questionData.options[questionData.answer]}`;
                 explanationDiv.appendChild(correctText);
 
                 const explanationTitle = document.createElement("p");
@@ -140,9 +256,10 @@
                 explanationDiv.appendChild(explanationText);
 
             } else {
+                playIncorrectSound();
                 const incorrectText = document.createElement("p");
                 incorrectText.className = "explanation-incorrect";
-                incorrectText.innerHTML = `❌ 不正解です。<br><br>正解は： **${questionData.options[questionData.answer]}**`;
+                incorrectText.innerHTML = `❌ 不正解です。<br><br>正解は： ${questionData.options[questionData.answer]}`;
                 explanationDiv.appendChild(incorrectText);
 
                 const explanationTitle = document.createElement("p");
@@ -157,10 +274,7 @@
 
             document.getElementById("quiz").style.display = "none";
             document.getElementById("result").style.display = "block";
-
-            setTimeout(function() {
-                document.getElementById("nextButton").style.display = "block";
-            }, 1000);
+            document.getElementById("nextButton").style.display = "block";
         }
 
         function nextQuestion() {
@@ -171,11 +285,41 @@
                 document.getElementById("quiz").style.display = "block";
                 loadQuestion();
             } else {
-                alert("テスト終了！お疲れ様でした。");
-                document.getElementById("result").style.display = "none";
-                document.getElementById("start").style.display = "block";
-                currentQuestionIndex = 0;
+                recordResult();
             }
+        }
+
+        function recordResult() {
+            const testResult = {
+                name: userName,
+                date: new Date().toLocaleString(),
+                correct: correctAnswers,
+                total: questions.length
+            };
+
+            fetch('your-api-endpoint', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(testResult)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("結果を記録しました。お疲れ様でした。");
+                } else {
+                    alert("結果の記録に失敗しました。お疲れ様でした。");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("結果の記録中にエラーが発生しました。お疲れ様でした。");
+            });
+
+            document.getElementById("result").style.display = "none";
+            document.getElementById("start").style.display = "block";
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
         }
     </script>
 </body>
