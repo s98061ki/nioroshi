@@ -104,7 +104,7 @@
 </head>
 <body>
     <h1>荷卸し作業テスト</h1>
-    <div id="update-date">更新日：2025年5月1日 18:38</div>
+    <div id="update-date">更新日：2025年5月1日</div>
     <div id="version">バージョン：1.0.1</div>  <div id="name-input-container">
         <label for="name-select">所属店舗を選択してください：</label><br>
         <select id="name-select" name="name" required>
@@ -121,22 +121,22 @@
             <option value="大府スタンド">大府スタンド</option>
             <option value="大府検査場">大府検査場</option>
             <option value="幸田スタンド">幸田スタンド</option>
-            <option value="三河検査場">三河検査場</option>
-            <option value="常滑スタンド">常滑スタンド</option>
-            <option value="常滑検査場">常滑検査場</option>
-            <option value="豊明">豊明</option>
-            <option value="稲穂">稲穂</option>
-            <option value="東海長口">東海長口</option>
-            <option value="豊田上丘">豊田上丘</option>
-            <option value="岡崎定国">岡崎定国</option>
-            <option value="三ヶ根">三ヶ根</option>
-            <option value="日進">日進</option>
-            <option value="阿久比">阿久比</option>
+            <option value="三河検査場">三河検査場</三河検査場</option>
+            <option value="常滑スタンド">常滑スタンド</常滑スタンド</option>
+            <option value="常滑検査場">常滑検査場</常滑検査場</option>
+            <option value="豊明">豊明</豊明</option>
+            <option value="稲穂">稲穂</稲穂</option>
+            <option value="東海長口">東海長口</東海長口</option>
+            <option value="豊田上丘">豊田上丘</豊田上丘</option>
+            <option value="岡崎定国">岡崎定国</岡崎定国</option>
+            <option value="三ヶ根">三ヶ根</三ヶ根</option>
+            <option value="日進">日進</日進</option>
+            <option value="阿久比">阿久比</阿久比</option>
             <option value="刈谷">刈谷</刈谷</option>
             <option value="西尾">西尾</西尾</option>
-            <option value="トレーラー配送部">トレーラー配送部</option>
+            <option value="トレーラー配送部">トレーラー配送部</トレーラー配送部</option>
             <option value="本社事務所">本社事務所</本社事務所</option>
-            <option value="レッカー">レッカー</option>
+            <option value="レッカー">レッカー</レッカー</option>
         </select>
         <label for="name-input">お名前を入力してください：</label><br>
         <input type="text" id="name-input" name="name" required>
@@ -190,7 +190,7 @@
         // スプレッドシートIDとシート名
         const SPREADSHEET_ID = "15PEK4SbxGgZvaM2evzK6w2qI0qPb8qkggU_J-9oZOGk";  // ★  スプレッドシートID
         const SHEET_NAME = "シート1";             // ★  シート名
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwNYW2fRBCnkIWtnMQ_iRmn7gZEbowsLYZK79HGR30S8bE3DJUGJDYFUIw6MQoScFBMcA/exec"; //★ GASのURL
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxaNPCJuLsJ5ec1OwptnW_JP7ms5J28RqmWq2KmBe33nKbQ-oy2bbs4UQLF3sFLAOmETg/exec"; //★ GASのURL
         const SHEET_URL = "https://docs.google.com/spreadsheets/d/15PEK4SbxGgZvaM2evzK6w2qI0qPb8qkggU_J-9oZOGk/edit?hl=ja&pli=1&gid=0#gid=0"; //★ スプレッドシートのURL
 
 
@@ -210,9 +210,6 @@
             document.getElementById("name-input-container").style.display = "none";
             document.getElementById("quiz").style.display = "block";
             loadQuestion();
-            userAnswers = []; // 回答履歴初期化
-            correctAnswers = 0; // 正解数初期化
-            displayDateTime(); // ページ読み込み時に日時を表示
         }
 
         function loadQuestion() {
