@@ -104,7 +104,7 @@
 </head>
 <body>
     <h1>荷卸し作業テスト</h1>
-    <div id="update-date">更新日：2025年5月1日</div>
+    <div id="update-date">更新日：2025年5月1日 18:38</div>
     <div id="version">バージョン：1.0.1</div>  <div id="name-input-container">
         <label for="name-select">所属店舗を選択してください：</label><br>
         <select id="name-select" name="name" required>
@@ -115,7 +115,7 @@
             <option value="長浦">長浦</option>
             <option value="高棚">高棚</option>
             <option value="豊明東">豊明東</option>
-            <option value="羽根">羽根</option>
+            <option value="羽根">羽根</羽根</option>
             <option value="東浦スタンド">東浦スタンド</option>
             <option value="東浦検査場">東浦検査場</option>
             <option value="大府スタンド">大府スタンド</option>
@@ -133,9 +133,9 @@
             <option value="日進">日進</option>
             <option value="阿久比">阿久比</option>
             <option value="刈谷">刈谷</刈谷</option>
-            <option value="西尾">西尾</option>
+            <option value="西尾">西尾</西尾</option>
             <option value="トレーラー配送部">トレーラー配送部</option>
-            <option value="本社事務所">本社事務所</option>
+            <option value="本社事務所">本社事務所</本社事務所</option>
             <option value="レッカー">レッカー</option>
         </select>
         <label for="name-input">お名前を入力してください：</label><br>
@@ -190,7 +190,7 @@
         // スプレッドシートIDとシート名
         const SPREADSHEET_ID = "15PEK4SbxGgZvaM2evzK6w2qI0qPb8qkggU_J-9oZOGk";  // ★  スプレッドシートID
         const SHEET_NAME = "シート1";             // ★  シート名
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwGppzK8erQfs8Vt0x7xj91qpZ_-E2gpG7vnzV7lGuRLRCFCKSLeH-SY1Jwy4enjndZ0A/exec"; //★ GASのURL
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwNYW2fRBCnkIWtnMQ_iRmn7gZEbowsLYZK79HGR30S8bE3DJUGJDYFUIw6MQoScFBMcA/exec"; //★ GASのURL
         const SHEET_URL = "https://docs.google.com/spreadsheets/d/15PEK4SbxGgZvaM2evzK6w2qI0qPb8qkggU_J-9oZOGk/edit?hl=ja&pli=1&gid=0#gid=0"; //★ スプレッドシートのURL
 
 
@@ -212,6 +212,7 @@
             loadQuestion();
             userAnswers = []; // 回答履歴初期化
             correctAnswers = 0; // 正解数初期化
+            displayDateTime(); // ページ読み込み時に日時を表示
         }
 
         function loadQuestion() {
@@ -295,7 +296,7 @@
             }
         }
 
-       function recordResult() {
+        function recordResult() {
             const testResult = {
                 name: userName,
                 date: new Date().toLocaleString(),
@@ -391,6 +392,18 @@
             URL.revokeObjectURL(csvUrl);
 
             alert("結果をCSVファイルとしてダウンロードしました。お疲れ様でした。");
+        }
+
+        function displayDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // 月は0から始まるため+1
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+
+            const dateTimeString = `${year}年${month}月${day}日 ${hour}:${minute}`;
+            document.getElementById("current-datetime").textContent = dateTimeString;
         }
     </script>
 </body>
