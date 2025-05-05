@@ -104,7 +104,7 @@
 </head>
 <body>
     <h1>荷卸し作業テスト</h1>
-    <div id="update-date">更新日：2025年5月1日</div>
+    <div id="update-date">更新日：2025年5月1日 18:38</div>
     <div id="version">バージョン：1.0.1</div>  <div id="name-input-container">
         <label for="name-select">所属店舗を選択してください：</label><br>
         <select id="name-select" name="name" required>
@@ -396,11 +396,9 @@
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0'); // 月は0から始まるため+1
             const day = String(now.getDate()).padStart(2, '0');
-            const hour = String(now.getHours()).padStart(2, '0');
-            const minute = String(now.getMinutes()).padStart(2, '0');
 
-            const dateTimeString = `${year}年${month}月${day}日 ${hour}:${minute}`;
-            document.getElementById("current-datetime").textContent = dateTimeString;
+            const dateString = `${year}年${month}月${day}日`;
+            document.getElementById("current-datetime").textContent = dateString;
         }
     </script>
 </body>
