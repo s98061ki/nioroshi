@@ -148,7 +148,7 @@
                     <option value="長浦">長浦</option>
                     <option value="高棚">高棚</高棚>
                     <option value="豊明東">豊明東</豊明東</option>
-                    <option value="羽根">羽根</羽根>
+                    <option value="羽根">羽根</羽根></option>
                     <option value="東浦スタンド">東浦スタンド</東浦スタンド</option>
                     <option value="東浦検査場">東浦検査場</東浦検査場</option>
                     <option value="大府スタンド">大府スタンド</大府スタンド</option>
@@ -632,8 +632,7 @@
 
             if (isCorrect) {
                 correctAnswers++;
-            }
-
+            } 
             showFeedback(isCorrect);
         });
 
@@ -715,18 +714,22 @@
 
         function showFeedback(isCorrect) {
             feedbackElement.classList.remove("hidden");
+            let delay = isCorrect ? 1000 : 5000; // 正解の場合は1秒、不正解の場合は5秒
+
             if (isCorrect) {
                 feedbackElement.textContent = "正解！";
                 feedbackElement.className = "feedback correct";
             } else {
-                feedbackElement.textContent = "不正解！";
+                const correctAnswerIndex = parseInt(quizData[currentQuestionIndex].correctAnswer) - 1;
+                const correctAnswerText = quizData[currentQuestionIndex].options[correctAnswerIndex];
+                feedbackElement.textContent = `不正解！ 正解は「${correctAnswerText}」です。`;
                 feedbackElement.className = "feedback incorrect";
             }
 
             setTimeout(() => {
                 currentQuestionIndex++;
                 loadQuestion();
-            }, 1000);
+            }, delay); // 設定された遅延時間後に次の問題へ
         }
 
         function showResults() {
