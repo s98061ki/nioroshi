@@ -28,7 +28,7 @@
             border-radius: 0.5rem;
             padding: 2rem;
             margin-bottom: 2rem;
-            text-align: left; /* 左寄せに変更 */
+            text-align: left;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .question {
@@ -130,6 +130,7 @@
             border-color: #f56565;
             color: #e53e3e;
         }
+
     </style>
 </head>
 <body class="bg-gray-100">
@@ -155,22 +156,22 @@
                     <option value="大府検査場">大府検査場</大府検査場</option>
                     <option value="幸田スタンド">幸田スタンド</幸田スタンド</option>
                     <option value="三河検査場">三河検査場</三河検査場</option>
-                    <option value="常滑スタンド">常滑スタンド</常滑スタンド</option>
-                    <option value="常滑検査場">常滑検査場</常滑検査場</option>
-                    <option value="豊明">豊明</豊明</option>
-                    <option value="稲穂">稲穂</稲穂</option>
-                    <option value="東海長口">東海長口</東海長口</option>
-                    <option value="豊田上丘">豊田上丘</豊田上丘</option>
-                    <option value="岡崎定国">岡崎定国</岡崎定国</option>
-                    <option value="三ヶ根">三ヶ根</三ヶ根</option>
-                    <option value="日進">日進</日進</option>
-                    <option value="阿久比">阿久比</阿久比</option>
-                    <option value="刈谷">刈谷</刈谷</option>
-                    <option value="西尾">西尾</西尾</option>
-                    <option value="トレーラー配送部">トレーラー配送部</トレーラー配送部</option>
-                    <option value="本社事務所">本社事務所</本社事務所</option>
-                    <option value="レッカー">レッカー</レッカー</option>
-                    <option value="ベンリー">ベンリー</ベンリー</option>
+                    <option value="常滑スタンド">常滑スタンド</常滑スタンド</常滑スタンド</option>
+                    <option value="常滑検査場">常滑検査場</常滑検査場</常滑検査場</option>
+                    <option value="豊明">豊明</豊明</豊明</option>
+                    <option value="稲穂">稲穂</稲穂</稲穂</option>
+                    <option value="東海長口">東海長口</東海長口</東海長口</option>
+                    <option value="豊田上丘">豊田上丘</豊田上丘</豊田上丘</option>
+                    <option value="岡崎定国">岡崎定国</岡崎定国</岡崎定国</option>
+                    <option value="三ヶ根">三ヶ根</三ヶ根</三ヶ根</option>
+                    <option value="日進">日進</日進</日進</option>
+                    <option value="阿久比">阿久比</阿久比</阿久比</option>
+                    <option value="刈谷">刈谷</刈谷</刈谷</option>
+                    <option value="西尾">西尾</西尾</西尾</option>
+                    <option value="トレーラー配送部">トレーラー配送部</トレーラー配送部</トレーラー配送部</option>
+                    <option value="本社事務所">本社事務所</本社事務所</本社事務所</option>
+                    <option value="レッカー">レッカー</レッカー</レッカー</option>
+                    <option value="ベンリー">ベンリー</ベンリー</ベンリー</option>
                 </select>
             </div>
             <div class="mb-6">
@@ -214,6 +215,7 @@
             <p>氏名: <span id="results-name"></span></p>
             <p>所属店舗: <span id="results-store"></span></p>
             <p>正解数: <span id="results-correct"></span> / <span id="results-total"></span></p>
+             <p>正解率: <span id="results-score-rate"></span></p>
             <div id="results-details">
                 <h3>間違った問題</h3>
                 <ul id="results-list" class="text-left"> 
@@ -259,7 +261,7 @@
                 question: "4. 積荷と吐出口の油種・数量の一致確認の際、違っていたらどうするべき？",
                 options: [
                     "吐出口側の油種クリップに合わせて、ドライバーがハッチの油種クリップを変更する",
-                    "ハッチ側の油種クリップに合わせて、立会人が吐出",
+                    "ハッチ側の油種クリップに合わせて、立会人が吐出口の油種クリップを変更する",
                     "ドライバーが納品伝票と積荷の油種の色確認を行い、ハッチに付けた油種クリップと間違いがないか確認を行う。　その後、ハッチの油種クリップに合わせて、吐出口の油種クリップを変更する",
                     "後で、サイトグラスで色を確認してから修正する"
                 ],
@@ -582,7 +584,10 @@
         let userName = "";
         let userStore = "";
         let userAnswers = [];
-        // const programRevisionDate = "2025年5月5日 19:04"; // 不要になったので削除
+        let allTestResults = []; // 全てのテスト結果を格納する配列
+
+        // Google Apps Script Web App URL (ここにGASのURLを設定)
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyxVUQ1XB1M_x8_jnMy9rQsefYz6PfW_6Al6RWvKehtq3r7GLROF0o3tL5DIg2GiFHoPg/exec"; // 例: "https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
 
         const loginContainer = document.getElementById("login-container");
         const quizContainer = document.getElementById("quiz-container");
@@ -600,10 +605,10 @@
         const nameInput = document.getElementById("name");
         const feedbackElement = document.getElementById("feedback");
         const resultsList = document.getElementById("results-list");
-        const revisionDateElement = document.getElementById("revision-date"); // 追加：日付表示要素
+        const resultsScoreRateElement = document.getElementById("results-score-rate");
 
-        // プログラム修正日を表示する関数
-        function displayRevisionDate() {
+        // ページのロードが完了したときに日付を表示
+        window.addEventListener('load', () => {
             const currentDate = new Date();
             const formattedDate = currentDate.toLocaleString('ja-JP', {
                 year: 'numeric',
@@ -612,11 +617,10 @@
                 hour: 'numeric',
                 minute: '2-digit'
             });
+            const revisionDateElement = document.createElement('p');
             revisionDateElement.textContent = `update：${formattedDate}`;
-        }
-
-        // ページのロードが完了したときに日付を表示
-        window.addEventListener('load', displayRevisionDate);
+            document.querySelector('.container').appendChild(revisionDateElement);
+        });
 
 
         nextButton.addEventListener("click", () => {
@@ -651,6 +655,7 @@
                 correctAnswers++;
             }
             showFeedback(isCorrect);
+            saveResults();
             showResults();
         });
 
@@ -714,7 +719,7 @@
 
         function showFeedback(isCorrect) {
             feedbackElement.classList.remove("hidden");
-            let delay = isCorrect ? 1000 : 5000; // 正解の場合は1秒、不正解の場合は5秒
+            let delay = isCorrect ? 1000 : 5000;
 
             if (isCorrect) {
                 feedbackElement.textContent = "正解！";
@@ -729,7 +734,7 @@
             setTimeout(() => {
                 currentQuestionIndex++;
                 loadQuestion();
-            }, delay); // 設定された遅延時間後に次の問題へ
+            }, delay);
         }
 
         function showResults() {
@@ -740,6 +745,9 @@
             resultsCorrectElement.textContent = correctAnswers;
             resultsTotalElement.textContent = quizData.length;
             resultsList.innerHTML = "";
+
+            const scoreRate = (correctAnswers / quizData.length) * 100;
+            resultsScoreRateElement.textContent = `${scoreRate.toFixed(2)}%`;
 
             quizData.forEach((questionData, index) => {
                 const userAnswer = userAnswers[index];
@@ -754,6 +762,46 @@
                     `;
                     resultsList.appendChild(listItem);
                 }
+            });
+        }
+
+        function saveResults() {
+            // Calculate score rate
+            const scoreRate = (correctAnswers / quizData.length) *100;
+
+            // テスト結果をオブジェクトにまとめて配列に保存
+            const result = {
+                userName: userName,
+                userStore: userStore,
+                correctAnswers: correctAnswers,
+                totalQuestions: quizData.length,
+                scoreRate: scoreRate.toFixed(2),
+                userAnswers: userAnswers,
+                timestamp: new Date().toLocaleString()
+            };
+           // allTestResults.push(result); // 結果を配列に保存する代わりに、GASに送信
+            sendDataToGAS(result);
+        }
+
+        function sendDataToGAS(data) {
+            const url = GAS_URL; // GASのURL
+
+            // Fetch APIを使用してデータを送信
+            fetch(url, {
+                method: 'POST',
+                mode: 'no-cors', // CORSエラーを避けるため
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data) // データをJSON形式に変換
+            })
+            .then(response => {
+                console.log('データ送信成功:', response);
+                // 必要に応じて、成功時の処理を追加
+            })
+            .catch(error => {
+                console.error('データ送信エラー:',error);
+                // 必要に応じて、エラー時の処理を追加
             });
         }
     </script>
