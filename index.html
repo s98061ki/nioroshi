@@ -28,7 +28,7 @@
             border-radius: 0.5rem;
             padding: 2rem;
             margin-bottom: 2rem;
-            text-align: left;
+            text-align: left; /* 左寄せに変更 */
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .question {
@@ -130,7 +130,6 @@
             border-color: #f56565;
             color: #e53e3e;
         }
-
     </style>
 </head>
 <body class="bg-gray-100">
@@ -584,10 +583,9 @@
         let userName = "";
         let userStore = "";
         let userAnswers = [];
-        let allTestResults = []; // 全てのテスト結果を格納する配列
 
         // Google Apps Script Web App URL (ここにGASのURLを設定)
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyxVUQ1XB1M_x8_jnMy9rQsefYz6PfW_6Al6RWvKehtq3r7GLROF0o3tL5DIg2GiFHoPg/exec"; // 例: "https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
+        const GAS_URL = "YOUR_GAS_WEB_APP_URL"; // 例: "https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
 
         const loginContainer = document.getElementById("login-container");
         const quizContainer = document.getElementById("quiz-container");
@@ -731,10 +729,16 @@
                 feedbackElement.className = "feedback incorrect";
             }
 
-            setTimeout(() => {
+            // Clear any existing timeout
+            if (window.feedbackTimeout) { //feedbackTimeoutをグローバル変数として定義
+              clearTimeout(window.feedbackTimeout);
+            }
+
+            window.feedbackTimeout = setTimeout(() => {
                 currentQuestionIndex++;
                 loadQuestion();
-            }, delay);
+                window.feedbackTimeout = null; // Clear the ID
+            }, delay); // 設定された遅延時間後に次の問題へ
         }
 
         function showResults() {
@@ -767,7 +771,7 @@
 
         function saveResults() {
             // Calculate score rate
-            const scoreRate = (correctAnswers / quizData.length) *100;
+            const scoreRate = (correctAnswers / quizData.length) * 100;
 
             // テスト結果をオブジェクトにまとめて配列に保存
             const result = {
@@ -800,7 +804,7 @@
                 // 必要に応じて、成功時の処理を追加
             })
             .catch(error => {
-                console.error('データ送信エラー:',error);
+                console.error('データ送信エラー:', error);
                 // 必要に応じて、エラー時の処理を追加
             });
         }
