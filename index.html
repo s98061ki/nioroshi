@@ -28,7 +28,7 @@
             border-radius: 0.5rem;
             padding: 2rem;
             margin-bottom: 2rem;
-            text-align: left; /* 左寄せに変更 */
+            text-align: left;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .question {
@@ -130,6 +130,7 @@
             border-color: #f56565;
             color: #e53e3e;
         }
+
     </style>
 </head>
 <body class="bg-gray-100">
@@ -143,9 +144,9 @@
                 <select id="store-name" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     <option value="" disabled selected>選択してください</option>
                     <option value="緑ヶ丘">緑ヶ丘</option>
-                    <option value="花園">花園</option>
-                    <option value="八幡">八幡</option>
-                    <option value="長浦">長浦</option>
+                    <option value="花園">花園</花園</option>
+                    <option value="八幡">八幡</八幡</option>
+                    <option value="長浦">長浦</長浦</option>
                     <option value="高棚">高棚</高棚>
                     <option value="豊明東">豊明東</豊明東</option>
                     <option value="羽根">羽根</羽根></option>
@@ -169,7 +170,7 @@
                     <option value="西尾">西尾</西尾</西尾</option>
                     <option value="トレーラー配送部">トレーラー配送部</トレーラー配送部</トレーラー配送部</option>
                     <option value="本社事務所">本社事務所</本社事務所</本社事務所</option>
-                    <option value="レッカー">レッカー</レッカー</レッカー</option>
+                     <option value="レッカー">レッカー</レッカー</レッカー</option>
                     <option value="ベンリー">ベンリー</ベンリー</ベンリー</option>
                 </select>
             </div>
@@ -585,7 +586,7 @@
         let userAnswers = [];
 
         // Google Apps Script Web App URL (ここにGASのURLを設定)
-        const GAS_URL = "YOUR_GAS_WEB_APP_URL"; // 例: "https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyxVUQ1XB1M_x8_jnMy9rQsefYz6PfW_6Al6RWvKehtq3r7GLROF0o3tL5DIg2GiFHoPg/exec"; // 例: "https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
 
         const loginContainer = document.getElementById("login-container");
         const quizContainer = document.getElementById("quiz-container");
@@ -616,7 +617,7 @@
                 minute: '2-digit'
             });
             const revisionDateElement = document.createElement('p');
-            revisionDateElement.textContent = `update：${formattedDate}`;
+            revisionDateElement.textContent = `テスト開始時刻：${formattedDate}`;
             document.querySelector('.container').appendChild(revisionDateElement);
         });
 
@@ -717,7 +718,7 @@
 
         function showFeedback(isCorrect) {
             feedbackElement.classList.remove("hidden");
-            let delay = isCorrect ? 1000 : 5000;
+            let delay = isCorrect ? 1000 : 4000;
 
             if (isCorrect) {
                 feedbackElement.textContent = "正解！";
