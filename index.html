@@ -171,12 +171,12 @@
                     <option value="三ヶ根">三ヶ根</三ヶ根</三ヶ根</option>
                     <option value="日進">日進</日進</日進</option>
                     <option value="阿久比">阿久比</阿久比</阿久比</option>
-                    <option value="刈谷">刈谷</刈谷</刈谷</option>
-                    <option value="西尾">西尾</西尾</西尾</option>
+                    <option value="刈谷">刈谷</刈谷</刈谷</刈谷</option>
+                    <option value="西尾">西尾</西尾</西尾</西尾</option>
                     <option value="トレーラー配送部">トレーラー配送部</トレーラー配送部</トレーラー配送部</option>
-                    <option value="本社事務所">本社事務所</本社事務所</本社事務所</option>
-                    <option value="レッカー">レッカー</レッカー</レッカー</option>
-                    <option value="ベンリー">ベンリー</ベンリー</ベンリー</option>
+                    <option value="本社事務所">本社事務所</本社事務所</本社事務所</本社事務所</option>
+                    <option value="レッカー">レッカー</レッカー</レッカー</レッカー</option>
+                    <option value="ベンリー">ベンリー</ベンリー</ベンリー</ベンリー</option>
                 </select>
             </div>
             <div class="mb-6">
@@ -488,7 +488,7 @@
                 ],
                 correctAnswer: "1"
             },
-             {
+            {
                 question: "26. 後尺の異常基準は？",
                 options: [
                     "（前尺＋荷卸し数量）×101％＞後尺",
@@ -588,7 +588,7 @@
                 ],
                 correctAnswer: "4"
             },
-            {
+             {
                 question: "36. 問題の難易度はどうですか？",
                 options: [
                     "難しい",
@@ -797,8 +797,7 @@
                     feedbackElement.className = "feedback correct";
                 } else {
                     const correctAnswerIndex = parseInt(quizData[currentQuestionIndex].correctAnswer) - 1;
-                    const correctAnswerText = quizData[currentQuestionIndex].options[correctAnswerIndex];
-                    feedbackElement.innerHTML = `不正解！<br>正解は「${correctAnswerText}」です。`;
+                    const correctAnswerText = quizData[currentQuestionIndex].options[correctAnswerIndex];feedbackElement.innerHTML = `不正解！<br>正解は「${correctAnswerText}」です。`;
                     feedbackElement.className = "feedback incorrect";
                 }
 
@@ -865,7 +864,6 @@
                 // Fetch APIを使用してデータを送信
                 fetch(url, {
                     method: 'POST',
-                    mode: 'no-cors', // CORSエラーを避けるため
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -881,6 +879,46 @@
                 });
             }
         });
+
+        // Add this Google Apps Script function in your Google Sheets script editor.
+        function doPost(e) {
+            // スプレッドシートのIDをURLから抽出
+            const spreadsheetId = "1iI2RwK2RknEYi-sxzgUHSbh2TgyjlgrE3oZGFI2PNxg";  // ★  URLから抽出したIDを設定
+            const sheetName = "テスト結果"; // ★ シート名を修正
+            const ss = SpreadsheetApp.openById(spreadsheetId);
+            const sheet = ss.getSheetByName(sheetName);
+            if (!sheet) {
+                throw new Error(`Sheet named "${sheetName}" not found`);
+            }
+
+            // Check if the incoming data is present
+            if (e && e.postData && e.postData.contents) {
+                const data = JSON.parse(e.postData.contents);
+                const header = ["氏名", "所属店舗", "正解数", "総問題数", "正解率", "回答", "タイムスタンプ"];
+
+                // Check if the sheet is empty, if so, write the header
+                if (sheet.getLastRow() === 0) {
+                    sheet.appendRow(header);
+                }
+
+                const rowData = [
+                    data.userName,
+                    data.userStore,
+                    data.correctAnswers,
+                    data.totalQuestions,
+                    data.scoreRate,
+                    data.userAnswers.join(","), // 配列をカンマ区切り文字列に変換
+                    data.timestamp
+                ];
+                sheet.appendRow(rowData);
+
+                // Respond with a success message
+                return ContentService.createTextOutput(JSON.stringify({ result: "success", message: "Data appended successfully." })).setMimeType(ContentService.MimeType.JSON);
+            } else {
+                //エラーメッセージを返す
+                return ContentService.createTextOutput(JSON.stringify({ result: "error", message: "No data received." })).setMimeType(ContentService.MimeType.JSON);
+            }
+        }
     </script>
 </body>
 </html>
