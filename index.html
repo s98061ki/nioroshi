@@ -130,6 +130,11 @@
             border-color: #f56565;
             color: #e53e3e;
         }
+        .completion-message {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #1a202c;
+        }
 
     </style>
 </head>
@@ -144,7 +149,7 @@
                 <select id="store-name" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     <option value="" disabled selected>選択してください</option>
                     <option value="緑ヶ丘">緑ヶ丘</option>
-                    <option value="花園">花園</花園</option>
+                    <option value="花園">花園</花園></option>
                     <option value="八幡">八幡</八幡</option>
                     <option value="長浦">長浦</長浦</option>
                     <option value="高棚">高棚</高棚>
@@ -170,7 +175,7 @@
                     <option value="西尾">西尾</西尾</西尾</option>
                     <option value="トレーラー配送部">トレーラー配送部</トレーラー配送部</トレーラー配送部</option>
                     <option value="本社事務所">本社事務所</本社事務所</本社事務所</option>
-                     <option value="レッカー">レッカー</レッカー</レッカー</option>
+                    <option value="レッカー">レッカー</レッカー</レッカー</option>
                     <option value="ベンリー">ベンリー</ベンリー</ベンリー</option>
                 </select>
             </div>
@@ -210,6 +215,11 @@
             </div>
         </div>
 
+        <div id="completion-container" class="hidden form-container">
+            <h2 class="completion-message">お疲れ様でした。間違えた問題があれば、再度確認してください。</h2>
+            <button id="show-results" class="btn primary">テスト結果表示</button>
+        </div>
+
         <div id="results-container" class="hidden">
             <h2>テスト結果</h2>
             <p>氏名: <span id="results-name"></span></p>
@@ -222,6 +232,7 @@
                 </ul>
             </div>
             <button id="retake-test" class="btn">もう一度受ける</button>
+            <button id="print-results" class="btn">この画面を印刷する</button> 
         </div>
     </div>
 
@@ -576,6 +587,15 @@
                     "コンタミの可能性があるので、すぐに上長に連絡して販売停止した。"
                 ],
                 correctAnswer: "4"
+            },
+            {
+                question: "36. 問題の難易度はどうですか？",
+                options: [
+                    "難しい",
+                    "かんたん",
+                    "適切"
+                ],
+                correctAnswer: "1,2,3" 
             }
         ];
 
@@ -588,23 +608,27 @@
         // Google Apps Script Web App URL (ここにGASのURLを設定)
         const GAS_URL = "https://script.google.com/macros/s/AKfycbyxVUQ1XB1M_x8_jnMy9rQsefYz6PfW_6Al6RWvKehtq3r7GLROF0o3tL5DIg2GiFHoPg/exec"; // 例: "https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
 
-        const loginContainer = document.getElementById("login-container");
-        const quizContainer = document.getElementById("quiz-container");
-        const questionElement = document.getElementById("question");
-        const optionsContainer = document.getElementById("options-container");
-        const nextButton = document.getElementById("next-question");
-        const finishButton = document.getElementById("finish-test");
-        const resultsContainer = document.getElementById("results-container");
-        const resultsNameElement = document.getElementById("results-name");
-        const resultsStoreElement = document.getElementById("results-store");
-        const resultsCorrectElement = document.getElementById("results-correct");
-        const resultsTotalElement = document.getElementById("results-total");
-        const retakeButton = document.getElementById("retake-test");
-        const storeSelect = document.getElementById("store-name");
-        const nameInput = document.getElementById("name");
-        const feedbackElement = document.getElementById("feedback");
-        const resultsList = document.getElementById("results-list");
-        const resultsScoreRateElement = document.getElementById("results-score-rate");
+        let loginContainer = null;
+        let quizContainer = null;
+        let questionElement = null;
+        let optionsContainer = null;
+        let nextButton = null;
+        let finishButton = null;
+        let resultsContainer = null;
+        let resultsNameElement = null;
+        let resultsStoreElement = null;
+        let resultsCorrectElement = null;
+        let resultsTotalElement = null;
+        let retakeButton = null;
+        let storeSelect = null;
+        let nameInput = null;
+        let feedbackElement = null;
+        let resultsList = null;
+        let resultsScoreRateElement = null;
+        let completionContainer = null;
+        let showResultsButton = null;
+        let printButton = null; // 印刷ボタンの変数を定義
+
 
         // ページのロードが完了したときに日付を表示
         window.addEventListener('load', () => {
@@ -616,199 +640,247 @@
                 hour: 'numeric',
                 minute: '2-digit'
             });
-            const revisionDateElement = document.createElement('p');
+            revisionDateElement = document.createElement('p');
             revisionDateElement.textContent = `テスト開始時刻：${formattedDate}`;
             document.querySelector('.container').appendChild(revisionDateElement);
-        });
+
+            loginContainer = document.getElementById("login-container");
+            quizContainer = document.getElementById("quiz-container");
+            questionElement = document.getElementById("question");
+            optionsContainer = document.getElementById("options-container");
+            nextButton = document.getElementById("next-question");
+            finishButton = document.getElementById("finish-test");
+            resultsContainer = document.getElementById("results-container");
+            resultsNameElement = document.getElementById("results-name");
+            resultsStoreElement = document.getElementById("results-store");
+            resultsCorrectElement = document.getElementById("results-correct");
+            resultsTotalElement = document.getElementById("results-total");
+            retakeButton = document.getElementById("retake-test");
+            storeSelect = document.getElementById("store-name");
+            nameInput = document.getElementById("name");
+            feedbackElement = document.getElementById("feedback");
+            resultsList = document.getElementById("results-list");
+            resultsScoreRateElement = document.getElementById("results-score-rate");
+            completionContainer = document.getElementById("completion-container");
+            showResultsButton = document.getElementById("show-results");
+            printButton = document.getElementById("print-results"); // 印刷ボタンを取得
 
 
-        nextButton.addEventListener("click", () => {
-            const selectedOption = document.querySelector('input[name="answer"]:checked');
-            if (!selectedOption) {
-                alert("選択肢を選んでください。");
-                return;
+            if (loginContainer) {
+                document.getElementById("start-test").addEventListener("click", () => {
+                    userName = nameInput.value.trim();
+                    userStore = storeSelect.value;
+
+                    if (!userStore) {
+                        alert("所属店舗を選択してください。");
+                        return;
+                    }
+                    if (!userName) {
+                        alert("名前を入力してください。");
+                        return;
+                    }
+
+                    loginContainer.classList.add("hidden");
+                    quizContainer.classList.remove("hidden");
+                    loadQuestion();
+                });
             }
 
-            const selectedAnswer = selectedOption.value;
-            userAnswers.push(selectedAnswer);
-            const isCorrect = selectedAnswer === quizData[currentQuestionIndex].correctAnswer;
 
-            if (isCorrect) {
-                correctAnswers++;
-            } 
-            showFeedback(isCorrect);
-        });
+            if (nextButton) {
+                nextButton.addEventListener("click", () => {
+                    const selectedOption = document.querySelector('input[name="answer"]:checked');
+                    if (!selectedOption) {
+                        alert("選択肢を選んでください。");
+                        return;
+                    }
 
-        finishButton.addEventListener("click", () => {
-            const selectedOption = document.querySelector('input[name="answer"]:checked');
-            if (!selectedOption) {
-                alert("選択肢を選んでください。");
-                return;
+                    const selectedAnswer = selectedOption.value;
+                    userAnswers.push(selectedAnswer);
+                    const isCorrect = quizData[currentQuestionIndex].correctAnswer.split(",").includes(selectedAnswer);
+
+
+                    if (isCorrect) {
+                        correctAnswers++;
+                    } 
+                    showFeedback(isCorrect);
+                });
             }
 
-            const selectedAnswer = selectedOption.value;
-            userAnswers.push(selectedAnswer);
-            const isCorrect = selectedAnswer === quizData[currentQuestionIndex].correctAnswer;
+           if (finishButton) {
+                finishButton.addEventListener("click", () => {
+                    const selectedOption = document.querySelector('input[name="answer"]:checked');
+                    if (!selectedOption) {
+                        alert("選択肢を選んでください。");
+                        return;
+                    }
 
-            if (isCorrect) {
-                correctAnswers++;
-            }
-            showFeedback(isCorrect);
-            saveResults();
-            showResults();
-        });
+                    const selectedAnswer = selectedOption.value;
+                    userAnswers.push(selectedAnswer);
+                    const isCorrect = quizData[currentQuestionIndex].correctAnswer.split(",").includes(selectedAnswer);
 
-        retakeButton.addEventListener("click", () => {
-            currentQuestionIndex = 0;
-            correctAnswers = 0;
-            userAnswers = [];
-            resultsContainer.classList.add("hidden");
-            quizContainer.classList.remove("hidden");
-            loadQuestion();
-            nextButton.classList.remove("hidden");
-            finishButton.classList.add("hidden");
-        });
 
-        document.getElementById("start-test").addEventListener("click", () => {
-            userName = nameInput.value.trim();
-            userStore = storeSelect.value;
-
-            if (!userStore) {
-                alert("所属店舗を選択してください。");
-                return;
-            }
-            if (!userName) {
-                alert("名前を入力してください。");
-                return;
+                    if (isCorrect) {
+                        correctAnswers++;
+                    }
+                    showFeedback(isCorrect);
+                    saveResults();
+                    quizContainer.classList.add("hidden");
+                    completionContainer.classList.remove("hidden");
+                });
             }
 
-            loginContainer.classList.add("hidden");
-            quizContainer.classList.remove("hidden");
-            loadQuestion();
-        });
-
-        function loadQuestion() {
-            const currentQuestion = quizData[currentQuestionIndex];
-            questionElement.textContent = currentQuestion.question;
-            optionsContainer.innerHTML = "";
-
-            currentQuestion.options.forEach((option, index) => {
-                const optionElement = document.createElement("label");
-                optionElement.className = "option";
-                optionElement.innerHTML = `
-                    <input type="radio" name="answer" value="${index + 1}">
-                    <span>${option}</span>
-                `;
-                optionsContainer.appendChild(optionElement);
-            });
-
-            nextButton.classList.add("hidden");
-            finishButton.classList.add("hidden");
-            feedbackElement.classList.add("hidden");
-
-
-            if (currentQuestionIndex === quizData.length - 1) {
-                finishButton.classList.remove("hidden");
-                nextButton.classList.add("hidden");
-            } else {
-                nextButton.classList.remove("hidden");
-                finishButton.classList.add("hidden");
-            }
-        }
-
-        function showFeedback(isCorrect) {
-            feedbackElement.classList.remove("hidden");
-            let delay = isCorrect ? 1000 : 4000;
-
-            if (isCorrect) {
-                feedbackElement.textContent = "正解！";
-                feedbackElement.className = "feedback correct";
-            } else {
-                const correctAnswerIndex = parseInt(quizData[currentQuestionIndex].correctAnswer) - 1;
-                const correctAnswerText = quizData[currentQuestionIndex].options[correctAnswerIndex];
-                feedbackElement.textContent = `不正解！ 正解は「${correctAnswerText}」です。`;
-                feedbackElement.className = "feedback incorrect";
+            if (showResultsButton) {
+                showResultsButton.addEventListener("click", () => {
+                    completionContainer.classList.add("hidden");
+                    showResults();
+                });
             }
 
-            // Clear any existing timeout
-            if (window.feedbackTimeout) { //feedbackTimeoutをグローバル変数として定義
-              clearTimeout(window.feedbackTimeout);
+            if (retakeButton) {
+                retakeButton.addEventListener("click", () => {
+                    currentQuestionIndex = 0;
+                    correctAnswers = 0;
+                    userAnswers = [];
+                    resultsContainer.classList.add("hidden");
+                    quizContainer.classList.remove("hidden");
+                    loadQuestion();
+                    nextButton.classList.remove("hidden");
+                    finishButton.classList.add("hidden");
+                });
             }
 
-            window.feedbackTimeout = setTimeout(() => {
-                currentQuestionIndex++;
-                loadQuestion();
-                window.feedbackTimeout = null; // Clear the ID
-            }, delay); // 設定された遅延時間後に次の問題へ
-        }
+            if (printButton) { // 印刷ボタンが取得できているか確認
+                printButton.addEventListener("click", () => {
+                    window.print(); // 印刷機能
+                });
+            }
 
-        function showResults() {
-            quizContainer.classList.add("hidden");
-            resultsContainer.classList.remove("hidden");
-            resultsNameElement.textContent = userName;
-            resultsStoreElement.textContent = userStore;
-            resultsCorrectElement.textContent = correctAnswers;
-            resultsTotalElement.textContent = quizData.length;
-            resultsList.innerHTML = "";
 
-            const scoreRate = (correctAnswers / quizData.length) * 100;
-            resultsScoreRateElement.textContent = `${scoreRate.toFixed(2)}%`;
+            function loadQuestion() {
+                if(quizData && quizData[currentQuestionIndex]){
+                    const currentQuestion = quizData[currentQuestionIndex];
+                    questionElement.textContent = currentQuestion.question;
+                    optionsContainer.innerHTML = "";
 
-            quizData.forEach((questionData, index) => {
-                const userAnswer = userAnswers[index];
-                const isCorrect = userAnswer === questionData.correctAnswer;
-                if (!isCorrect) { 
-                    const listItem = document.createElement("li");
-                    listItem.className = "wrong-answer";
-                    listItem.innerHTML = `
-                        <p>${questionData.question}</p>
-                        <p>あなたの回答: ${questionData.options[parseInt(userAnswer) - 1] || "未回答"}</p>
-                        <p>正解: ${questionData.options[parseInt(questionData.correctAnswer) - 1]}</p>
-                    `;
-                    resultsList.appendChild(listItem);
+                    currentQuestion.options.forEach((option, index) => {
+                        const optionElement = document.createElement("label");
+                        optionElement.className = "option";
+                        optionElement.innerHTML = `
+                            <input type="radio" name="answer" value="${index + 1}">
+                            <span>${option}</span>
+                        `;
+                        optionsContainer.appendChild(optionElement);
+                    });
+
+                    nextButton.classList.add("hidden");
+                    finishButton.classList.add("hidden");
+                    feedbackElement.classList.add("hidden");
+
+
+                    if (currentQuestionIndex === quizData.length - 1) {
+                        finishButton.classList.remove("hidden");
+                        nextButton.classList.add("hidden");
+                    } else {
+                        nextButton.classList.remove("hidden");
+                        finishButton.classList.add("hidden");
+                    }
                 }
-            });
-        }
+            }
 
-        function saveResults() {
-            // Calculate score rate
-            const scoreRate = (correctAnswers / quizData.length) * 100;
+            function showFeedback(isCorrect) {
+                feedbackElement.classList.remove("hidden");
+                let delay = isCorrect ? 500 : 500;
 
-            // テスト結果をオブジェクトにまとめて配列に保存
-            const result = {
-                userName: userName,
-                userStore: userStore,
-                correctAnswers: correctAnswers,
-                totalQuestions: quizData.length,
-                scoreRate: scoreRate.toFixed(2),
-                userAnswers: userAnswers,
-                timestamp: new Date().toLocaleString()
-            };
-           // allTestResults.push(result); // 結果を配列に保存する代わりに、GASに送信
-            sendDataToGAS(result);
-        }
+                if (isCorrect) {
+                    feedbackElement.textContent = "正解！";
+                    feedbackElement.className = "feedback correct";
+                } else {
+                    const correctAnswerIndex = parseInt(quizData[currentQuestionIndex].correctAnswer) - 1;
+                    const correctAnswerText = quizData[currentQuestionIndex].options[correctAnswerIndex];
+                    feedbackElement.innerHTML = `不正解！<br>正解は「${correctAnswerText}」です。`;
+                    feedbackElement.className = "feedback incorrect";
+                }
 
-        function sendDataToGAS(data) {
-            const url = GAS_URL; // GASのURL
+                // Clear any existing timeout
+                if (window.feedbackTimeout) { //feedbackTimeoutをグローバル変数として定義
+                  clearTimeout(window.feedbackTimeout);
+                }
 
-            // Fetch APIを使用してデータを送信
-            fetch(url, {
-                method: 'POST',
-                mode: 'no-cors', // CORSエラーを避けるため
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data) // データをJSON形式に変換
-            })
-            .then(response => {
-                console.log('データ送信成功:', response);
-                // 必要に応じて、成功時の処理を追加
-            })
-            .catch(error => {
-                console.error('データ送信エラー:', error);
-                // 必要に応じて、エラー時の処理を追加
-            });
-        }
+                window.feedbackTimeout = setTimeout(() => {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                    window.feedbackTimeout = null; // Clear the ID
+                }, delay); // 設定された遅延時間後に次の問題へ
+            }
+
+            function showResults() {
+                quizContainer.classList.add("hidden");
+                resultsContainer.classList.remove("hidden");
+                resultsNameElement.textContent = userName;
+                resultsStoreElement.textContent = userStore;
+                resultsCorrectElement.textContent = correctAnswers;
+                resultsTotalElement.textContent = quizData.length;
+                resultsList.innerHTML = "";
+
+                const scoreRate = (correctAnswers / quizData.length) * 100;
+                resultsScoreRateElement.textContent = `${scoreRate.toFixed(2)}%`;
+
+                quizData.forEach((questionData, index) => {
+                    const userAnswer = userAnswers[index];
+                    const isCorrect = userAnswer === questionData.correctAnswer;
+                    if (!isCorrect) { 
+                        const listItem = document.createElement("li");
+                        listItem.className = "wrong-answer";
+                        listItem.innerHTML = `
+                            <p>${questionData.question}</p>
+                            <p>あなたの回答: ${questionData.options[parseInt(userAnswer) - 1] || "未回答"}</p>
+                            <p>正解: ${questionData.options[parseInt(questionData.correctAnswer) - 1]}</p>
+                        `;
+                        resultsList.appendChild(listItem);
+                    }
+                });
+            }
+
+            function saveResults() {
+                // Calculate score rate
+                const scoreRate = (correctAnswers / quizData.length) * 100;
+
+                // テスト結果をオブジェクトにまとめて配列に保存
+                const result = {
+                    userName: userName,
+                    userStore: userStore,correctAnswers: correctAnswers,
+                    totalQuestions: quizData.length,
+                    scoreRate: scoreRate.toFixed(2),
+                    userAnswers: userAnswers,
+                    timestamp: new Date().toLocaleString()
+                };
+                // allTestResults.push(result); // 結果を配列に保存する代わりに、GASに送信
+                sendDataToGAS(result);
+            }
+
+            function sendDataToGAS(data) {
+                const url = GAS_URL; // GASのURL
+
+                // Fetch APIを使用してデータを送信
+                fetch(url, {
+                    method: 'POST',
+                    mode: 'no-cors', // CORSエラーを避けるため
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data) // データをJSON形式に変換
+                })
+                .then(response => {
+                    console.log('データ送信成功:', response);
+                    // 必要に応じて、成功時の処理を追加
+                })
+                .catch(error => {
+                    console.error('データ送信エラー:', error);
+                    // 必要に応じて、エラー時の処理を追加
+                });
+            }
+        });
     </script>
 </body>
 </html>
