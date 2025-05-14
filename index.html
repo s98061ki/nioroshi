@@ -789,7 +789,7 @@
 
             function showFeedback(isCorrect) {
                 feedbackElement.classList.remove("hidden");
-                let delay = isCorrect ? 500 : 500;
+                let delay = isCorrect ? 500 : 1000;
 
                 if (isCorrect) {
                     feedbackElement.textContent = "正解！";
@@ -819,8 +819,7 @@
                 resultsNameElement.textContent = userName;
                 resultsStoreElement.textContent = userStore;
                 resultsCorrectElement.textContent= correctAnswers;
-                resultsTotalElement.textContent = quizData.length;
-                resultsList.innerHTML = "";
+                resultsTotalElement.textContent = quizData.length;resultsList.innerHTML = "";
 
                 const scoreRate = (correctAnswers / quizData.length) * 100;
                 resultsScoreRateElement.textContent = `${scoreRate.toFixed(2)}%`;
