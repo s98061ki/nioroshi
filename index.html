@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>荷卸しと黒本テスト</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+ 　　<script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -141,7 +141,6 @@
 <body class="bg-gray-100">
     <div class="container">
         <h1 class="text-2xl font-semibold text-gray-800 mb-4">荷卸しと黒本テスト</h1>
-        
 
         <div id="login-container" class="form-container">
             <div class="mb-4">
@@ -165,11 +164,11 @@
                     <option value="常滑検査場">常滑検査場</常滑検査場</常滑検査場</option>
                     <option value="豊明">豊明</豊明</豊明</option>
                     <option value="稲穂">稲穂</稲穂</稲穂</option>
-                    <option value="東海長口">東海長口</東海長口</東海長口</option>
+                    <option value="東海長口">東海長口</東海長口</東海長口</東海長口</option>
                     <option value="豊田上丘">豊田上丘</豊田上丘</豊田上丘</option>
                     <option value="岡崎定国">岡崎定国</岡崎定国</岡崎定国</option>
                     <option value="三ヶ根">三ヶ根</三ヶ根</三ヶ根</option>
-                    <option value="日進">日進</日進</日進</option>
+                    <option value="日進">日進</日進</日進</日進</option>
                     <option value="阿久比">阿久比</阿久比</阿久比</option>
                     <option value="刈谷">刈谷</刈谷</刈谷</刈谷</option>
                     <option value="西尾">西尾</西尾</西尾</西尾</option>
@@ -228,11 +227,11 @@
              <p>正解率: <span id="results-score-rate"></span></p>
             <div id="results-details">
                 <h3>間違った問題</h3>
-                <ul id="results-list" class="text-left"> 
+                <ul id="results-list" class="text-left">
                 </ul>
             </div>
             <button id="retake-test" class="btn">もう一度受ける</button>
-            <button id="print-results" class="btn">この画面を印刷する</button> 
+            <button id="print-results" class="btn">この画面を印刷する</button>
         </div>
     </div>
 
@@ -588,14 +587,14 @@
                 ],
                 correctAnswer: "4"
             },
-             {
+            {
                 question: "36. 問題の難易度はどうですか？",
                 options: [
                     "難しい",
                     "かんたん",
                     "適切"
                 ],
-                correctAnswer: "1,2,3" 
+                correctAnswer: "1,2,3"
             }
         ];
 
@@ -606,7 +605,7 @@
         let userAnswers = [];
 
         // Google Apps Script Web App URL (ここにGASのURLを設定)
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyxVUQ1XB1M_x8_jnMy9rQsefYz6PfW_6Al6RWvKehtq3r7GLROF0o3tL5DIg2GiFHoPg/exec"; // 例: "https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycby32rkuByI9AgjuOERHT2UmScA23DD7KkSVeXSIYMTK/dev"; // 例: "https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
 
         let loginContainer = null;
         let quizContainer = null;
@@ -702,7 +701,7 @@
 
                     if (isCorrect) {
                         correctAnswers++;
-                    } 
+                    }
                     showFeedback(isCorrect);
                 });
             }
@@ -797,7 +796,7 @@
                     feedbackElement.className = "feedback correct";
                 } else {
                     const correctAnswerIndex = parseInt(quizData[currentQuestionIndex].correctAnswer) - 1;
-                    const correctAnswerText = quizData[currentQuestionIndex].options[correctAnswerIndex];feedbackElement.innerHTML = `不正解！<br>正解は「${correctAnswerText}」です。`;
+                    const correctAnswerText = quizData[currentQuestionIndex].options[correctAnswerIndex];feedbackElement.innerHTML =`不正解！<br>正解は「${correctAnswerText}」です。`;
                     feedbackElement.className = "feedback incorrect";
                 }
 
@@ -828,7 +827,7 @@
                 quizData.forEach((questionData, index) => {
                     const userAnswer = userAnswers[index];
                     const isCorrect = userAnswer === questionData.correctAnswer;
-                    if (!isCorrect) { 
+                    if (!isCorrect) {
                         const listItem = document.createElement("li");
                         listItem.className = "wrong-answer";
                         listItem.innerHTML = `
@@ -882,42 +881,40 @@
 
         // Add this Google Apps Script function in your Google Sheets script editor.
         function doPost(e) {
-            // スプレッドシートのIDをURLから抽出
-            const spreadsheetId = "1iI2RwK2RknEYi-sxzgUHSbh2TgyjlgrE3oZGFI2PNxg";  // ★  URLから抽出したIDを設定
-            const sheetName = "テスト結果"; // ★ シート名を修正
-            const ss = SpreadsheetApp.openById(spreadsheetId);
-            const sheet = ss.getSheetByName(sheetName);
-            if (!sheet) {
-                throw new Error(`Sheet named "${sheetName}" not found`);
-            }
-
-            // Check if the incoming data is present
-            if (e && e.postData && e.postData.contents) {
+            try {
+                // JSON形式のデータをパース
                 const data = JSON.parse(e.postData.contents);
-                const header = ["氏名", "所属店舗", "正解数", "総問題数", "正解率", "回答", "タイムスタンプ"];
+                const userName = data.userName;
+                const userStore = data.userStore;
+                const correctAnswers = data.correctAnswers;
+                const totalQuestions = data.totalQuestions;
+                const scoreRate = data.scoreRate;
+                const userAnswers = data.userAnswers;
+                const timestamp = data.timestamp;
 
-                // Check if the sheet is empty, if so, write the header
-                if (sheet.getLastRow() === 0) {
-                    sheet.appendRow(header);
-                }
+                // スプレッドシートIDとシート名を指定
+                const SPREADSHEET_ID = "1iI2RwK2RknEYi-sxzgUHSbh2TgyjlgrE3oZGFI2PNxg"; // ★スプレッドシートID
+                const SHEET_NAME = "テスト結果"; // ★シート名
 
-                const rowData = [
-                    data.userName,
-                    data.userStore,
-                    data.correctAnswers,
-                    data.totalQuestions,
-                    data.scoreRate,
-                    data.userAnswers.join(","), // 配列をカンマ区切り文字列に変換
-                    data.timestamp
-                ];
-                sheet.appendRow(rowData);
+                // スプレッドシートを取得
+                const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+                const sheet = ss.getSheetByName(SHEET_NAME);
 
-                // Respond with a success message
-                return ContentService.createTextOutput(JSON.stringify({ result: "success", message: "Data appended successfully." })).setMimeType(ContentService.MimeType.JSON);
-            } else {
-                //エラーメッセージを返す
-                return ContentService.createTextOutput(JSON.stringify({ result: "error", message: "No data received." })).setMimeType(ContentService.MimeType.JSON);
+                // 新しい行に名前とスコアを書き込む
+                sheet.appendRow([userName, userStore, correctAnswers, totalQuestions, scoreRate, userAnswers.join(","), timestamp]);
+
+                // 成功時のレスポンス
+                return createJsonResponse({ result: "success" });
+            } catch (error) {
+                // エラー時のレスポンス
+                return createJsonResponse({ result: "error", error: error.toString() });
             }
+        }
+
+        // JSONレスポンスを返す関数
+        function createJsonResponse(data) {
+            return ContentService.createTextOutput(JSON.stringify(data))
+                .setMimeType(ContentService.MimeType.JSON);
         }
     </script>
 </body>
