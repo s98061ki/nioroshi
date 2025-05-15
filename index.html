@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>荷卸しと黒本テスト</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -153,7 +153,7 @@
                     <option value="長浦">長浦</option>
                     <option value="高棚">高棚</option>
                     <option value="豊明東">豊明東</option>
-                    <option value="羽根">羽根</option>
+                    <option value="羽根">羽根</羽根>
                     <option value="東浦スタンド">東浦スタンド</option>
                     <option value="東浦検査場">東浦検査場</option>
                     <option value="大府スタンド">大府スタンド</option>
@@ -315,10 +315,20 @@
                     "前尺は荷卸し直前のものであるか確認する",
                     "前尺は、前回の荷卸し後の在庫量である"
                 ],
-                correctAnswer: "2"
+                correctAnswer: "3"
             },
             {
-                question: "9. 注油口を開けた時に行うべき確認事項は？",
+                question: "9. 遠方注油口のBOXの鍵の管理について、正しい文章を選べ",
+                options: [
+                    "ローリードライバーが持っているので、店舗では管理していない",
+                    "ローリードライバーが持ち出しやすい場所に保管する",
+                    "荷卸しで必要な鍵なので、遠方注油口の近くなどに保管しておく",
+                    "POSレジ内など、ローリードライバーが容易に持ち出せない場所に保管する"
+                ],
+                correctAnswer: "4"
+            },
+            {
+                question: "10. 注油口を開けた時に行うべき確認事項は？",
                 options: [
                     "タンクの温度を測定する",
                     "油種クリップとラベルを確認する",
@@ -328,7 +338,7 @@
                 correctAnswer: "3"
             },
             {
-                question: "10. ホースの接続時にドライバーと相互確認する項目は？",
+                question: "11. ホースの接続時にドライバーと相互確認する項目は？",
                 options: [
                     "油種クリップ・注油口ラベル",
                     "吐出口の開閉状況",
@@ -338,7 +348,7 @@
                 correctAnswer: "1"
             },
             {
-                question: "11. 荷卸しする油種の順序が（灯油→レギュラー→ハイオク→軽油）の順と異なる場合の対応は？",
+                question: "12. 荷卸しする油種の順序が（灯油→レギュラー→ハイオク→軽油）の順と異なる場合の対応は？",
                 options: [
                     "この場合の対応方法は決まっていない",
                     "立会人は、ドライバーに荷卸し順序の修正を指示する",
@@ -348,7 +358,7 @@
                 correctAnswer: "2"
             },
             {
-                question: "12. ホース接続時の作業について、正しい文章を選べ",
+                question: "13. ホース接続時の作業について、正しい文章を選べ",
                 options: [
                     "ドライバーが指差呼称したことを確認して、立会人はチェック表に記入する",
                     "ドライバーが指差呼称したことを確認して、立会人は「ヨシ」と相槌する",
@@ -358,7 +368,7 @@
                 correctAnswer: "4"
             },
             {
-                question: "13. 吐出口のコックを開放する前に確認すべき項目は？",
+                question: "14. 吐出口のコックを開放する前に確認すべき項目は？",
                 options: [
                     "サイトグラスで油種の色を確認する",
                     "注油口の蓋が開いているか確認する",
@@ -368,7 +378,7 @@
                 correctAnswer: "1"
             },
             {
-                question: "14. サイトグラスにて確認する事項は何ですか？",
+                question: "15. サイトグラスにて確認する事項は何ですか？",
                 options: [
                     "油種の色",
                     "タンクの温度",
@@ -378,7 +388,7 @@
                 correctAnswer: "1"
             },
             {
-                question: "15. 灯油の色は何色ですか？",
+                question: "16. 灯油の色は何色ですか？",
                 options: [
                     "無色透明",
                     "橙色（赤色）",
@@ -388,7 +398,7 @@
                 correctAnswer: "1"
             },
             {
-                question: "16. レギュラーの色は何色ですか？",
+                question: "17. レギュラーの色は何色ですか？",
                 options: [
                     "無色透明",
                     "橙色（赤色）",
@@ -398,7 +408,7 @@
                 correctAnswer: "2"
             },
             {
-                question: "17. ハイオクの色は何色ですか？",
+                question: "18. ハイオクの色は何色ですか？",
                 options: [
                     "無色透明",
                     "橙色（赤色）",
@@ -408,7 +418,7 @@
                 correctAnswer: "2"
             },
             {
-                question: "18. 軽油の色は何色ですか？",
+                question: "19. 軽油の色は何色ですか？",
                 options: [
                     "無色透明",
                     "橙色（赤色）",
@@ -418,7 +428,7 @@
                 correctAnswer: "4"
             },
             {
-                question: "19. サイトグラスの色確認時の作業について、正しい文章を選べ",
+                question: "20. サイトグラスの色確認時の作業について、正しい文章を選べ",
                 options: [
                     "ドライバーが指差呼称したことを確認して、立会人はチェック表に記入する",
                     "ドライバーが指差呼称したことを確認して、立会人は「ヨシ」と相槌する",
@@ -428,7 +438,7 @@
                 correctAnswer: "4"
             },
             {
-                question: "20. サイトグラスの色確認時に、クリップの油種の色と異なる場合の対応について、正しい文章を選べ",
+                question: "21. サイトグラスの色確認時に、クリップの油種の色と異なる場合の対応について、正しい文章を選べ",
                 options: [
                     "上長に電話して指示を仰ぐ",
                     "積荷の一致確認はしているので、色が違っていてもそのまま荷卸しを継続する",
@@ -438,7 +448,7 @@
                 correctAnswer: "4"
             },
             {
-                question: "21. 荷卸し開始時に確認すべき項目は？",
+                question: "22. 荷卸し開始時に確認すべき項目は？",
                 options: [
                     "吐出口の開閉状況",
                     "タンクの温度",
@@ -448,7 +458,7 @@
                 correctAnswer: "3"
             },
             {
-                question: "22. 荷卸し作業中に異常が発生した場合の対応は？",
+                question: "23. 荷卸し作業中に異常が発生した場合の対応は？",
                 options: [
                     "ドライバーの指示に従い作業を進める",
                     "とりあえず様子を見る",
@@ -458,7 +468,7 @@
                 correctAnswer: "3"
             },
             {
-                question: "23. 荷卸し作業中の安全監視で確認すべき事項は？",
+                question: "24. 荷卸し作業中の安全監視で確認すべき事項は？",
                 options: [
                     "油面計やべーパーの状況",
                     "吐出口の開閉状況",
@@ -468,7 +478,7 @@
                 correctAnswer: "1"
             },
             {
-                question: "24. 荷卸し中に場を離れる際、行うべき対応は？",
+                question: "25. 荷卸し中に場を離れる際、行うべき対応は？",
                 options: [
                     "吐出口コックを閉止する",
                     "タンクの蓋を閉める",
@@ -478,7 +488,7 @@
                 correctAnswer: "1"
             },
             {
-                question: "25. 荷卸し終了後、後尺を測定する目的は？",
+                question: "26. 荷卸し終了後、後尺を測定する目的は？",
                 options: [
                     "荷卸し数量の異常やコンタミを確認するため",
                     "注油口のラベルを確認するため",
@@ -488,7 +498,7 @@
                 correctAnswer: "1"
             },
             {
-                question: "26. 後尺の異常基準は？",
+                question: "27. 後尺の異常基準は？",
                 options: [
                     "（前尺＋荷卸し数量）×101％＞後尺",
                     "（荷卸し数量）×102％＞前尺",
@@ -498,7 +508,7 @@
                 correctAnswer: "4"
             },
             {
-                question: "27. 荷卸し終了後にドライバーと相互に確認すべき内容は？",
+                question: "28. 荷卸し終了後にドライバーと相互に確認すべき内容は？",
                 options: [
                     "荷卸し数量と油種の一致",
                     "ホースの接続状態",
@@ -508,7 +518,7 @@
                 correctAnswer: "1"
             },
             {
-                question: "28. コンタミした場合の対応について、正しい文章を選べ",
+                question: "29. コンタミした場合の対応について、正しい文章を選べ",
                 options: [
                     "本社に電話する",
                     "上長に電話したがつながらないので、折り返し連絡を待つ",
@@ -518,7 +528,7 @@
                 correctAnswer: "4"
             },
             {
-                question: "29. 黒本とは？",
+                question: "30. 黒本とは？",
                 options: [
                     "荷卸しのマニュアルが書かれた本",
                     "地下タンク在庫や出荷量、仕入れ量などを記したもの",
@@ -528,7 +538,7 @@
                 correctAnswer: "2"
             },
             {
-                question: "30. 黒本を入力するのはいつですか？",
+                question: "31. 黒本を入力するのはいつですか？",
                 options: [
                     "毎朝6時",
                     "精算後、すぐに",
@@ -538,7 +548,7 @@
                 correctAnswer: "2"
             },
             {
-                question: "31. 黒本を入力する意味について、正しい文章を選べ",
+                question: "32. 黒本を入力する意味について、正しい文章を選べ",
                 options: [
                     "毎日、どれだけ販売したか実績を管理するため",
                     "在庫の発注のため",
@@ -548,7 +558,7 @@
                 correctAnswer: "4"
             },
             {
-                question: "32. 黒本の入力後、どのようになったら異常か？",
+                question: "33. 黒本の入力後、どのようになったら異常か？",
                 options: [
                     "「当日増減率」又は「累計増減率」のマスが赤色になったら",
                     "当日増減量のマスが赤色になったら",
@@ -558,7 +568,7 @@
                 correctAnswer: "1"
             },
             {
-                question: "33. 黒本の「当日増減率」について、正しい文章を選べ",
+                question: "34. 黒本の「当日増減率」について、正しい文章を選べ",
                 options: [
                     "これは昨日の販売数量と比較した増減量である",
                     "１％を超えると「漏洩している」可能性が高いので、すぐに上長に連絡する",
@@ -568,7 +578,7 @@
                 correctAnswer: "3"
             },
             {
-                question: "34. 黒本の「累計増減率」について、正しい文章を選べ",
+                question: "35. 黒本の「累計増減率」について、正しい文章を選べ",
                 options: [
                     "3日連続で１％を超えたが品質に問題なさそうなので、上長に連絡せず様子を見る",
                     "月末は数値が大きくなる傾向がある",
@@ -578,7 +588,7 @@
                 correctAnswer: "3"
             },
             {
-                question: "35. 黒本の数値に異常があった場合の対応について、正しい文章を選べ",
+                question: "36. 黒本の数値に異常があった場合の対応について、正しい文章を選べ",
                 options: [
                     "黒本を入力しないので、対応方法について知らなくてもよい",
                     "入力ミスは無かったが、原因が分からないのでとりあえず様子をみる。",
@@ -587,8 +597,8 @@
                 ],
                 correctAnswer: "4"
             },
-             {
-                question: "36. 問題の難易度はどうですか？",
+            {
+                question: "37. 問題の難易度はどうですか？",
                 options: [
                     "難しい",
                     "かんたん",
@@ -659,7 +669,7 @@
             nameInput = document.getElementById("name");
             feedbackElement = document.getElementById("feedback");
             resultsList = document.getElementById("results-list");
-             resultsScoreRateElement = document.getElementById("results-score-rate");
+            resultsScoreRateElement = document.getElementById("results-score-rate");
             completionContainer = document.getElementById("completion-container");
             showResultsButton = document.getElementById("show-results");
             printButton = document.getElementById("print-results"); // 印刷ボタンを取得
@@ -801,9 +811,7 @@
                     feedbackElement.className = "feedback incorrect";
                 }
 
-                // Clear any existing timeout
-                if (window.feedbackTimeout) { //feedbackTimeoutをグローバル変数として定義
-                    clearTimeout(window.feedbackTimeout);
+                // Clear any existing timeoutif (window.feedbackTimeout) { //feedbackTimeoutをグローバル変数として定義clearTimeout(window.feedbackTimeout);
                 }
 
                 window.feedbackTimeout = setTimeout(() => {
