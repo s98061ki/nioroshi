@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -135,7 +136,6 @@
             margin-bottom: 1rem;
             color: #1a202c;
         }
-
     </style>
 </head>
 <body class="bg-gray-100">
@@ -224,7 +224,7 @@
             <p>氏名: <span id="results-name"></span></p>
             <p>所属店舗: <span id="results-store"></span></p>
             <p>正解数: <span id="results-correct"></span> / <span id="results-total"></span></p>
-             <p>正解率: <span id="results-score-rate"></span></p>
+            <p>正解率: <span id="results-score-rate"></span></p>
             <div id="results-details">
                 <h3>間違った問題</h3>
                 <ul id="results-list" class="text-left">
@@ -236,6 +236,8 @@
     </div>
 
     <script>
+        // ★ここにGASデプロイ後のウェブアプリURLを入力してください
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzMc1CFw73jMuX5CNuHJc_mbpwZEJXSVl_z8dR6CSYiWJkBsF4txGM_ltdb3kX9cryEmw/exec";
         const quizData = [
             {
                 question: "1. 荷卸し中のハンディ（モバイルSSC）の使用について、正しい文章を選べ",
@@ -614,9 +616,6 @@
         let userStore = "";
         let userAnswers = [];
 
-        // Google Apps Script Web App URL (ここにGASのURLを設定)
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyRbzk1CD4MGzlgL7-eBL3aoAWKQOBRaKomqf5w1ytGI2GxG1k0WTcfQUsQ7SBctkeWYg/exec"; // 例: "https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec";
-
         let loginContainer = null;
         let quizContainer = null;
         let questionElement = null;
@@ -636,10 +635,8 @@
         let resultsScoreRateElement = null;
         let completionContainer = null;
         let showResultsButton = null;
-        let printButton = null; // 印刷ボタンの変数を定義
+        let printButton = null;
 
-
-        // ページのロードが完了したときに日付を表示
         window.addEventListener('load', () => {
             const currentDate = new Date();
             const formattedDate = currentDate.toLocaleString('ja-JP', {
@@ -672,8 +669,7 @@
             resultsScoreRateElement = document.getElementById("results-score-rate");
             completionContainer = document.getElementById("completion-container");
             showResultsButton = document.getElementById("show-results");
-            printButton = document.getElementById("print-results"); // 印刷ボタンを取得
-
+            printButton = document.getElementById("print-results");
 
             if (loginContainer) {
                 document.getElementById("start-test").addEventListener("click", () => {
@@ -695,7 +691,6 @@
                 });
             }
 
-
             if (nextButton) {
                 nextButton.addEventListener("click", () => {
                     const selectedOption = document.querySelector('input[name="answer"]:checked');
@@ -708,7 +703,6 @@
                     userAnswers.push(selectedAnswer);
                     const isCorrect = quizData[currentQuestionIndex].correctAnswer.split(",").includes(selectedAnswer);
 
-
                     if (isCorrect) {
                         correctAnswers++;
                     }
@@ -716,7 +710,7 @@
                 });
             }
 
-           if (finishButton) {
+            if (finishButton) {
                 finishButton.addEventListener("click", () => {
                     const selectedOption = document.querySelector('input[name="answer"]:checked');
                     if (!selectedOption) {
@@ -727,7 +721,6 @@
                     const selectedAnswer = selectedOption.value;
                     userAnswers.push(selectedAnswer);
                     const isCorrect = quizData[currentQuestionIndex].correctAnswer.split(",").includes(selectedAnswer);
-
 
                     if (isCorrect) {
                         correctAnswers++;
@@ -759,12 +752,11 @@
                 });
             }
 
-            if (printButton) { // 印刷ボタンが取得できているか確認
+            if (printButton) {
                 printButton.addEventListener("click", () => {
-                    window.print(); // 印刷機能
+                    window.print();
                 });
             }
-
 
             function loadQuestion() {
                 if(quizData && quizData[currentQuestionIndex]){
@@ -785,7 +777,6 @@
                     nextButton.classList.add("hidden");
                     finishButton.classList.add("hidden");
                     feedbackElement.classList.add("hidden");
-
 
                     if (currentQuestionIndex === quizData.length - 1) {
                         finishButton.classList.remove("hidden");
@@ -811,15 +802,15 @@
                     feedbackElement.className = "feedback incorrect";
                 }
 
-                // Clear any existing timeout
-                if (window.feedbackTimeout) { //feedbackTimeoutをグローバル変数として定義clearTimeout(window.feedbackTimeout);
+                if (window.feedbackTimeout) {
+                    clearTimeout(window.feedbackTimeout);
                 }
 
                 window.feedbackTimeout = setTimeout(() => {
                     currentQuestionIndex++;
                     loadQuestion();
-                    window.feedbackTimeout = null; // Clear the ID
-                }, delay); // 設定された遅延時間後に次の問題へ
+                    window.feedbackTimeout = null;
+                }, delay);
             }
 
             function showResults() {
@@ -827,8 +818,9 @@
                 resultsContainer.classList.remove("hidden");
                 resultsNameElement.textContent = userName;
                 resultsStoreElement.textContent = userStore;
-                resultsCorrectElement.textContent= correctAnswers;
-                resultsTotalElement.textContent = quizData.length;resultsList.innerHTML = "";
+                resultsCorrectElement.textContent = correctAnswers;
+                resultsTotalElement.textContent = quizData.length;
+                resultsList.innerHTML = "";
 
                 const scoreRate = (correctAnswers / quizData.length) * 100;
                 resultsScoreRateElement.textContent = `${scoreRate.toFixed(2)}%`;
@@ -850,100 +842,41 @@
             }
 
             function saveResults() {
-                // Calculate score rate
                 const scoreRate = (correctAnswers / quizData.length) * 100;
 
-                // テスト結果をオブジェクトにまとめて配列に保存
                 const result = {
                     userName: userName,
-                    userStore: userStore,correctAnswers: correctAnswers,
+                    userStore: userStore,
+                    correctAnswers: correctAnswers,
                     totalQuestions: quizData.length,
                     scoreRate: scoreRate.toFixed(2),
                     userAnswers: userAnswers,
                     timestamp: new Date().toLocaleString()
                 };
-                // allTestResults.push(result); // 結果を配列に保存する代わりに、GASに送信
+                
                 sendDataToGAS(result);
             }
 
             function sendDataToGAS(data) {
-             const GAS_URL = "https://script.google.com/macros/s/AKfycbzY2pXUQsX3EzP9so5Bof_TumJi6z3H4eav1O6OkHyvyiCQ8smtkEuDEywSAFgC5C_UAg/exec"; // GASのURL
-
-                // Fetch APIを使用してデータを送信
+                // CORS対応のためno-corsモードを使用
                 fetch(GAS_URL, {
                     method: 'POST',
+                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(data) // データをJSON形式に変換
+                    body: JSON.stringify(data)
                 })
                 .then(response => {
-                    console.log('データ送信成功:', response);
-                    // 必要に応じて、成功時の処理を追加
+                    // no-corsモードでは response.json()が使えないため、成功として扱う
+                    console.log('データ送信完了');
                 })
                 .catch(error => {
                     console.error('データ送信エラー:', error);
-                    // 必要に応じて、エラー時の処理を追加
+                    alert('結果の保存に失敗しました。ネットワーク接続を確認してください。');
                 });
             }
         });
-
-        // Add this Google Apps Script function in your Google Sheets script editor.
-        function doPost(e) {
-            try {
-                // JSON形式のデータをパース
-                const data = JSON.parse(e.postData.contents);
-                const userName = data.userName;
-                const userStore = data.userStore;
-                const correctAnswers = data.correctAnswers;
-                const totalQuestions = data.totalQuestions;
-                const scoreRate = data.scoreRate;
-                const userAnswers = data.userAnswers.join(','); // ★  userAnswersをカンマ区切り文字列に変換
-                const timestamp = data.timestamp;
-
-                // スプレッドシートIDとシート名を指定
-                const SPREADSHEET_ID = "1iI2RwK2RknEYi-sxzgUHSbh2TgyjlgrE3oZGFI2PNxg"; // ★スプレッドシートID
-                const SHEET_NAME = "テスト結果"; // ★シート名
-
-                // スプレッドシートを取得
-                const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-                const sheet = ss.getSheetByName(SHEET_NAME);
-
-                // 新しい行に名前とスコアを書き込む
-                sheet.appendRow([userName, userStore, correctAnswers, totalQuestions, scoreRate, userAnswers, timestamp]);
-
-                // 成功時のレスポンスを直接構築
-                const successResponse = {
-                    result: "success",
-                    headers: {
-                        'Access-Control-Allow-Origin': '*',
-                        'Content-Type': 'application/json' // ★ Content-Type ヘッダーを明示的に設定
-                    },
-                    content: JSON.stringify({ result: "success" }) // content プロパティにJSON文字列を設定
-                };
-
-                return ContentService.createTextOutput(JSON.stringify(successResponse)).setMimeType(ContentService.MimeType.JSON);
-
-            } catch (error) {
-                // エラー時のレスポンスを直接構築
-                const errorResponse = {
-                    result: "error",
-                    error: error.toString(),
-                    headers: {
-                        'Access-Control-Allow-Origin': '*',
-                        'Content-Type': 'application/json' // ★ Content-Type ヘッダーを明示的に設定
-                    },
-                    content: JSON.stringify({ result: "error", error: error.toString() }) // content プロパティにJSON文字列を設定
-                };
-                return ContentService.createTextOutput(JSON.stringify(errorResponse)).setMimeType(ContentService.MimeType.JSON);
-            }
-        }
-
-        // JSONレスポンスを返す関数 (この関数は使用していません)
-        // function createJsonResponse(data) {
-        //  return ContentService.createTextOutput(JSON.stringify(data))
-        //      .setMimeType(ContentService.MimeType.JSON);
-        // }
     </script>
 </body>
 </html>
