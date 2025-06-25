@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SS品質管理サポート</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Professional (Background: stone-50, Cards: white/stone-100, Accent: sky-600, Warning: red-600) -->
+    <!-- Application Structure Plan: 利用者の役割（品質管理者・新入社員）とタスクに基づいた、ダッシュボード中心の対話型構造を採用。ナビゲーションで「ダッシュボード」「日常点検」「品質規格」「緊急時対応」「学習モード」を切り替えることで、情報の検索性を高め、直感的な操作を実現。この設計は、資料の法的・形式的な構成をそのまま再現するのではなく、現場での使いやすさを最優先し、必要な情報へ迅速にアクセスできることを目的としています。 -->
+    <!-- Visualization & Content Choices: 報告書情報：品質不適合の原因 -> 目標：原因の比較・理解 -> 表示方法：棒グラフ（Chart.js）-> 操作：ホバーで詳細表示 -> 理由：最も一般的な問題点を視覚的に示し、予防策への意識を高めるため。報告書情報：燃料油の品質規格 -> 目標：規格の参照・確認 -> 表示方法：対話型HTMLテーブル＋JSフィルタ -> 理由：PDFからの検索より遥かに高速で規格を確認できるため。報告書情報：緊急時対応手順 -> 目標：緊急時の行動支援 -> 表示方法：ステップ形式のウィザード（HTML/JS）-> 理由：危機的状況下での認知負荷を軽減し、正確な手順実行を確実にするため。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans JP', 'Inter', sans-serif; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .nav-item { transition: all 0.2s ease-in-out; }
+        .nav-item.active { border-bottom-color: #0284c7; color: #0284c7; font-weight: 600; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .task-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        .tab-button.active { background-color: #0ea5e9; color: white; }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="mb-6">
+            <h1 class="text-3xl font-bold text-stone-900 flex items-center">
+                <span class="text-sky-600 mr-3">⛽</span> SS品質管理サポート
+            </h1>
+            <p class="text-stone-500 mt-1">品質管理者と新入社員のための統合業務支援ツール</p>
+        </header>
+
+        <nav class="bg-white rounded-lg shadow-sm mb-6 sticky top-0 z-10">
+            <ul id="main-nav" class="flex flex-wrap border-b border-stone-200">
+                <li><a href="#dashboard" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">ダッシュボード</a></li>
+                <li><a href="#daily-checks" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">日常点検</a></li>
+                <li><a href="#standards" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">品質規格</a></li>
+                <li><a href="#emergency" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">緊急時対応</a></li>
+                <li><a href="https://s98061ki.github.io/nioroshi/" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">学習モード</a></li>
+                <li><a href="https://www.youtube.com/playlist?list=PLBXIDWHV_3_1W-3Byazg5ELS3LxmkLJL_" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">動画で見る</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <!-- Dashboard Page -->
+            <section id="dashboard-page" class="page">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm">
+                        <h2 class="text-xl font-semibold mb-4 text-stone-800">品質不適合の主な原因</h2>
+                        <p class="text-sm text-stone-500 mb-4">過去の事例から、品質トラブルの主な原因を理解し、日常業務での予防意識を高めましょう。特にホース内の滞油（端切り）とローリーからのコンタミが大きな要因です。</p>
+                        <div class="chart-container">
+                            <canvas id="causesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <h3 class="font-semibold text-lg text-stone-800">クイックアクセス</h3>
+                            <p class="text-sm text-stone-500 mb-4">主要な業務へ素早く移動します。</p>
+                            <div class="space-y-3">
+                                <a href="#daily-checks" class="nav-link-internal block w-full text-center bg-sky-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-sky-600 transition duration-200">日常点検を開始</a>
+                                <a href="#emergency" class="nav-link-internal block w-full text-center bg-red-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-red-600 transition duration-200">緊急時対応プロトコル</a>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <h3 class="font-semibold text-lg text-stone-800">管理者向け情報</h3>
+                            <p class="text-sm text-stone-500 mb-4">品質管理者の届出や義務に関する要約です。</p>
+                            <ul class="space-y-2 text-sm text-stone-600">
+                                <li class="flex items-start"><span class="mr-2 text-sky-600">▶</span>各給油所に品質管理者の選任・届出が必須（兼務不可）。</li>
+                                <li class="flex items-start"><span class="mr-2 text-sky-600">▶</span>資格：乙種第4類危険物取扱者免状など。<a href="https://www.chubu.meti.go.jp/d51sekiyu/01_tetsuzuki/05_hinshitsukanrisha.html" target="_blank" class="ml-1 text-sky-600 hover:underline">詳細はこちら</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Daily Checks Page -->
+            <section id="daily-checks-page" class="page">
+                 <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold mb-2 text-stone-800">日常点検業務</h2>
+                    <p class="text-stone-600 mb-6">ここでは、日々の業務で実施する品質管理のための点検手順を確認できます。各項目を確実に実施し、記録することで、品質トラブルを未然に防ぎます。</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- 端切り -->
+                        <div class="bg-stone-100 p-6 rounded-lg transition duration-300 task-card">
+                            <h3 class="text-lg font-semibold mb-2 flex items-center"><span class="text-2xl mr-3">✂️</span>「端切り」の実施</h3>
+                            <p class="text-sm text-stone-600 mb-4">ホース内の滞油による品質劣化を防ぐ最重要作業です。特に販売頻度の低い油種（例：夏季の灯油）は必須です。</p>
+                            <details class="text-sm">
+                                <summary class="font-medium text-sky-600 cursor-pointer">手順詳細</summary>
+                                <ol class="list-decimal list-inside mt-2 space-y-2 text-stone-700">
+                                    <li>計量機ノズルから2L程度の燃料を抜き取る。</li>
+                                    <li>特に灯油は、抜き取った油を透明な容器に入れ、水道水と比較し着色がないか確認する。（簡易色相チェック）</li>
+                                    <li>試買検査の前には必ず実施する。</li>
+                                </ol>
+                            </details>
+                        </div>
+                        <!-- 荷卸し立会い -->
+                        <div class="bg-stone-100 p-6 rounded-lg transition duration-300 task-card">
+                            <h3 class="text-lg font-semibold mb-2 flex items-center"><span class="text-2xl mr-3">🚚</span>荷卸し時の立会い・確認</h3>
+                            <p class="text-sm text-stone-600 mb-4">コンタミネーション（異油種・水分混入）を防ぐため、荷卸し時の確認を徹底します。</p>
+                             <details class="text-sm">
+                                <summary class="font-medium text-sky-600 cursor-pointer">確認項目</summary>
+                                <ul class="list-disc list-inside mt-2 space-y-2 text-stone-700">
+                                    <li>受入油種と数量の確認。</li>
+                                    <li>注油口とホースの正しい結合を確認。</li>
+                                    <li>地下タンクの在庫量（受入前・後）の確認。</li>
+                                    <li>ローリー乗務員と相互に配管内の残油がないか確認。</li>
+                                </ul>
+                            </details>
+                        </div>
+                        <!-- 目視確認 -->
+                        <div class="bg-stone-100 p-6 rounded-lg transition duration-300 task-card">
+                             <h3 class="text-lg font-semibold mb-2 flex items-center"><span class="text-2xl mr-3">👀</span>水分混入の目視確認</h3>
+                            <p class="text-sm text-stone-600 mb-4">計量機から吐出される油の状態を日常的に観察し、水コンタミの初期兆候を発見します。</p>
+                            <details class="text-sm">
+                                <summary class="font-medium text-sky-600 cursor-pointer">チェックポイント</summary>
+                                <ul class="list-disc list-inside mt-2 space-y-2 text-stone-700">
+                                    <li>吐出油が白濁していないか？</li>
+                                    <li>エア噛みのような音や振動はないか？</li>
+                                    <li>在庫管理表で在庫量の不自然な増加はないか？</li>
+                                    <li>集中豪雨や台風の後には特に注意する。</li>
+                                </ul>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Standards Page -->
+            <section id="standards-page" class="page">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold mb-2 text-stone-800">燃料油品質規格</h2>
+                    <p class="text-stone-600 mb-6">品確法で定められた燃料油の品質規格（強制規格・標準規格）を検索・確認できます。油種を選択してください。</p>
+                    <div class="mb-4">
+                        <select id="fuel-type-selector" class="w-full md:w-1/3 p-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                            <option value="gasoline">揮発油（ガソリン）</option>
+                            <option value="diesel">軽油</option>
+                            <option value="kerosene">灯油</option>
+                        </select>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-stone-500">
+                            <thead class="text-xs text-stone-700 uppercase bg-stone-100">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">項目</th>
+                                    <th scope="col" class="px-6 py-3">基準</th>
+                                    <th scope="col" class="px-6 py-3">観点</th>
+                                    <th scope="col" class="px-6 py-3">規格</th>
+                                </tr>
+                            </thead>
+                            <tbody id="standards-table-body">
+                                <!-- JS will populate this -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Emergency Page -->
+            <section id="emergency-page" class="page">
+                 <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold mb-2 text-red-800">緊急時対応プロトコル</h2>
+                    <p class="text-red-700 mb-6">品質クレームやコンタミ事故が発生した場合、パニックにならず、以下の手順に従って冷静に対応してください。初動の速さが被害拡大を防ぎます。</p>
+                    
+                    <div id="emergency-steps-container">
+                        <!-- Step 1 -->
+                        <div class="emergency-step p-5 bg-white rounded-lg shadow-md mb-4">
+                            <h3 class="text-xl font-bold text-red-600 mb-2">ステップ1：直ちに販売を停止</h3>
+                            <p class="text-stone-700">お客様からのクレーム（「給油後、エンジンが止まった」など）や、自身の確認で異常を発見した場合、該当する計量機での販売を<strong>直ちに停止</strong>してください。これが最優先事項です。</p>
+                        </div>
+                        <!-- Step 2 -->
+                         <div class="emergency-step p-5 bg-white rounded-lg shadow-md mb-4">
+                            <h3 class="text-xl font-bold text-red-600 mb-2">ステップ2：責任者への報告</h3>
+                            <p class="text-stone-700">速やかに品質管理者または店長へ状況を報告してください。自己判断で対応を続けないでください。</p>
+                        </div>
+                        <!-- Step 3 -->
+                         <div class="emergency-step p-5 bg-white rounded-lg shadow-md mb-4">
+                            <h3 class="text-xl font-bold text-red-600 mb-2">ステップ3：関係機関への連絡</h3>
+                            <p class="text-stone-700 mb-4">品質管理者は、以下の関係機関へ速やかに連絡してください。</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="border border-stone-200 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-stone-800">① 最寄りの消防本部</h4>
+                                    <p class="text-sm text-stone-600">事故の経緯、対応状況を報告。</p>
+                                </div>
+                                <div class="border border-stone-200 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-stone-800">② 元売事業者</h4>
+                                    <p class="text-sm text-stone-600">社内規定に基づき連絡。</p>
+                                </div>
+                                <div class="border border-stone-200 p-4 rounded-lg md:col-span-2">
+                                    <h4 class="font-semibold text-stone-800">③ 中部経済産業局 資源・燃料課</h4>
+                                    <p class="text-lg font-mono font-bold my-2"><a href="tel:052-951-2781" class="text-sky-600 hover:underline">📞 052-951-2781</a></p>
+                                    <details class="text-sm">
+                                        <summary class="font-medium text-sky-600 cursor-pointer">伝えるべき事項</summary>
+                                        <ol class="list-decimal list-inside mt-2 space-y-1 text-stone-700">
+                                            <li>販売事業者名、給油所名</li>
+                                            <li>給油所所在地</li>
+                                            <li>連絡が取れる電話番号</li>
+                                            <li>コンタミの概要（例：灯油に揮発油混入）</li>
+                                            <li>直前に当該燃料の荷卸しを受けた事業者名</li>
+                                        </ol>
+                                        <p class="mt-2 text-xs text-stone-500">※休日・時間外は留守番電話に応答メッセージを残してください。</p>
+                                    </details>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </section>
+
+            <!-- Learning Page -->
+            <section id="learning-page" class="page">
+                 <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold mb-2 text-stone-800">学習モード</h2>
+                    <p class="text-stone-600 mb-6">品質管理の基本をクイズ形式で学びましょう。新入社員の教育や、知識の再確認にご活用ください。</p>
+                    
+                    <div id="quiz-container">
+                        <!-- Quiz questions will be injected here by JS -->
+                    </div>
+
+                    <div id="quiz-result" class="mt-6 p-4 rounded-lg text-center hidden"></div>
+                    <button id="submit-quiz-btn" class="mt-6 w-full bg-sky-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-sky-600 transition duration-200">回答を送信</button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = {
+                state: {
+                    currentPage: 'dashboard',
+                },
+                
+                init() {
+                    this.initRouter();
+                    this.renderPage();
+                    this.initCharts();
+                    this.initStandardsTable();
+                    this.initQuiz();
+                    
+                    document.getElementById('fuel-type-selector').addEventListener('change', (e) => this.renderStandardsTable(e.target.value));
+                    document.querySelectorAll('.nav-link-internal').forEach(link => {
+                        link.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const targetId = e.target.getAttribute('href').substring(1);
+                            this.navigateTo(targetId);
+                        });
+                    });
+                },
+
+                initRouter() {
+                    const navLinks = document.querySelectorAll('#main-nav a');
+                    navLinks.forEach(link => {
+                        // For external links like '学習モード', prevent default and don't add 'active' class
+                        if (link.getAttribute('href').startsWith('http')) {
+                            return;
+                        }
+
+                        link.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const pageId = e.target.getAttribute('href').substring(1);
+                            this.navigateTo(pageId);
+                        });
+                    });
+                     // Handle initial page load from hash
+                    const initialPage = window.location.hash ? window.location.hash.substring(1) : 'dashboard';
+                    this.navigateTo(initialPage);
+                },
+                
+                navigateTo(pageId) {
+                    this.state.currentPage = pageId;
+                    window.location.hash = pageId;
+                    this.renderPage();
+                },
+
+                renderPage() {
+                    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+                    const newPage = document.getElementById(`${this.state.currentPage}-page`);
+                    if (newPage) {
+                        newPage.classList.add('active');
+                    } else {
+                        document.getElementById('dashboard-page').classList.add('active');
+                    }
+
+                    document.querySelectorAll('#main-nav a').forEach(link => {
+                        // Do not add 'active' class to external links
+                        if (link.getAttribute('href').startsWith('http')) {
+                            link.classList.remove('active'); // Ensure it's not active even if hash matches a non-existent page
+                            return;
+                        }
+
+                        if (link.getAttribute('href') === `#${this.state.currentPage}`) {
+                            link.classList.add('active');
+                        } else {
+                            link.classList.remove('active');
+                        }
+                    });
+                },
+                
+                causesData: {
+                    labels: ['ホース内滞油(端切り不足)', 'ローリーからのコンタミ', '計量機・配管の劣化', '施設への水分侵入', 'その他'],
+                    datasets: [{
+                        label: '不適合件数（イメージ）',
+                        data: [45, 30, 15, 8, 2],
+                        backgroundColor: ['#38bdf8', '#60a5fa', '#93c5fd', '#bfdbfe', '#e0f2fe'],
+                        borderColor: ['#0284c7', '#2563eb', '#60a5fa', '#93c5fd', '#dbeafe'],
+                        borderWidth: 1
+                    }]
+                },
+
+                initCharts() {
+                    const ctx = document.getElementById('causesChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: this.causesData,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            indexAxis: 'y',
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    title: { display: true, text: '発生頻度' }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                title: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return ` ${context.dataset.label}: ${context.raw}%`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+
+                standardsData: {
+                    gasoline: [
+                        { item: '鉛', spec: '検出されないこと', reason: '環境(大気汚染防止)', type: '強制' },
+                        { item: '硫黄分', spec: '0.001質量%(10ppm)以下', reason: '環境(大気汚染防止)', type: '強制' },
+                        { item: 'ベンゼン', spec: '1体積%以下', reason: '健康被害防止', type: '強制' },
+                        { item: '灯油混入率', spec: '4体積%以下', reason: 'エンジントラブル防止', type: '強制' },
+                        { item: '色', spec: 'オレンジ色', reason: '灯油との誤使用防止', type: '標準' },
+                        { item: 'オクタン価', spec: '1号(ハイオク)96以上, 2号(レギュラー)89以上', reason: '運転時の快適性', type: '標準' },
+                    ],
+                    diesel: [
+                        { item: '硫黄分', spec: '0.001質量%(10ppm)以下', reason: '環境(大気汚染防止)', type: '強制' },
+                        { item: 'セタン指数', spec: '45以上', reason: '環境(大気汚染防止)', type: '強制' },
+                        { item: '蒸留性状(90%留出温度)', spec: '360℃以下', reason: '環境(大気汚染防止)', type: '強制' },
+                        { item: '引火点', spec: '45℃以上', reason: '安全性', type: '標準' },
+                        { item: '流動点', spec: '季節・地域により異なる', reason: '運転時の快適性', type: '標準' },
+                    ],
+                    kerosene: [
+                        { item: '硫黄分', spec: '0.008質量%(80ppm)以下', reason: '環境(大気汚染防止)', type: '強制' },
+                        { item: '引火点', spec: '40℃以上', reason: '消費者安全の確保', type: '強制' },
+                        { item: '色', spec: 'セーボルト色が+25以上 (無色透明)', reason: 'ガソリンとの誤使用防止', type: '標準' },
+                        { item: '煙点', spec: '23mm以上', reason: '快適性', type: '標準' },
+                    ]
+                },
+
+                initStandardsTable() {
+                    this.renderStandardsTable('gasoline');
+                },
+
+                renderStandardsTable(fuelType) {
+                    const tableBody = document.getElementById('standards-table-body');
+                    tableBody.innerHTML = '';
+                    const data = this.standardsData[fuelType] || [];
+                    data.forEach(std => {
+                        const row = document.createElement('tr');
+                        row.className = 'bg-white border-b hover:bg-stone-50';
+                        row.innerHTML = `
+                            <td class="px-6 py-4 font-medium text-stone-900 whitespace-nowrap">${std.item}</td>
+                            <td class="px-6 py-4">${std.spec}</td>
+                            <td class="px-6 py-4">${std.reason}</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 font-semibold leading-tight rounded-full ${std.type === '強制' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
+                                    ${std.type}
+                                </span>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                },
+
+                quizData: [
+                    {
+                        question: "夏季の灯油販売で特に注意すべき日常点検作業は何ですか？",
+                        options: ["在庫量の確認", "「端切り」の実施", "計量機の清掃"],
+                        answer: "「端切り」の実施"
+                    },
+                    {
+                        question: "灯油にガソリンが微量でも混入すると、どの規格値に最も大きな影響が出ますか？",
+                        options: ["硫黄分", "色", "引火点"],
+                        answer: "引火点"
+                    },
+                    {
+                        question: "品質管理者の選任について、正しいものはどれですか？",
+                        options: ["1人で複数のSSを兼務できる", "資格は特に必要ない", "各SSに1名選任し、兼務はできない"],
+                        answer: "各SSに1名選任し、兼務はできない"
+                    },
+                    {
+                        question: "お客様から「給油後に車が止まった」と連絡があった場合、最初に行うべきことは何ですか？",
+                        options: ["原因を調査する", "直ちに該当油種の販売を停止する", "お客様に謝罪する"],
+                        answer: "直ちに該当油種の販売を停止する"
+                    }
+                ],
+
+                initQuiz() {
+                    const quizContainer = document.getElementById('quiz-container');
+                    this.quizData.forEach((q, index) => {
+                        const questionDiv = document.createElement('div');
+                        questionDiv.className = 'mb-6';
+                        let optionsHtml = '';
+                        q.options.forEach(opt => {
+                            optionsHtml += `
+                                <label class="block p-3 my-2 border rounded-lg hover:bg-stone-100 cursor-pointer">
+                                    <input type="radio" name="question${index}" value="${opt}" class="mr-2">
+                                    ${opt}
+                                </label>
+                            `;
+                        });
+                        questionDiv.innerHTML = `
+                            <p class="font-semibold mb-2">${index + 1}. ${q.question}</p>
+                            <div class="space-y-2">${optionsHtml}</div>
+                        `;
+                        quizContainer.appendChild(questionDiv);
+                    });
+                    
+                    document.getElementById('submit-quiz-btn').addEventListener('click', () => this.submitQuiz());
+                },
+                
+                submitQuiz() {
+                    let score = 0;
+                    this.quizData.forEach((q, index) => {
+                        const selected = document.querySelector(`input[name="question${index}"]:checked`);
+                        if(selected && selected.value === q.answer) {
+                            score++;
+                        }
+                    });
+                    
+                    const resultDiv = document.getElementById('quiz-result');
+                    const totalQuestions = this.quizData.length;
+                    resultDiv.innerHTML = `<h2>結果: ${totalQuestions}問中 ${score}問 正解！</h2>`;
+                    resultDiv.className = `mt-6 p-4 rounded-lg text-center font-bold ${score / totalQuestions > 0.7 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+                    resultDiv.classList.remove('hidden');
+                }
+            };
+
+            app.init();
+        });
+    </script>
+</body>
+</html>
