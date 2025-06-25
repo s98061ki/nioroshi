@@ -145,10 +145,10 @@
                         <table class="w-full text-sm text-left text-stone-500">
                             <thead class="text-xs text-stone-700 uppercase bg-stone-100">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3">項目</th>
-                                    <th scope="col" class="px-6 py-3">基準</th>
-                                    <th scope="col" class="px-6 py-3">観点</th>
-                                    <th scope="col" class="px-6 py-3">規格</th>
+                                    <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3">項目</th>
+                                    <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3">基準</th>
+                                    <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3">観点</th>
+                                    <th scope="col" class="px-3 py-2 sm:px-6 sm:py-3">規格</th>
                                 </tr>
                             </thead>
                             <tbody id="standards-table-body">
@@ -378,10 +378,10 @@
                         const row = document.createElement('tr');
                         row.className = 'bg-white border-b hover:bg-stone-50';
                         row.innerHTML = `
-                            <td class="px-6 py-4 font-medium text-stone-900 whitespace-nowrap">${std.item}</td>
-                            <td class="px-6 py-4">${std.spec}</td>
-                            <td class="px-6 py-4">${std.reason}</td>
-                            <td class="px-6 py-4">
+                            <td class="px-3 py-2 sm:px-6 sm:py-4 font-medium text-stone-900 whitespace-nowrap">${std.item}</td>
+                            <td class="px-3 py-2 sm:px-6 sm:py-4">${std.spec}</td>
+                            <td class="px-3 py-2 sm:px-6 sm:py-4 break-words">${std.reason}</td>
+                            <td class="px-3 py-2 sm:px-6 sm:py-4">
                                 <span class="px-2 py-1 font-semibold leading-tight rounded-full ${std.type === '強制' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
                                     ${std.type}
                                 </span>
