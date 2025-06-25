@@ -43,6 +43,7 @@
                 <li><a href="#emergency" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">緊急時対応</a></li>
                 <li><a href="https://s98061ki.github.io/nioroshi/" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">学習モード</a></li>
                 <li><a href="https://www.youtube.com/playlist?list=PLBXIDWHV_3_1W-3Byazg5ELS3LxmkLJL_" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">動画で見る</a></li>
+                <li><a href="#documents" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">資料</a></li>
             </ul>
         </nav>
 
@@ -225,6 +226,24 @@
                 </div>
             </section>
 
+            <!-- Documents Page -->
+            <section id="documents-page" class="page">
+                 <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold mb-2 text-stone-800">資料</h2>
+                    <p class="text-stone-600 mb-6">品質管理に関連する重要な資料はこちらから参照できます。</p>
+                    <div class="space-y-4">
+                        <a href="https://drive.google.com/file/d/1UHO6SKxEOz2kWs8qQOAXXSQbnDxCtD7/view?usp=sharing" target="_blank" class="flex items-center p-4 bg-stone-100 rounded-lg hover:bg-stone-200 transition duration-200">
+                            <span class="text-red-500 text-2xl mr-3">📄</span>
+                            <span class="font-medium text-stone-800">品確法教育用資料「給油所の運営にあたって」.pdf</span>
+                        </a>
+                        <a href="https://drive.google.com/file/d/1UGrY8OLCYYnKBcGPC05YijzyrWC8DdiG/view?usp=sharing" target="_blank" class="flex items-center p-4 bg-stone-100 rounded-lg hover:bg-stone-200 transition duration-200">
+                            <span class="text-red-500 text-2xl mr-3">📄</span>
+                            <span class="font-medium text-stone-800">端切りの重要性と品確法2025.pdf</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
@@ -255,8 +274,8 @@
                 initRouter() {
                     const navLinks = document.querySelectorAll('#main-nav a');
                     navLinks.forEach(link => {
-                        // For external links like '学習モード', prevent default and don't add 'active' class
-                        if (link.getAttribute('href').startsWith('http')) {
+                        // For external links like '学習モード' and '動画で見る', prevent default and don't add 'active' class
+                        if (link.getAttribute('href').startsWith('http') || link.getAttribute('href').startsWith('https')) {
                             return;
                         }
 
@@ -288,7 +307,7 @@
 
                     document.querySelectorAll('#main-nav a').forEach(link => {
                         // Do not add 'active' class to external links
-                        if (link.getAttribute('href').startsWith('http')) {
+                        if (link.getAttribute('href').startsWith('http') || link.getAttribute('href').startsWith('https')) {
                             link.classList.remove('active'); // Ensure it's not active even if hash matches a non-existent page
                             return;
                         }
