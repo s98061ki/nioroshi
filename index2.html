@@ -23,31 +23,55 @@
         .page.active { display: block; }
         .task-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
         .tab-button.active { background-color: #0ea5e9; color: white; }
+        /* Flex container for navigation rows */
+        .nav-rows { display: flex; flex-direction: column; }
+        .nav-row { display: flex; flex-wrap: wrap; }
     </style>
 </head>
 <body class="bg-stone-50 text-stone-800">
 
     <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        <header class="mb-6">
+        <header class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <h1 class="text-3xl font-bold text-stone-900 flex items-center">
-                <span class="text-sky-600 mr-3">⛽</span> SS品質管理サポート
+                <span class="text-sky-600 mr-3">⛽</span> 品質管理サポート
             </h1>
-            <p class="text-stone-500 mt-1">品質管理者と新入社員のための統合業務支援ツール</p>
+            <p class="text-stone-500 mt-1 sm:mt-0 sm:ml-4">品質管理統合業務支援ツール</p>
+            <div class="text-sm text-stone-400 mt-2 sm:mt-0 sm:ml-auto">
+                最終データ更新日: <span id="last-update-date">2025年6月26日</span>
+            </div>
         </header>
 
         <nav class="bg-white rounded-lg shadow-sm mb-6 sticky top-0 z-10">
-            <ul id="main-nav" class="flex flex-wrap border-b border-stone-200">
-                <li><a href="#dashboard" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">ダッシュボード</a></li>
-                <li><a href="#daily-checks" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">日常点検</a></li>
-                <li><a href="#standards" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">品質規格</a></li>
-                <li><a href="#emergency" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">緊急時対応</a></li>
-                <li><a href="https://s98061ki.github.io/nioroshi/" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">学習モード</a></li>
-                <li><a href="https://www.youtube.com/playlist?list=PLBXIDWHV_3_1W-3Byazg5ELS3LxmkLJL_" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">動画で見る</a></li>
-                <li><a href="#documents" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600">資料</a></li>
-            </ul>
+            <div class="nav-rows">
+                <ul id="main-nav-row-1" class="nav-row border-b border-stone-200">
+                    <li><a href="#dashboard" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📊</span>ダッシュボード</a></li>
+                    <li><a href="#daily-checks" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">✅</span>日常点検</a></li>
+                    <li><a href="#fax-notifications" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📠</span>本社からの通知FAX</a></li>
+                    <li><a href="#standards" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📋</span>品質規格</a></li>
+                                   <li><a href="#emergency" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">🚨</span>緊急時対応</a></li>
+                                    </ul>
+                <ul id="main-nav-row-2" class="nav-row">
+ <li><a href="https://s98061ki.github.io/nioroshi/" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">💡</span>学習モード</a></li>
+                    <li><a href="https://www.youtube.com/playlist?list=PLBXIDWHV_3_1W-3Byazg5ELS3LxmkLJL_" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">🎥</span>動画で見る</a></li>
+                    <li><a href="#documents" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📄</span>資料</a></li>
+                </ul>
+            </div>
         </nav>
 
         <main>
+            <!-- Latest News Section -->
+            <section id="latest-news-section" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg shadow-sm mb-6">
+                <h2 class="text-lg font-semibold mb-2 text-blue-800 flex items-center">
+                    <span class="mr-2 text-xl">✨</span> 新着情報
+                </h2>
+                <ul class="list-disc list-inside text-sm text-blue-700 space-y-1">
+                   <li><span class="font-bold">2025年6月26日:</span> 本社からの通知FAX「6月11日　荷卸し立会い優秀者」をアップしました。</li>
+                    <li><span class="font-bold">2025年6月26日:</span> 資料「品確法教育用資料」「端切りの重要性と品確法」をアップしました。</li>
+                    <li><span class="font-bold">2025年6月26日:</span> 学習モード　テスト内容をアップデートしました。</li>
+                    
+                </ul>
+            </section>
+
             <!-- Dashboard Page -->
             <section id="dashboard-page" class="page">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -64,16 +88,12 @@
                             <p class="text-sm text-stone-500 mb-4">主要な業務へ素早く移動します。</p>
                             <div class="space-y-3">
                                 <a href="#daily-checks" class="nav-link-internal block w-full text-center bg-sky-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-sky-600 transition duration-200">日常点検を開始</a>
-                                <a href="#emergency" class="nav-link-internal block w-full text-center bg-red-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-red-600 transition duration-200">緊急時対応プロトコル</a>
+                                <a href="#emergency" class="nav-link-internal block w-full text-center bg-red-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-red-600 transition duration-200">緊急時対応手順</a>
+                                <a href="https://s98061ki.github.io/nioroshi/" target="_blank" class="block w-full text-center bg-green-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-600 transition duration-200">学習モード</a>
+                                <a href="#fax-notifications" class="nav-link-internal block w-full text-center bg-purple-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-purple-600 transition duration-200">本社からの通知FAX</a>
                             </div>
                         </div>
-                        <div class="bg-white p-6 rounded-lg shadow-sm">
-                            <h3 class="font-semibold text-lg text-stone-800">管理者向け情報</h3>
-                            <p class="text-sm text-stone-500 mb-4">品質管理者の届出や義務に関する要約です。</p>
-                            <ul class="space-y-2 text-sm text-stone-600">
-                                <li class="flex items-start"><span class="mr-2 text-sky-600">▶</span>各給油所に品質管理者の選任・届出が必須（兼務不可）。</li>
-                                <li class="flex items-start"><span class="mr-2 text-sky-600">▶</span>資格：乙種第4類危険物取扱者免状など。<a href="https://www.chubu.meti.go.jp/d51sekiyu/01_tetsuzuki/05_hinshitsukanrisha.html" target="_blank" class="ml-1 text-sky-600 hover:underline">詳細はこちら</a></li>
-                            </ul>
+                        
                         </div>
                     </div>
                 </div>
@@ -139,7 +159,7 @@
                         <select id="fuel-type-selector" class="w-full md:w-1/3 p-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
                             <option value="gasoline">揮発油（ガソリン）</option>
                             <option value="diesel">軽油</option>
-                            <option value="kerosene">灯油</option>
+                            <option value="kerosene" selected>灯油</option>
                         </select>
                     </div>
                     <div class="overflow-x-auto">
@@ -244,6 +264,17 @@
                 </div>
             </section>
 
+            <!-- FAX Notifications Page -->
+            <section id="fax-notifications-page" class="page">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold mb-2 text-stone-800">本社からの通知FAX</h2>
+                    <p class="text-stone-600 mb-6">本社から発信された品質管理に関するFAX通知を、日付の新しい順に確認できます。</p>
+                    <div id="fax-files-list" class="space-y-4">
+                        <!-- FAX files will be populated here by JS -->
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
@@ -254,34 +285,52 @@
                     currentPage: 'dashboard',
                 },
                 
+                faxFilesData: [
+                    // NOTE: This data is intentionally ordered by date in DESCENDING order (newest first).
+                    // The sorting logic in initFaxFilesList() further ensures this order.
+                    { date: '20250611', name: '20250611荷卸し立会い優秀者.pdf', url: 'https://drive.google.com/file/d/1AiIySyEUoYK-eFX7864nI-UgHQi0_iwZ/view?usp=sharing' },
+                    { date: '20250510', name: '20250510監査セルフチェックリスト.pdf', url: 'https://drive.google.com/file/d/1oi0xjmfGx-PyCWFXovYQJMAy1DnwM09j/view?usp=sharing' },
+                    { date: '20250505', name: '20250505荷卸し作業動画.pdf', url: 'https://drive.google.com/file/d/1PLYGxN2hYC5gaBy3Gtn9QNVFbOUwcfte/view?usp=sharing' },
+                    { date: '20250404', name: '20250404監査総括2025年3月.pdf', url: 'https://drive.google.com/file/d/18v8va-18Vt2I8TPTyQBOsFy6sbjFU2GK/view?usp=sharing' },
+                    { date: '20250307', name: '20250307立ち会い時のハンディ使用について.pdf', url: 'https://drive.google.com/file/d/1r2VN6IpjOUb8cJnBPy1ggAMssZFJeTDK/view?usp=sharing' },
+                    { date: '20250306', name: '20250306黒本の増減率について.pdf', url: 'https://drive.google.com/file/d/1y3V6Ijb4WFzgvFTJeNeue5WC9ZkvGWDz/view?usp=sharing' },
+                    { date: '20250306', name: '20250306監査総括2025年2月分.pdf', url: 'https://drive.google.com/file/d/14pf2VX1i5hqCNg7waSTKrhzwYVgs93S0/view?usp=sharing' },
+                    { date: '20250213', name: '20250213新人の荷卸し教育について.pdf', url: 'https://drive.google.com/file/d/1Sr0YgCBeRsGqo5jlLoA4hQMeZeGDVQTg/view?usp=sharing' },
+                    { date: '20250210', name: '20250210開店時間前の荷卸しについて.pdf', url: 'https://drive.google.com/file/d/1AGkCpQaG45OcI4jkfhGaaHFPR5RSedGR/view?usp=sharing' },
+                    { date: '20250206', name: '20250206前尺プリントのタイミングについて.pdf', url: 'https://drive.google.com/file/d/1rTS73u4vp_fMTRsrAzKU4CG3Sq-Sgxi3/view?usp=sharing' },
+                    { date: '20250205', name: '20250205品質分析結果通知書の注意点.pdf', url: 'https://drive.google.com/file/d/1-eZR8ZqaoYrBc1bc8xr0ZdkgkXLl5xvu/view?usp=sharing' },
+                    { date: '20250131', name: '20250131荷卸し立会い強化月間.pdf', url: 'https://drive.google.com/file/d/110ZbtZ1jtS7289Klhw6bG9ukUMrmCODt/view?usp=sharing' },
+                ],
+                
                 init() {
                     this.initRouter();
                     this.renderPage();
                     this.initCharts();
                     this.initStandardsTable();
-                    this.initQuiz();
+                    this.initQuiz(); // Removed quiz initialization
+                    this.initFaxFilesList(); // New initialization for fax files
                     
                     document.getElementById('fuel-type-selector').addEventListener('change', (e) => this.renderStandardsTable(e.target.value));
                     document.querySelectorAll('.nav-link-internal').forEach(link => {
                         link.addEventListener('click', (e) => {
                             e.preventDefault();
-                            const targetId = e.target.getAttribute('href').substring(1);
+                            const targetId = link.getAttribute('href').substring(1); // Fix: Use link.getAttribute('href')
                             this.navigateTo(targetId);
                         });
                     });
                 },
 
                 initRouter() {
-                    const navLinks = document.querySelectorAll('#main-nav a');
+                    const navLinks = document.querySelectorAll('.nav-item'); // Select all nav items including those in multiple rows
                     navLinks.forEach(link => {
-                        // For external links like '学習モード' and '動画で見る', prevent default and don't add 'active' class
+                        // For external links, prevent default and don't add 'active' class
                         if (link.getAttribute('href').startsWith('http') || link.getAttribute('href').startsWith('https')) {
                             return;
                         }
 
                         link.addEventListener('click', (e) => {
                             e.preventDefault();
-                            const pageId = e.target.getAttribute('href').substring(1);
+                            const pageId = link.getAttribute('href').substring(1); // Fix: Use link.getAttribute('href')
                             this.navigateTo(pageId);
                         });
                     });
@@ -305,7 +354,8 @@
                         document.getElementById('dashboard-page').classList.add('active');
                     }
 
-                    document.querySelectorAll('#main-nav a').forEach(link => {
+                    // Update active class for all nav items across both rows
+                    document.querySelectorAll('.nav-item').forEach(link => {
                         // Do not add 'active' class to external links
                         if (link.getAttribute('href').startsWith('http') || link.getAttribute('href').startsWith('https')) {
                             link.classList.remove('active'); // Ensure it's not active even if hash matches a non-existent page
@@ -386,7 +436,8 @@
                 },
 
                 initStandardsTable() {
-                    this.renderStandardsTable('gasoline');
+                    // Initialize with kerosene as default
+                    this.renderStandardsTable('kerosene');
                 },
 
                 renderStandardsTable(fuelType) {
@@ -410,67 +461,46 @@
                     });
                 },
 
-                quizData: [
-                    {
-                        question: "夏季の灯油販売で特に注意すべき日常点検作業は何ですか？",
-                        options: ["在庫量の確認", "「端切り」の実施", "計量機の清掃"],
-                        answer: "「端切り」の実施"
-                    },
-                    {
-                        question: "灯油にガソリンが微量でも混入すると、どの規格値に最も大きな影響が出ますか？",
-                        options: ["硫黄分", "色", "引火点"],
-                        answer: "引火点"
-                    },
-                    {
-                        question: "品質管理者の選任について、正しいものはどれですか？",
-                        options: ["1人で複数のSSを兼務できる", "資格は特に必要ない", "各SSに1名選任し、兼務はできない"],
-                        answer: "各SSに1名選任し、兼務はできない"
-                    },
-                    {
-                        question: "お客様から「給油後に車が止まった」と連絡があった場合、最初に行うべきことは何ですか？",
-                        options: ["原因を調査する", "直ちに該当油種の販売を停止する", "お客様に謝罪する"],
-                        answer: "直ちに該当油種の販売を停止する"
-                    }
-                ],
-
                 initQuiz() {
                     const quizContainer = document.getElementById('quiz-container');
-                    this.quizData.forEach((q, index) => {
-                        const questionDiv = document.createElement('div');
-                        questionDiv.className = 'mb-6';
-                        let optionsHtml = '';
-                        q.options.forEach(opt => {
-                            optionsHtml += `
-                                <label class="block p-3 my-2 border rounded-lg hover:bg-stone-100 cursor-pointer">
-                                    <input type="radio" name="question${index}" value="${opt}" class="mr-2">
-                                    ${opt}
-                                </label>
-                            `;
-                        });
-                        questionDiv.innerHTML = `
-                            <p class="font-semibold mb-2">${index + 1}. ${q.question}</p>
-                            <div class="space-y-2">${optionsHtml}</div>
-                        `;
-                        quizContainer.appendChild(questionDiv);
-                    });
-                    
-                    document.getElementById('submit-quiz-btn').addEventListener('click', () => this.submitQuiz());
+                    quizContainer.innerHTML = '<p class="text-stone-500">現在、クイズデータはありません。</p>';
+                    document.getElementById('submit-quiz-btn').style.display = 'none';
                 },
                 
                 submitQuiz() {
-                    let score = 0;
-                    this.quizData.forEach((q, index) => {
-                        const selected = document.querySelector(`input[name="question${index}"]:checked`);
-                        if(selected && selected.value === q.answer) {
-                            score++;
-                        }
+                    console.log("クイズデータがないため、送信処理は実行されません。");
+                },
+
+                initFaxFilesList() {
+                    const faxFilesListContainer = document.getElementById('fax-files-list');
+                    this.faxFilesData = [
+                        { date: '20250611', name: '20250611荷卸し立会い優秀者.pdf', url: 'https://drive.google.com/file/d/1AiIySyEUoYK-eFX7864nI-UgHQi0_iwZ/view?usp=sharing' },
+                        { date: '20250510', name: '20250510監査セルフチェックリスト.pdf', url: 'https://drive.google.com/file/d/1oi0xjmfGx-PyCWFXovYQJMAy1DnwM09j/view?usp=sharing' },
+                        { date: '20250505', name: '20250505荷卸し作業動画.pdf', url: 'https://drive.google.com/file/d/1PLYGxN2hYC5gaBy3Gtn9QNVFbOUwcfte/view?usp=sharing' },
+                        { date: '20250404', name: '20250404監査総括2025年3月.pdf', url: 'https://drive.google.com/file/d/18v8va-18Vt2I8TPTyQBOsFy6sbjFU2GK/view?usp=sharing' },
+                        { date: '20250307', name: '20250307立ち会い時のハンディ使用について.pdf', url: 'https://drive.google.com/file/d/1r2VN6IpjOUb8cJnBPy1ggAMssZFJeTDK/view?usp=sharing' },
+                        { date: '20250306', name: '20250306黒本の増減率について.pdf', url: 'https://drive.google.com/file/d/1y3V6Ijb4WFzgvFTJeNeue5WC9ZkvGWDz/view?usp=sharing' },
+                        { date: '20250306', name: '20250306監査総括2025年2月分.pdf', url: 'https://drive.google.com/file/d/14pf2VX1i5hqCNg7waSTKrhzwYVgs93S0/view?usp=sharing' },
+                        { date: '20250213', name: '20250213新人の荷卸し教育について.pdf', url: 'https://drive.google.com/file/d/1Sr0YgCBeRsGqo5jlLoA4hQMeZeGDVQTg/view?usp=sharing' },
+                        { date: '20250210', name: '20250210開店時間前の荷卸しについて.pdf', url: 'https://drive.google.com/file/d/1AGkCpQaG45OcI4jkfhGaaHFPR5RSedGR/view?usp=sharing' },
+                        { date: '20250206', name: '20250206前尺プリントのタイミングについて.pdf', url: 'https://drive.google.com/file/d/1rTS73u4vp_fMTRsrAzKU4CG3Sq-Sgxi3/view?usp=sharing' },
+                        { date: '20250205', name: '20250205品質分析結果通知書の注意点.pdf', url: 'https://drive.google.com/file/d/1-eZR8ZqaoYrBc1bc8xr0ZdkgkXLl5xvu/view?usp=sharing' },
+                        { date: '20250131', name: '20250131荷卸し立会い強化月間.pdf', url: 'https://drive.google.com/file/d/110ZbtZ1jtS7289Klhw6bG9ukUMrmCODt/view?usp=sharing' },
+                    ];
+                    // Sort in descending order by date (8-digit prefix)
+                    this.faxFilesData.sort((a, b) => b.date.localeCompare(a.date));
+
+                    this.faxFilesData.forEach(file => {
+                        const fileLink = document.createElement('a');
+                        fileLink.href = file.url;
+                        fileLink.target = "_blank";
+                        fileLink.className = "flex items-center p-4 bg-stone-100 rounded-lg hover:bg-stone-200 transition duration-200";
+                        fileLink.innerHTML = `
+                            <span class="text-xl mr-3">🖷</span> <!-- FAXの絵文字に変更 -->
+                            <span class="font-medium text-stone-800">${file.name}</span>
+                        `;
+                        faxFilesListContainer.appendChild(fileLink);
                     });
-                    
-                    const resultDiv = document.getElementById('quiz-result');
-                    const totalQuestions = this.quizData.length;
-                    resultDiv.innerHTML = `<h2>結果: ${totalQuestions}問中 ${score}問 正解！</h2>`;
-                    resultDiv.className = `mt-6 p-4 rounded-lg text-center font-bold ${score / totalQuestions > 0.7 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
-                    resultDiv.classList.remove('hidden');
                 }
             };
 
