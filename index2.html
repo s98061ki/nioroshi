@@ -14,7 +14,7 @@
     <!-- Visualization & Content Choices: 報告書情報：品質不適合の原因 -> 目標：原因の比較・理解 -> 表示方法：棒グラフ（Chart.js）-> 操作：ホバーで詳細表示 -> 理由：最も一般的な問題点を視覚的に示し、予防策への意識を高めるため。報告書情報：燃料油の品質規格 -> 目標：規格の参照・確認 -> 表示方法：対話型HTMLテーブル＋JSフィルタ -> 理由：PDFからの検索より遥かに高速で規格を確認できるため。報告書情報：緊急時対応手順 -> 目標：緊急時の行動支援 -> 表示方法：ステップ形式のウィザード（HTML/JS）-> 理由：危機的状況下での認知負荷を軽減し、正確な手順実行を確実にするため。 -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
-        body { font-family: 'Noto Sans JP', 'Inter', sans-serif; }
+        body { font-family: 'Noto JP', 'Inter', sans-serif; }
         /* 正楷書体は一般的なWebフォントではないため、代替として筆記体風のフォントを指定し、serifをフォールバックとします */
         @font-face {
             font-family: 'Kaisho';
@@ -35,7 +35,7 @@
         .nav-row { display: flex; flex-wrap: wrap; }
         /* 行動指針の表示調整 */
         .slogan-text {
-            font-family: 'Kaisho', 'Noto Sans JP', serif;
+            font-family: 'Kaisho', 'Noto JP', serif;
             font-size: 1.125rem; /* text-lg */
             font-weight: 500; /* font-medium */
             color: #57534e; /* text-stone-700 */
@@ -50,10 +50,46 @@
                 font-size: 1rem; /* スマホで小さめに */
             }
         }
+        /* Emergency tab styles */
+        .emergency-tab-container {
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e2e8f0; /* stone-200 */
+            margin-bottom: 1.5rem;
+        }
+        .emergency-tab-button {
+            padding: 0.75rem 1.25rem;
+            font-weight: 600;
+            color: #71717a; /* stone-500 */
+            border-radius: 0.375rem 0.375rem 0 0;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            display: flex; /* アイコンとテキストを横並びにする */
+            align-items: center; /* 垂直方向中央揃え */
+        }
+        .emergency-tab-button span {
+            margin-right: 0.5rem; /* アイコンとテキストの間にスペース */
+            display: flex; /* SVGが中央に表示されるようにflexを追加 */
+            align-items: center;
+            justify-content: center;
+        }
+        .emergency-tab-button:hover {
+            color: #0ea5e9; /* sky-600 */
+        }
+        .emergency-tab-button.active {
+            color: #0ea5e9; /* sky-600 */
+            border-bottom-color: #0ea5e9;
+        }
+        .emergency-tab-content {
+            display: none;
+        }
+        .emergency-tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body class="bg-stone-50 text-stone-800">
-
     <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         <header class="mb-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
@@ -62,7 +98,6 @@
                         <span class="text-sky-600 mr-3">⛽</span> 品質管理・荷卸しポータル
                     </h1>
                 </div>
-                <!-- 最終データ更新日を削除 -->
             </div>
             <p class="slogan-text mt-4">
                 バロン・パークグループ 行動指針<br>「安全・安心を第一に考え、信用・信頼される企業を目指します。」
@@ -78,7 +113,6 @@
                <li><span class="font-bold">2025年6月26日:</span> 本社からの通知FAX「6月11日　荷卸し立会い優秀者」をアップしました。</li>
                 <li><span class="font-bold">2025年6月26日:</span> 資料「品確法教育用資料」「端切りの重要性と品確法」をアップしました。</li>
                 <li><span class="font-bold">2025年6月26日:</span> 学習モード　テスト内容をアップデートしました。</li>
-                
             </ul>
         </section>
 
@@ -92,6 +126,7 @@
                 </ul>
                 <ul id="main-nav-row-2" class="nav-row">
                     <li><a href="#emergency" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">🚨</span>緊急時対応</a></li>
+                    <!-- 学習モードのナビゲーションリンクを再追加 -->
                     <li><a href="https://s98061ki.github.io/nioroshi/" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">💡</span>学習モード</a></li>
                     <li><a href="https://www.youtube.com/playlist?list=PLBXIDWHV_3_1W-3Byazg5ELS3LxmkLJL_" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">🎥</span>動画で見る</a></li>
                     <li><a href="#documents" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📄</span>資料</a></li>
@@ -118,12 +153,11 @@
                             <div class="space-y-3">
                                 <a href="#daily-checks" class="nav-link-internal block w-full text-center bg-sky-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-sky-600 transition duration-200">日常点検を開始</a>
                                 <a href="#emergency" class="nav-link-internal block w-full text-center bg-red-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-red-600 transition duration-200">緊急時対応手順</a>
+                                <!-- 学習モードのクイックアクセスリンクを再追加 -->
                                 <a href="https://s98061ki.github.io/nioroshi/" target="_blank" class="block w-full text-center bg-green-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-600 transition duration-200">学習モード</a>
                                 <a href="#fax-notifications" class="nav-link-internal block w-full text-center bg-purple-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-purple-600 transition duration-200">本社からの通知FAX</a>
                                 <a href="#incident-assistant" class="nav-link-internal block w-full text-center bg-blue-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-600 transition duration-200">✨AI事故アシスタントを試す</a>
                             </div>
-                        </div>
-                        
                         </div>
                     </div>
                 </div>
@@ -214,48 +248,187 @@
             <section id="emergency-page" class="page">
                  <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg shadow-sm">
                     <h2 class="text-2xl font-bold mb-2 text-red-800">緊急時対応手順</h2>
-                    <p class="text-red-700 mb-6">品質クレームやコンタミ事故が発生した場合、パニックにならず、以下の手順に従って冷静に対応してください。初動の速さが被害拡大を防ぎます。</p>
-                    
-                    <div id="emergency-steps-container">
-                        <!-- Step 1 -->
-                        <div class="emergency-step p-5 bg-white rounded-lg shadow-md mb-4">
-                            <h3 class="text-xl font-bold text-red-600 mb-2">ステップ1：直ちに販売を停止</h3>
-                            <p class="text-stone-700">お客様からのクレーム（「給油後、エンジンが止まった」など）や、自身の確認で異常を発見した場合、該当する計量機での販売を<strong>直ちに停止</strong>してください。これが最優先事項です。</p>
+                    <p class="text-red-700 mb-6">品質クレーム、火災、地震など、緊急事態発生時の対応手順を以下のタブから選択して確認してください。</p>
+
+                    <div class="emergency-tab-container" id="emergency-tabs">
+                        <div class="emergency-tab-button active" data-tab="suspected-contamination"><span>❓</span>コンタミの疑い</div>
+                        <div class="emergency-tab-button" data-tab="confirmed-contamination"><span>❗</span>コンタミ</div>
+                        <div class="emergency-tab-button" data-tab="fire"><span>🔥</span>火災</div>
+                        <div class="emergency-tab-button" data-tab="earthquake">
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-activity">
+                                    <path d="M22 12H18L15 21L9 3L6 12H2"/>
+                                </svg>
+                            </span>南海トラフ地震
                         </div>
-                        <!-- Step 2 -->
-                         <div class="emergency-step p-5 bg-white rounded-lg shadow-md mb-4">
-                            <h3 class="text-xl font-bold text-red-600 mb-2">ステップ2：責任者への報告</h3>
-                            <p class="text-stone-700">速やかに品質管理者または店長へ状況を報告してください。自己判断で対応を続けないでください。</p>
-                        </div>
-                        <!-- Step 3 -->
-                         <div class="emergency-step p-5 bg-white rounded-lg shadow-md mb-4">
-                            <h3 class="text-xl font-bold text-red-600 mb-2">ステップ3：関係機関への連絡</h3>
-                            <p class="text-stone-700 mb-4">品質管理者は、以下の関係機関へ速やかに連絡してください。</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="border border-stone-200 p-4 rounded-lg">
-                                    <h4 class="font-semibold text-stone-800">① 最寄りの消防本部</h4>
-                                    <p class="text-sm text-stone-600">事故の経緯、対応状況を報告。</p>
+                    </div>
+
+                    <div id="emergency-tab-contents">
+                        <!-- Suspected Contamination Tab Content -->
+                        <div class="emergency-tab-content active" id="suspected-contamination-content">
+                            <h3 class="text-xl font-bold text-red-600 mb-3">コンタミの疑い時の対応</h3>
+                            <div class="space-y-4 text-stone-700">
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">1. 直ちに販売を停止</h4>
+                                    <p class="text-sm">お客様からのクレームや、自身の確認で異常を発見した場合、該当する計量機での販売を<strong>直ちに停止</strong>してください。これが最優先事項です。</p>
                                 </div>
-                                <div class="border border-stone-200 p-4 rounded-lg">
-                                    <h4 class="font-semibold text-stone-800">② 元売事業者</h4>
-                                    <p class="text-sm text-stone-600">社内規定に基づき連絡。</p>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">2. 責任者への報告</h4>
+                                    <p class="text-sm">速やかに品質管理者または店長へ状況を報告してください。自己判断で対応を続けないでください。</p>
                                 </div>
-                                <div class="border border-stone-200 p-4 rounded-lg md:col-span-2">
-                                    <h4 class="font-semibold text-stone-800">③ 中部経済産業局 資源・燃料課</h4>
-                                    <p class="text-lg font-mono font-bold my-2"><a href="tel:052-951-2781" class="text-sky-600 hover:underline">📞 052-951-2781</a></p>
-                                    <details class="text-sm">
-                                        <summary class="font-medium text-sky-600 cursor-pointer">伝えるべき事項</summary>
-                                        <ol class="list-decimal list-inside mt-2 space-y-1 text-stone-700">
-                                            <li>販売事業者名、給油所名</li>
-                                            <li>給油所所在地</li>
-                                            <li>連絡が取れる電話番号</li>
-                                            <li>コンタミの概要（例：灯油に揮発油混入）</li>
-                                            <li>直前に当該燃料の荷卸しを受けた事業者名</li>
-                                        </ol>
-                                        <p class="mt-2 text-xs text-stone-500">※休日・時間外は留守番電話に応答メッセージを残してください。</p>
-                                    </details>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">3. 顧客への聞き取り</h4>
+                                    <p class="text-sm">給油日時、給油した油種、車両の症状（例: エンスト、異音、加速不良）などを詳しく聞き取ってください。可能であれば、連絡先を控えてください。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">4. サンプル採取</h4>
+                                    <p class="text-sm">該当する計量機ノズルから少量の燃料を透明な容器に抜き取り、目視で色や濁り、異物の有無を確認してください。可能であれば、地下タンクからもサンプルを採取してください。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">5. 状況記録</h4>
+                                    <p class="text-sm">発見日時、担当者名、発見経緯、顧客情報（氏名、連絡先、車両情報）、初期対応内容などを詳細に記録してください。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">6. 専門業者への連絡</h4>
+                                    <p class="text-sm">必要に応じて、燃料分析を行う専門業者や保守業者に連絡し、指示を仰いでください。</p>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Confirmed Contamination Tab Content -->
+                        <div class="emergency-tab-content" id="confirmed-contamination-content">
+                            <h3 class="text-xl font-bold text-red-600 mb-3">コンタミ事故発生時の対応</h3>
+                            <p class="text-sm text-stone-600 mb-4">コンタミが確定した場合の対応です。特に、関係機関への迅速な連絡が重要です。</p>
+                            <div class="space-y-4 text-stone-700">
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">1. 直ちに販売を停止</h4>
+                                    <p class="text-sm">最優先で該当する計量機およびタンクからの販売を停止し、顧客への影響拡大を防ぎます。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">2. 責任者への報告</h4>
+                                    <p class="text-sm">品質管理者または店長へ直ちに状況を報告し、今後の対応方針を協議します。</p>
+                                </div>
+                                <!-- 既存の関係機関への連絡を再利用 -->
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">3. 関係機関への連絡</h4>
+                                    <p class="text-stone-700 mb-4">品質管理者又は店長は、以下の関係機関へ速やかに連絡してください。</p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="border border-stone-200 p-4 rounded-lg">
+                                            <h4 class="font-semibold text-stone-800">① 最寄りの消防本部</h4>
+                                            <p class="text-sm text-stone-600">事故の経緯、対応状況を報告。</p>
+                                        </div>
+                                        <div class="border border-stone-200 p-4 rounded-lg">
+                                            <h4 class="font-semibold text-stone-800">② 元売事業者</h4>
+                                            <p class="text-sm text-stone-600">社内規定に基づき連絡。</p>
+                                        </div>
+                                        <div class="border border-stone-200 p-4 rounded-lg md:col-span-2">
+                                            <h4 class="font-semibold text-stone-800">③ 中部経済産業局 資源・燃料課</h4>
+                                            <p class="text-lg font-mono font-bold my-2"><a href="tel:052-951-2781" class="text-sky-600 hover:underline">📞 052-951-2781</a></p>
+                                            <details class="text-sm">
+                                                <summary class="font-medium text-sky-600 cursor-pointer">伝えるべき事項</summary>
+                                                <ol class="list-decimal list-inside mt-2 space-y-1 text-stone-700">
+                                                    <li>販売事業者名、給油所名</li>
+                                                    <li>給油所所在地</li>
+                                                    <li>連絡が取れる電話番号</li>
+                                                    <li>コンタミの概要（例：灯油に揮発油混入）</li>
+                                                    <li>直前に当該燃料の荷卸しを受けた事業者名</li>
+                                                </ol>
+                                                <p class="mt-2 text-xs text-stone-500">※休日・時間外は留守番電話に応答メッセージを残してください。</p>
+                                            </details>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">4. 影響範囲の特定</h4>
+                                    <p class="text-sm">どのタンク、どの計量機、いつから影響があったのかを特定し、該当顧客の情報を収集します。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">5. 詳細なサンプル採取と分析手配</h4>
+                                    <p class="text-sm">コンタミの状況を正確に把握するため、必要に応じて複数の場所からサンプルを採取し、専門機関での分析を手配します。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">6. 汚染燃料の隔離・抜き取り手配</h4>
+                                    <p class="text-sm">汚染された燃料がこれ以上拡散しないよう隔離し、専門業者による抜き取り、またはタンク清掃の手配を行います。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">7. 顧客対応</h4>
+                                    <p class="text-sm">影響を受けたお客様に対しては、誠意をもって状況を説明し、今後の対応（車両点検、修理、補償など）について案内します。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fire Tab Content -->
+                        <div class="emergency-tab-content" id="fire-content">
+                            <h3 class="text-xl font-bold text-red-600 mb-3">火災発生時の対応</h3>
+                            <p class="text-sm text-stone-600 mb-4">SS内で火災が発生した場合の基本的な対応です。従業員と顧客の安全確保が最優先です。</p>
+                            <div class="space-y-4 text-stone-700">
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">1. 初期消火（可能な場合）</h4>
+                                    <p class="text-sm">火災を発見したら、すぐに「火事だ！」と大声で周囲に知らせ、安全が確保できる範囲で消火器などによる初期消火を行います。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">2. 従業員・顧客の安全確保・避難誘導</h4>
+                                    <p class="text-sm">初期消火が困難な場合や、火が拡大する恐れがある場合は、直ちに消火を諦め、従業員と顧客の安全確保を最優先し、安全な場所へ避難誘導します。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">3. 速やかに119番通報</h4>
+                                    <p class="text-sm">火災の状況（場所、何が燃えているか、負傷者の有無など）を正確に伝え、消防隊の到着を待ちます。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">4. 責任者への報告</h4>
+                                    <p class="text-sm">店長や本社など、関係する責任者へ速やかに状況を報告します。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">5. 周辺への注意喚起・進入禁止措置</h4>
+                                    <p class="text-sm">周囲の人々への危険を知らせ、火災現場への不用意な立ち入りを防ぎます。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">6. 燃料供給の緊急停止</h4>
+                                    <p class="text-sm">燃料の二次災害を防ぐため、緊急停止ボタンなどで燃料供給を停止します。</p>
+                                </div>
+                            </div>
+                            <p class="mt-4 text-sm text-red-600 font-semibold">※詳細な手順や訓練については、別途社内マニュアルを参照してください。</p>
+                        </div>
+
+                        <!-- Nankai Trough Earthquake Tab Content -->
+                        <div class="emergency-tab-content" id="earthquake-content">
+                            <h3 class="text-xl font-bold text-red-600 mb-3">南海トラフ地震発生時の対応</h3>
+                            <p class="text-sm text-stone-600 mb-4">南海トラフ地震発生時の対応です。大規模災害に備え、迅速かつ冷静な行動が求められます。</p>
+                            <div class="space-y-4 text-stone-700">
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">1. 身の安全確保（シェイクアウト）</h4>
+                                    <p class="text-sm">地震発生時は、まず身の安全を確保します。頭を守り、揺れが収まるまで姿勢を低くして身を守ってください。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">2. 従業員・顧客の安全確認</h4>
+                                    <p class="text-sm">揺れが収まったら、従業員と顧客の安否を確認し、負傷者がいる場合は応急処置を行います。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">3. 燃料供給ラインの緊急遮断</h4>
+                                    <p class="text-sm">火災や漏洩を防ぐため、計量機や地下タンクへの燃料供給を緊急停止します。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">4. 計量機・タンク周辺の安全確認</h4>
+                                    <p class="text-sm">燃料の漏洩や機器の損傷がないか、計量機や地下タンク周辺を慎重に確認します。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">5. 施設全体の点検</h4>
+                                    <p class="text-sm">建屋の損傷、落下物、危険物の転倒など、施設全体の安全状況を確認します。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">6. 責任者への報告</h4>
+                                    <p class="text-sm">被災状況と対応状況を店長や本社へ報告します。連絡手段が途絶える可能性も考慮し、複数の手段を検討します。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">7. 二次災害防止</h4>
+                                    <p class="text-sm">火の元の確認、危険物の安全な場所への移動など、二次災害の発生を防ぐ措置を講じます。</p>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg shadow-md">
+                                    <h4 class="font-semibold text-stone-800 mb-1">8. 災害情報収集と共有</h4>
+                                    <p class="text-sm">テレビ、ラジオ、インターネットなどで最新の災害情報を収集し、従業員や顧客と共有します。</p>
+                                </div>
+                            </div>
+                            <p class="mt-4 text-sm text-red-600 font-semibold">※詳細な手順や訓練については、別途社内マニュアルや地域の防災計画を参照してください。</p>
                         </div>
                     </div>
                  </div>
@@ -266,13 +439,12 @@
                  <div class="bg-white p-6 rounded-lg shadow-sm">
                     <h2 class="text-2xl font-bold mb-2 text-stone-800">学習モード</h2>
                     <p class="text-stone-600 mb-6">品質管理の基本をクイズ形式で学びましょう。新入社員の教育や、知識の再確認にご活用ください。</p>
-                    
-                    <div id="quiz-container">
-                        <!-- Quiz questions will be injected here by JS -->
+                    <div class="text-center">
+                        <p class="text-stone-700 mb-4">以下のボタンをクリックして、学習サイトへ移動してください。</p>
+                        <a href="https://s98061ki.github.io/nioroshi/" target="_blank" class="inline-block bg-green-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-600 transition duration-200 text-lg">
+                            学習サイトへGO!
+                        </a>
                     </div>
-
-                    <div id="quiz-result" class="mt-6 p-4 rounded-lg text-center hidden"></div>
-                    <button id="submit-quiz-btn" class="mt-6 w-full bg-sky-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-sky-600 transition duration-200">回答を送信</button>
                 </div>
             </section>
 
@@ -310,15 +482,14 @@
                 <div class="bg-white p-6 rounded-lg shadow-sm">
                     <h2 class="text-2xl font-bold mb-2 text-stone-800">AI事故アシスタント ✨</h2>
                     <p class="text-stone-600 mb-6">品質に関する事故や異常が発生した際に、その状況を入力してください。AIが原因の可能性や、推奨される対応を提案します。</p>
-                    
                     <div class="mb-4">
                         <label for="incident-description" class="block text-stone-700 text-sm font-bold mb-2">事故の状況を具体的に入力してください:</label>
                         <textarea id="incident-description" class="shadow appearance-none border rounded w-full py-3 px-4 text-stone-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-sky-500" rows="6" placeholder="例: お客様が給油後、エンジンの不調を訴えました。直前に大雨がありました。"></textarea>
+                        <div id="incident-input-message" class="mt-2 text-red-600 text-sm hidden"></div>
                     </div>
                     <button id="analyze-incident-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-200">
                         ✨ 状況を分析する
                     </button>
-                    
                     <div id="incident-analysis-result" class="mt-6 p-4 bg-stone-100 rounded-lg shadow hidden">
                         <p class="text-stone-500 text-center" id="analysis-loading-indicator">分析中...</p>
                         <div id="analysis-content" class="hidden">
@@ -345,7 +516,6 @@
                     </div>
                 </div>
             </section>
-
         </main>
     </div>
 
@@ -355,10 +525,9 @@
                 state: {
                     currentPage: 'dashboard',
                 },
-                
+
+                // FAXファイルデータはここに一元化
                 faxFilesData: [
-                    // NOTE: This data is intentionally ordered by date in DESCENDING order (newest first).
-                    // The sorting logic in initFaxFilesList() further ensures this order.
                     { date: '20250611', name: '20250611荷卸し立会い優秀者.pdf', url: 'https://drive.google.com/file/d/1AiIySyEUoYK-eFX7864nI-UgHQi0_iwZ/view?usp=sharing' },
                     { date: '20250510', name: '20250510監査セルフチェックリスト.pdf', url: 'https://drive.google.com/file/d/1oi0xjmfGx-PyCWFXovYQJMAy1DnwM09j/view?usp=sharing' },
                     { date: '20250505', name: '20250505荷卸し作業動画.pdf', url: 'https://drive.google.com/file/d/1PLYGxN2hYC5gaBy3Gtn9QNVFbOUwcfte/view?usp=sharing' },
@@ -372,40 +541,49 @@
                     { date: '20250205', name: '20250205品質分析結果通知書の注意点.pdf', url: 'https://drive.google.com/file/d/1-eZR8ZqaoYrBc1bc8xr0ZdkgkXLl5xvu/view?usp=sharing' },
                     { date: '20250131', name: '20250131荷卸し立会い強化月間.pdf', url: 'https://drive.google.com/file/d/110ZbtZ1jtS7289Klhw6bG9ukUMrmCODt/view?usp=sharing' },
                 ],
-                
-                // initRouterメソッドをinit()よりも前に定義
+
+                // ルーティングを初期化するメソッド
                 initRouter() {
                     const navLinks = document.querySelectorAll('.nav-item');
                     navLinks.forEach(link => {
+                        // 外部リンクは対象外とする
                         if (link.getAttribute('href').startsWith('http') || link.getAttribute('href').startsWith('https')) {
                             return;
                         }
                         link.addEventListener('click', (e) => {
                             e.preventDefault();
-                            const pageId = link.getAttribute('href').substring(1);
+                            const pageId = link.getAttribute('href').substring(1); // #を除去
                             this.navigateTo(pageId);
                         });
                     });
+                    // 初期のページをURLハッシュから取得、なければダッシュボード
                     const initialPage = window.location.hash ? window.location.hash.substring(1) : 'dashboard';
                     this.navigateTo(initialPage);
                 },
 
+                // ページ遷移を実行するメソッド
                 navigateTo(pageId) {
                     this.state.currentPage = pageId;
-                    window.location.hash = pageId;
+                    window.location.hash = pageId; // URLハッシュを更新
                     this.renderPage();
                 },
 
+                // ページを描画するメソッド
                 renderPage() {
+                    // 全てのページを非表示にする
                     document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+                    // 現在のページを表示する
                     const newPage = document.getElementById(`${this.state.currentPage}-page`);
                     if (newPage) {
                         newPage.classList.add('active');
                     } else {
+                        // ページが見つからない場合はダッシュボードを表示
                         document.getElementById('dashboard-page').classList.add('active');
                     }
 
+                    // ナビゲーションアイテムのアクティブ状態を更新
                     document.querySelectorAll('.nav-item').forEach(link => {
+                        // 外部リンクはアクティブ状態の管理対象外
                         if (link.getAttribute('href').startsWith('http') || link.getAttribute('href').startsWith('https')) {
                             link.classList.remove('active');
                             return;
@@ -417,18 +595,20 @@
                         }
                     });
                 },
-                
+
+                // 品質不適合原因のグラフデータ
                 causesData: {
                     labels: ['ホース内滞油(端切り不足)', 'ローリーからのコンタミ', '計量機・配管の劣化', '施設への水分侵入', 'その他'],
                     datasets: [{
                         label: '不適合件数（イメージ）',
-                        data: [45, 30, 15, 8, 2],
+                        data: [45, 30, 15, 8, 2], // データはパーセンテージで表示されるように調整
                         backgroundColor: ['#38bdf8', '#60a5fa', '#93c5fd', '#bfdbfe', '#e0f2fe'],
                         borderColor: ['#0284c7', '#2563eb', '#60a5fa', '#93c5fd', '#dbeafe'],
                         borderWidth: 1
                     }]
                 },
 
+                // グラフを初期化するメソッド
                 initCharts() {
                     const ctx = document.getElementById('causesChart').getContext('2d');
                     new Chart(ctx, {
@@ -437,20 +617,20 @@
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            indexAxis: 'y',
+                            indexAxis: 'y', // 横棒グラフにする
                             scales: {
                                 x: {
                                     beginAtZero: true,
-                                    title: { display: true, text: '発生頻度' }
+                                    title: { display: true, text: '発生頻度 (%)' } // タイトルをパーセンテージに
                                 }
                             },
                             plugins: {
-                                legend: { display: false },
-                                title: { display: false },
+                                legend: { display: false }, // 凡例を非表示
+                                title: { display: false }, // タイトルを非表示
                                 tooltip: {
                                     callbacks: {
                                         label: function(context) {
-                                            return ` ${context.dataset.label}: ${context.raw}%`;
+                                            return ` ${context.dataset.label}: ${context.raw}%`; // ツールチップの表示形式を調整
                                         }
                                     }
                                 }
@@ -459,6 +639,7 @@
                     });
                 },
 
+                // 品質規格データ
                 standardsData: {
                     gasoline: [
                         { item: '鉛', spec: '検出されないこと', reason: '環境(大気汚染防止)', type: '強制' },
@@ -483,15 +664,18 @@
                     ]
                 },
 
+                // 品質規格テーブルを初期化するメソッド
                 initStandardsTable() {
-                    // Initialize with kerosene as default
+                    // デフォルトで灯油の規格を表示
                     this.renderStandardsTable('kerosene');
                 },
 
+                // 品質規格テーブルを描画するメソッド
                 renderStandardsTable(fuelType) {
                     const tableBody = document.getElementById('standards-table-body');
-                    tableBody.innerHTML = '';
-                    const data = this.standardsData[fuelType] || [];
+                    tableBody.innerHTML = ''; // テーブルの内容をクリア
+
+                    const data = this.standardsData[fuelType] || []; // 選択された油種のデータを取得
                     data.forEach(std => {
                         const row = document.createElement('tr');
                         row.className = 'bg-white border-b hover:bg-stone-50';
@@ -509,33 +693,13 @@
                     });
                 },
 
-                initQuiz() {
-                    const quizContainer = document.getElementById('quiz-container');
-                    quizContainer.innerHTML = '<p class="text-stone-500">現在、クイズデータはありません。</p>';
-                    document.getElementById('submit-quiz-btn').style.display = 'none';
-                },
-                
-                submitQuiz() {
-                    console.log("クイズデータがないため、送信処理は実行されません。");
-                },
-
+                // FAXファイルリストを初期化するメソッド
                 initFaxFilesList() {
                     const faxFilesListContainer = document.getElementById('fax-files-list');
-                    this.faxFilesData = [
-                        { date: '20250611', name: '20250611荷卸し立会い優秀者.pdf', url: 'https://drive.google.com/file/d/1AiIySyEUoYK-eFX7864nI-UgHQi0_iwZ/view?usp=sharing' },
-                        { date: '20250510', name: '20250510監査セルフチェックリスト.pdf', url: 'https://drive.google.com/file/d/1oi0xjmfGx-PyCWFXovYQJMAy1DnwM09j/view?usp=sharing' },
-                        { date: '20250505', name: '20250505荷卸し作業動画.pdf', url: 'https://drive.google.com/file/d/1PLYGxN2hYC5gaBy3Gtn9QNVFbOUwcfte/view?usp=sharing' },
-                        { date: '20250404', name: '20250404監査総括2025年3月.pdf', url: 'https://drive.google.com/file/d/18v8va-18Vt2I8TPTyQBOsFy6sbjFU2GK/view?usp=sharing' },
-                        { date: '20250307', name: '20250307立ち会い時のハンディ使用について.pdf', url: 'https://drive.google.com/file/d/1r2VN6IpjOUb8cJnBPy1ggAMssZFJeTDK/view?usp=sharing' },
-                        { date: '20250306', name: '20250306黒本の増減率について.pdf', url: 'https://drive.google.com/file/d/1y3V6Ijb4WFzgvFTJeNeue5WC9ZkvGWDz/view?usp=sharing' },
-                        { date: '20250306', name: '20250306監査総括2025年2月分.pdf', url: 'https://drive.google.com/file/d/14pf2VX1i5hqCNg7waSTKrhzwYVgs93S0/view?usp=sharing' },
-                        { date: '20250213', name: '20250213新人の荷卸し教育について.pdf', url: 'https://drive.google.com/file/d/1Sr0YgCBeRsGqo5jlLoA4hQMeZeGDVQTg/view?usp=sharing' },
-                        { date: '20250210', name: '20250210開店時間前の荷卸しについて.pdf', url: 'https://drive.google.com/file/d/1AGkCpQaG45OcI4jkfhGaaHFPR5RSedGR/view?usp=sharing' },
-                        { date: '20250206', name: '20250206前尺プリントのタイミングについて.pdf', url: 'https://drive.google.com/file/d/1rTS73u4vp_fMTRsrAzKU4CG3Sq-Sgxi3/view?usp=sharing' },
-                        { date: '20250205', name: '20250205品質分析結果通知書の注意点.pdf', url: 'https://drive.google.com/file/d/1-eZR8ZqaoYrBc1bc8xr0ZdkgkXLl5xvu/view?usp=sharing' },
-                        { date: '20250131', name: '20250131荷卸し立会い強化月間.pdf', url: 'https://drive.google.com/file/d/110ZbtZ1jtS7289Klhw6bG9ukUMrmCODt/view?usp=sharing' },
-                    ];
-                    // Sort in descending order by date (8-digit prefix)
+                    faxFilesListContainer.innerHTML = ''; // コンテンツをクリア
+
+                    // 日付の新しい順にソート (8桁の数字プレフィックスでソート)
+                    // faxFilesDataはすでにアプリのプロパティとして定義されているので、ここでは再定義しない
                     this.faxFilesData.sort((a, b) => b.date.localeCompare(a.date));
 
                     this.faxFilesData.forEach(file => {
@@ -551,9 +715,11 @@
                     });
                 },
 
+                // AI事故アシスタントを初期化するメソッド
                 async initIncidentAssistant() {
                     const analyzeButton = document.getElementById('analyze-incident-btn');
                     const descriptionInput = document.getElementById('incident-description');
+                    const incidentInputMessage = document.getElementById('incident-input-message'); // 新しいメッセージ表示要素
                     const resultDiv = document.getElementById('incident-analysis-result');
                     const loadingIndicator = document.getElementById('analysis-loading-indicator');
                     const analysisContent = document.getElementById('analysis-content');
@@ -565,8 +731,12 @@
                     analyzeButton.addEventListener('click', async () => {
                         const incidentDescription = descriptionInput.value.trim();
                         if (!incidentDescription) {
-                            alert('事故の状況を入力してください。'); // Replace with custom modal if preferred
+                            incidentInputMessage.textContent = '事故の状況を入力してください。';
+                            incidentInputMessage.classList.remove('hidden');
+                            resultDiv.classList.add('hidden'); // 結果表示を隠す
                             return;
+                        } else {
+                            incidentInputMessage.classList.add('hidden'); // 入力があればメッセージを隠す
                         }
 
                         resultDiv.classList.remove('hidden');
@@ -574,11 +744,11 @@
                         analysisContent.classList.add('hidden');
                         analysisCauses.innerHTML = '';
                         analysisInfo.innerHTML = '';
-                        analysisActions.innerHTML = '<li>直ちに該当油種の販売を停止し、<a href="#emergency" class="text-sky-600 hover:underline nav-link-internal">緊急時対応手順</a>を参照してください。</li>'; // Reset to default action
+                        // デフォルトの初動対応をリセットして再追加
+                        analysisActions.innerHTML = '<li>直ちに該当油種の販売を停止し、<a href="#emergency" class="text-sky-600 hover:underline nav-link-internal">緊急時対応手順</a>を参照してください。</li>';
 
                         try {
                             const prompt = `あなたはガソリンスタンドの品質管理アシスタントです。以下の事故状況を分析し、事象の要約、考えられる原因/確認事項（箇条書き）、推奨される初動対応（箇条書き）、および追加で収集すべき情報（箇条書き）をJSON形式で提供してください。原因は具体的な可能性を複数挙げてください。
-
 事故状況: ${incidentDescription}
 
 JSONフォーマットの例:
@@ -588,7 +758,6 @@ JSONフォーマットの例:
   "actions": ["行動1", "行動2"],
   "info_to_gather": ["情報1", "情報2"]
 }`;
-
                             let chatHistory = [];
                             chatHistory.push({ role: "user", parts: [{ text: prompt }] });
                             const payload = {
@@ -610,15 +779,15 @@ JSONフォーマットの例:
                             // APIキーをここに設定
                             const apiKey = "AIzaSyB4moqcE2Gr21_puDDsFyITUT3zfSNG9ls";
                             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                            
+
                             const response = await fetch(apiUrl, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify(payload)
                             });
-                            
+
                             const result = await response.json();
-                            
+
                             if (result.candidates && result.candidates.length > 0 &&
                                 result.candidates[0].content && result.candidates[0].content.parts &&
                                 result.candidates[0].content.parts.length > 0) {
@@ -631,9 +800,10 @@ JSONフォーマットの例:
                                     li.textContent = cause;
                                     analysisCauses.appendChild(li);
                                 });
-                                // Preserve default action, add new actions if present
+                                // デフォルトのアクションを維持しつつ、LLMからの新しいアクションを追加
                                 parsedJson.actions.forEach(action => {
-                                    if (!analysisActions.innerHTML.includes(action)) { // Avoid duplicating default action if LLM generates it
+                                    // 既存のデフォルトアクションと重複しないようにチェック
+                                    if (!analysisActions.textContent.includes(action)) {
                                         const li = document.createElement('li');
                                         li.textContent = action;
                                         analysisActions.appendChild(li);
@@ -655,14 +825,16 @@ JSONフォーマットの例:
                             loadingIndicator.textContent = '分析中にエラーが発生しました。';
                             console.error('Error calling LLM:', error);
                         } finally {
-                             // Re-attach internal navigation listeners to newly added content
+                            // 新しく追加されたコンテンツ内の内部ナビゲーションリンクにイベントリスナーを再付与
                             document.querySelectorAll('#incident-analysis-result .nav-link-internal').forEach(link => {
-                                link.removeEventListener('click', app.internalNavLinkHandler); // Remove old listener if exists
-                                link.addEventListener('click', app.internalNavLinkHandler); // Add new listener
+                                // 既存のリスナーを削除してから新しいリスナーを追加 (複数回のクリックで重複するのを防ぐ)
+                                link.removeEventListener('click', app.internalNavLinkHandler);
+                                link.addEventListener('click', app.internalNavLinkHandler);
                             });
                         }
                     });
-                     // Define the handler once to remove/add it easily
+
+                    // ハンドラーを一度定義し、容易に削除・追加できるようにする
                     this.internalNavLinkHandler = (e) => {
                         e.preventDefault();
                         const targetId = e.target.getAttribute('href').substring(1);
@@ -670,17 +842,58 @@ JSONフォーマットの例:
                     };
                 },
 
+                // 緊急時対応タブを初期化するメソッド
+                initEmergencyTabs() {
+                    const tabContainer = document.getElementById('emergency-tabs');
+                    const tabContents = document.getElementById('emergency-tab-contents');
+
+                    if (!tabContainer || !tabContents) return;
+
+                    // 初期表示タブを設定（例：コンタミの疑い）
+                    const defaultTabId = 'suspected-contamination';
+                    this.showEmergencyTab(defaultTabId);
+
+                    tabContainer.addEventListener('click', (e) => {
+                        if (e.target.closest('.emergency-tab-button')) { // 親要素も含むように変更
+                            const tabId = e.target.closest('.emergency-tab-button').dataset.tab;
+                            this.showEmergencyTab(tabId);
+                        }
+                    });
+                },
+
+                // 緊急時対応タブを表示するメソッド
+                showEmergencyTab(tabId) {
+                    // すべてのタブボタンとタブコンテンツのアクティブ状態を解除
+                    document.querySelectorAll('.emergency-tab-button').forEach(button => button.classList.remove('active'));
+                    document.querySelectorAll('.emergency-tab-content').forEach(content => content.classList.remove('active'));
+
+                    // 指定されたタブボタンとタブコンテンツをアクティブにする
+                    const selectedButton = document.querySelector(`.emergency-tab-button[data-tab="${tabId}"]`);
+                    const selectedContent = document.getElementById(`${tabId}-content`);
+
+                    if (selectedButton) {
+                        selectedButton.classList.add('active');
+                    }
+                    if (selectedContent) {
+                        selectedContent.classList.add('active');
+                    }
+                },
+
+
+                // 全ての初期化処理を実行するメソッド
                 init() {
-                    this.initRouter();
-                    this.renderPage();
-                    this.initCharts();
-                    this.initStandardsTable();
-                    this.initQuiz();
-                    this.initFaxFilesList();
-                    this.initIncidentAssistant();
-                    
+                    this.initRouter(); // ルーティングの初期化
+                    this.renderPage(); // 初期ページの描画
+                    this.initCharts(); // グラフの初期化
+                    this.initStandardsTable(); // 品質規格テーブルの初期化
+                    this.initFaxFilesList(); // FAXファイルリストの初期化
+                    this.initIncidentAssistant(); // AI事故アシスタントの初期化
+                    this.initEmergencyTabs(); // 緊急時対応タブの初期化
+
+                    // 燃料油種セレクターの変更イベントリスナー
                     document.getElementById('fuel-type-selector').addEventListener('change', (e) => this.renderStandardsTable(e.target.value));
-                    
+
+                    // 内部ナビゲーションリンクに対するイベントリスナー（クイックアクセス用など）
                     document.querySelectorAll('.nav-link-internal').forEach(link => {
                         link.addEventListener('click', (e) => {
                             e.preventDefault();
@@ -691,7 +904,7 @@ JSONフォーマットの例:
                 }
             };
 
-            app.init();
+            app.init(); // アプリケーションの初期化を開始
         });
     </script>
 </body>
