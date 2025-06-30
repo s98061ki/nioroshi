@@ -607,7 +607,8 @@ JSONフォーマットの例:
                                     }
                                 }
                             };
-                            const apiKey = ""; // If you want to use models other than gemini-2.0-flash or imagen-3.0-generate-002, provide an API key here. Otherwise, leave this as-is.
+                            // APIキーをここに設定
+                            const apiKey = "AIzaSyB4moqcE2Gr21_puDDsFyITUT3zfSNG9ls";
                             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                             
                             const response = await fetch(apiUrl, {
@@ -669,7 +670,6 @@ JSONフォーマットの例:
                     };
                 },
 
-                // Ensure init and other methods are properly ordered after their dependencies
                 init() {
                     this.initRouter();
                     this.renderPage();
@@ -677,7 +677,7 @@ JSONフォーマットの例:
                     this.initStandardsTable();
                     this.initQuiz();
                     this.initFaxFilesList();
-                    this.initIncidentAssistant(); // Now this call should work
+                    this.initIncidentAssistant();
                     
                     document.getElementById('fuel-type-selector').addEventListener('change', (e) => this.renderStandardsTable(e.target.value));
                     
