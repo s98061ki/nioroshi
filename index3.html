@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>荷卸し・黒本・品質管理テスト</title>
+    <!-- Tailwind CSS CDN (kept for potential future use, but overridden by custom styles) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Base site's CSS for styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background, consistent with previous */
+        }
+        .container {
+            max-width: 800px; /* Changed to 800px as per base site */
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+        .form-container {
+            background-color: #f7fafc; /* As per base site */
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* As per base site */
+        }
+        .question-container {
+            background-color: #fff;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: left;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .question {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1a202c;
+        }
+        .options {
+            margin-bottom: 1rem;
+        }
+        .option {
+            display: block;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            background-color: #edf2f7; /* As per base site */
+            color: #1a202c;
+        }
+        .option:hover {
+            background-color: #e2e8f0; /* As per base site */
+        }
+        .option input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+        .option:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            color: white;
+            background-color: #4a5568; /* As per base site */
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border: none;
+            font-size: 1rem;
+            margin: 0.5rem 0.5rem; /* Adjusted margin for better spacing when wrapping */
+        }
+        .btn:hover {
+            background-color: #2d3748; /* As per base site */
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        /* Primary button color (used for navigation buttons like Next, Prev, Retake, Print) */
+        .btn.primary {
+            background-color: #4a5568; /* Changed to a neutral gray for general buttons */
+        }
+        .btn.primary:hover {
+            background-color: #2d3748; /* Darker gray on hover */
+        }
+
+        /* Category specific button colors */
+        .btn.category-1 { /* For 初級編, 中上級編 */
+            background-color: #68d391; /* Light green */
+        }
+        .btn.category-1:hover {
+            background-color: #48bb78; /* Darker green */
+        }
+
+        .btn.category-2 { /* For 荷卸し編, 黒本・試買編 */
+            background-color: #38b2ac; /* Teal */
+        }
+        .btn.category-2:hover {
+            background-color: #319795; /* Darker Teal */
+        }
+
+        .btn.category-3 { /* For 総合編 */
+            background-color: #805ad5; /* Purple */
+        }
+        .btn.category-3:hover {
+            background-color: #6b46c1; /* Darker Purple */
+        }
+
+        #results-container {
+            background-color: #f7fafc; /* As per base site */
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* As per base site */
+        }
+        #results-container h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #1a202c;
+        }
+        #results-container p {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            color: #4a5568;
+        }
+        #results-container button {
+            margin-top: 1rem;
+        }
+        .correct-answer {
+            background-color: #f0fdf4; /* As per base site */
+            border-color: #68d391; /* As per base site */
+            color: #1a202c;
+        }
+        .wrong-answer {
+            background-color: #fee2e2;
+            border-color: #f56565; /* As per base site */
+            color: #1a202c;
+        }
+        .feedback {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .feedback.correct {
+            background-color: #f0fdf4; /* As per base site */
+            border-color: #68d391; /* As per base site */
+            color: #38a169; /* As per base site */
+        }
+        .feedback.incorrect {
+            background-color: #fee2e2;
+            border-color: #f56565; /* As per base site */
+            color: #e53e3e; /* As per base site */
+        }
+        .completion-message {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #1a202c;
+        }
+        /* Progress Bar styles (re-added for UX) */
+        .progress-bar {
+            background-color: #e2e8f0;
+            border-radius: 9999px; /* Fully rounded */
+            height: 8px;
+            margin-bottom: 1rem;
+        }
+        .progress-fill {
+            background-color: #4a5568; /* Adjusted to match btn color */
+            border-radius: 9999px;
+            height: 100%;
+            transition: width 0.3s ease-in-out;
+        }
+        /* Custom Modal styles (from previous version, kept as it's better than alert) */
+        .modal {
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            padding: 2rem;
+            max-width: 600px; /* Increased max-width for explanation */
+            width: 90%; /* Responsive width */
+            text-align: center;
+            max-height: 90vh; /* Limit height for scrollability */
+            overflow-y: auto; /* Enable scrolling for long explanations */
+        }
+        /* Loading Indicator styles */
+        .loading-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50px;
+            margin-top: 1rem;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #4a5568; /* Adjusted to match btn color */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        /* Category buttons container */
+        #category-selection-container {
+            margin-top: 2rem;
+            display: grid;
+            grid-template-columns: 1fr; /* Default to single column */
+            gap: 0.75rem; /* Gap between buttons */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            #category-selection-container {
+                grid-template-columns: repeat(2, 1fr); /* 2 columns on larger screens */
+            }
+        }
+        #category-selection-container .btn {
+            width: 100%;
+            margin: 0; /* Override individual button margin */
+            display: flex; /* Enable flexbox for icon and text alignment */
+            align-items: center; /* Vertically center icon and text */
+            justify-content: center; /* Horizontally center content */
+            padding: 1rem 1.5rem; /* Increase padding for better visual */
+            font-size: 1.125rem; /* text-lg */
+        }
+        #category-selection-container .btn svg {
+            margin-right: 0.75rem; /* Space between icon and text */
+        }
+        /* Specific styling for the '総合編' button to span two columns */
+        #start-comprehensive {
+            grid-column: 1 / -1; /* Span across all columns */
+            /* To center it within the span, if it's not already centered by default grid behavior */
+            justify-self: stretch; /* Make it stretch across the full span */
+        }
+        .question-count {
+            margin-left: 0.5rem;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="container">
+        <h1 class="text-2xl font-semibold text-gray-800 mb-4">荷卸し・黒本・品質管理テスト</h1>
+        <div id="login-container" class="form-container">
+            <div class="mb-4">
+                <label for="store-name" class="block text-gray-700 text-sm font-bold mb-2">所属店舗名:</label>
+                <select id="store-name" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="" disabled selected>選択してください</option>
+                    <option value="緑ヶ丘">緑ヶ丘</option>
+                    <option value="花園">花園</option>
+                    <option value="八幡">八幡</option>
+                    <option value="長浦">長浦</option>
+                    <option value="高棚">高棚</option>
+                    <option value="豊明東">豊明東</option>
+                    <option value="羽根">羽根</option>
+                    <option value="東浦スタンド">東浦スタンド</option>
+                    <option value="東浦検査場">東浦検査場</option>
+                    <option value="大府スタンド">大府スタンド</option>
+                    <option value="大府検査場">大府検査場</option>
+                    <option value="幸田スタンド">幸田スタンド</option>
+                    <option value="三河検査場">三河検査場</option>
+                    <option value="常滑スタンド">常滑スタンド</option>
+                    <option value="常滑検査場">常滑検査場</option>
+                    <option value="豊明">豊明</option>
+                    <option value="稲穂">稲穂</option>
+                    <option value="東海長口">東海長口</option>
+                    <option value="豊田上丘">豊田上丘</option>
+                    <option value="岡崎定国">岡崎定国</option>
+                    <option value="三ヶ根">三ヶ根</option>
+                    <option value="日進">日進</option>
+                    <option value="阿久比">阿久比</option>
+                    <option value="刈谷">刈谷</option>
+                    <option value="西尾">西尾</option>
+                    <option value="トレーラー配送部">トレーラー配送部</option>
+                    <option value="本社事務所">本社事務所</option>
+                    <option value="レッカー">レッカー</option>
+                    <option value="ベンリー">ベンリー</option>
+                </select>
+            </div>
+            <div class="mb-6">
+                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">名前:</label>
+                <input type="text" id="name" placeholder="名前を入力してください" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <!-- Category selection buttons (always visible, but disabled initially) -->
+            <h2 class="text-xl font-bold text-gray-800 mb-4 mt-6">テストの種類を選択してください</h2>
+            <div id="category-selection-container">
+                <button id="start-beginner" class="btn category-1" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    初級編<span id="count-beginner" class="question-count"></span>
+                </button>
+                <button id="start-intermediate" class="btn category-1" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                    中上級編<span id="count-intermediate" class="question-count"></span>
+                </button>
+                <button id="start-nioroshi" class="btn category-2" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M10 18H7l-3 3v-3"/><path d="M7 18v3"/><path d="M18 6h2a2 2 0 0 1 2 2v7a1 1 0 0 1-1 1h-1"/><path d="M10 10h7"/><path d="M10 14h4"/></svg>
+                    荷卸し編<span id="count-nioroshi" class="question-count"></span>
+                </button>
+                <button id="start-kurohon" class="btn category-2" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                    黒本・試買編<span id="count-kurohon" class="question-count"></span>
+                </button>
+                <button id="start-comprehensive" class="btn category-3" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layers"><path d="m12.83 2.18-.3.9a4.37 4.37 0 0 0-1.66 0l-.3-.9a.25.25 0 0 1-.09-.2H3.25a.25.25 0 0 0-.25.25v16.5a.25.25 0 0 0 .25.25H20.75a.25.25 0 0 0 .25-.25V2.23a.25.25 0 0 0-.09-.2Z"/><path d="M12 17.5V20"/><path d="M8 17.5V20"/><path d="M16 17.5V20"/><path d="M12 11.5v3"/><path d="M8 11.5v3"/><path d="M16 11.5v3"/><path d="M12 5.5v3"/><path d="M8 5.5v3"/><path d="M16 5.5v3"/></svg>
+                    総合編<span id="count-comprehensive" class="question-count"></span>
+                </button>
+            </div>
+        </div>
+
+        <div id="quiz-container" class="hidden">
+            <!-- Progress Bar -->
+            <div class="mb-6">
+                <div class="text-sm text-gray-600 mb-2 text-center">
+                    <span id="current-question-number">1</span> / <span id="total-questions-quiz"></span>
+                </div>
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <div id="question-container" class="question-container">
+                <h2 class="question" id="question"></h2>
+                <div id="options-container" class="options">
+                    <!-- Options will be dynamically loaded here -->
+                </div>
+                <div id="feedback" class="feedback hidden"></div>
+            </div>
+            <div class="actions">
+                <button id="prev-question" class="btn hidden">前の問題</button>
+                <button id="next-question" class="btn primary hidden">次の問題</button>
+                <button id="finish-test" class="btn primary hidden">テスト終了</button>
+            </div>
+        </div>
+
+        <div id="completion-container" class="hidden form-container">
+            <h2 class="completion-message">お疲れ様でした。間違えた問題があれば、再度確認してください。</h2>
+            <button id="show-results" class="btn primary">テスト結果表示</button>
+        </div>
+
+        <div id="results-container" class="hidden form-container">
+            <h2>テスト結果</h2>
+            <p>氏名: <span id="results-name"></span></p>
+            <p>所属店舗: <span id="results-store"></span></p>
+            <p>正解数: <span id="results-correct"></span> / <span id="results-total"></span></p>
+            <p>正解率: <span id="results-score-rate"></span></p>
+            <div id="results-details">
+                <h3>間違った問題</h3>
+                <ul id="results-list" class="text-left">
+                </ul>
+            </div>
+            <div class="loading-indicator hidden" id="loading-indicator">
+                <div class="spinner"></div>
+                <p class="ml-3 text-gray-600">結果を送信中...</p>
+            </div>
+            <p id="submission-status" class="mt-4 text-sm"></p>
+            <button id="retake-test" class="btn">もう一度受ける</button>
+            <button id="print-results" class="btn">この画面を印刷する</button>
+        </div>
+    </div>
+
+    <!-- Custom Alert/Modal -->
+    <div id="custom-modal" class="modal hidden">
+        <div class="modal-content">
+            <p id="modal-message" class="text-lg font-semibold text-gray-800 mb-6"></p>
+            <button id="modal-ok-button" class="btn primary">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Google Apps Script Web App URL from the base site
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbw6Ito1hLug4P1DXEUfjIBJ07bBWM0nVAgAPX4SBg989__pfns7s98QPZ--EGy7_Pk7lQ/exec";
+
+        // Function to show custom modal (instead of alert)
+        function showCustomModal(message) {
+            const modal = document.getElementById('custom-modal');
+            const modalMessage = document.getElementById('modal-message');
+            modalMessage.textContent = message;
+            modal.classList.remove('hidden');
+        }
+
+        // Function to hide custom modal
+        function hideCustomModal() {
+            const modal = document.getElementById('custom-modal');
+            modal.classList.add('hidden');
+        }
+        document.getElementById('modal-ok-button').addEventListener('click', hideCustomModal);
+
+        // Raw CSV data from the fetched files (keeping duplicates as requested)
+        const csvData = `難易度,ジャンル,問題番号,question,option1,option2,option3,option4,correctAnswer
+初級,荷卸し,1,立ち会いが無い場合の荷卸しについて、正しい対応を選べ。,ドライバー単独で荷卸しをしてもよい,荷卸しを一時中断し、上長に連絡する,立ち会いが無い場合は荷卸し禁止となっている,一時的であれば、ドライバー単独で荷卸ししてもよい,3
+初級,荷卸し,2,荷卸し中のハンディ（モバイルSSC）の使用について、正しい文章を選べ,荷卸し立ち会い者は、ハンディを使用して給油監視しなければならない,2名以上のシフトの時であっても、他の人が作業で忙しい時はハンディを使用して立会をする,荷卸し立ち会い時に1名体制の時はハンディを使用するが、荷卸し優先なので、監視の必要はない,ハンディを使用して給油許可する場合は、必ず目視又は監視カメラで確認する,4
+初級,荷卸し,3,前尺について、正しい文章を選べ,前尺は、毎朝７時の在庫である,前日の夜にプリントしたものでも、販売数量が少なければ前尺として使用できる,前尺は荷卸し直前のものであるか確認する,前尺は、前回の荷卸し後の在庫量である,3
+初級,荷卸し,4,アース接続の主な目的は何ですか？,荷卸しスピードを上げるため,静電気による引火の危険を防止するため,ローリーの重量を測定するため,消火器の設置場所を示すため,2
+中級,荷卸し,5,受け入れ予定の油種、数量の確認で違いがあった場合、最初に確認し修正すべきものは何ですか？,本社に電話して指示を仰ぐ,ドライバーの判断に任せる,チェック表、配送表、納品伝票、配送予定表を確認し、どれが正しいかドライバーと立会人で確認し修正する,荷卸しを中断し、本社からの指示を待つ,3
+初級,荷卸し,6,積荷と吐出口の油種・数量の一致確認の手順は？,積荷のラベルを確認する,ドライバーから先に油種クリップを見せて立会人が確認する,立会人が吐出口の油種クリップを声に出して確認し、ドライバーと一致確認する,油種を試験紙で検査する,3
+初級,荷卸し,7,積荷と吐出口の相互一致確認は、何を防ぐために最も重要ですか？,荷卸し時間の延長,油種のコンタミネーション（混油）事故,作業員の疲労,ローリー車両の損傷,2
+中級,荷卸し,8,積荷と吐出口の油種・数量の一致確認の際、違っていたらどうするべきですか？,吐出口側の油種クリップに合わせて、ドライバーがハッチの油種クリップを変更する,ハッチ側の油種クリップに合わせて、立会人が吐出口の油種クリップを変更する,ドライバーが納品伝票と積荷の油種の色確認を行い、ハッチに付けた油種クリップと間違いがないか確認を行う。　その後、ハッチの油種クリップに合わせて、吐出口の油種クリップを変更する,後で、サイトグラスで色を確認してから修正する,3
+中級,荷卸し,9,バロン・パーク株式会社のタンクローリーのうち、集中配管型の車両は、同じ吐出口を使用するマスで混載してはいけないルールになった理由は何ですか？,荷卸しスピードを上げるため,コンタミのリスクを減らすため,作業の複雑さを避けるため,積載量を最大化するため,2
+中級,荷卸し,10,地下タンクの空間容量に余裕がない場合、ドライバーは誰に連絡して指示を仰ぐべきですか？,立会人,上長,配送担当者,専門業者,3
+初級,荷卸し,11,荷卸し順序の適切な順番は？,軽油 → レギュラー → 灯油 → ハイオク,灯油 → レギュラー → ハイオク → 軽油,灯油 → ハイオク → レギュラー → 軽油,レギュラー → 軽油 → ハイオク → 灯油,2
+初級,荷卸し,12,荷卸し順序が決められているのはなぜですか？,作業スピードを上げるため,引火点の低下を防ぐため,異なる油種間のコンタミを防いで、品質の劣化を防ぐため,販売量の多い油種から卸すため,3
+中級,荷卸し,13,荷卸しする油種の順序が（灯油→レギュラー→ハイオク→軽油）の順と異なる場合の対応は？,この場合の対応方法は決まっていない,立会人は、ドライバーに荷卸し順序の修正を指示する,上長に電話して指示を仰ぐ,吐出口と地下タンクの油種が一致していれば問題無いので、そのまま荷卸しを継続する,2
+初級,荷卸し,14,荷卸し順序を決定し、チェック表に接続先を記載する際に１番重要なポイントは？,ローリー側と地下タンクの油種が一致しているか,ローリー側と地下タンクの数量が一致しているか,チェック表の接続の欄にレ点が入っているか,ローリーの前側から順番に線を引いているか,1
+初級,荷卸し,15,配管内残油の確認（前しぼり）は、主に何を防ぐために行われますか？,配管の詰まり,次回の荷卸し作業の遅延,異なる油種間のコンタミ,ホースの損傷,3
+初級,荷卸し,16,前しぼりについて、正しい文章を選べ,前しぼりは、前荷と積荷の油種が異なる場合にのみする,前しぼりが不十分だと、灯油の引火点が下がり、火災につながるおそれがある,前しぼりをして、油種が分からない時は、レギュラータンクに入れる,前しぼりした油は、ドライバーの指示するところへ卸す,2
+中級,荷卸し,17,ガソリンの引火点について、正しいものを選べ。,ガソリンの引火点は１００℃である,常温ならば引火することはない,灯油に混ぜると、灯油の引火点が上がる,ガソリンの引火点は、ー４０℃以下である,4
+中級,荷卸し,18,品確法における灯油の引火点の最低基準はどのくらいですか？,0℃以上,20℃以上,40℃以上,100℃以上,3
+中級,荷卸し,19,灯油の引火点低下の主な原因として最も考えられるものは何ですか？,地下タンクの経年劣化,ローリーの過積載,ガソリンの微量コンタミネーション,気温の急激な変化,3
+初級,荷卸し,20,灯油にガソリンが混ざると灯油はどうなるか、正しい文章を選べ,引火点が上昇する,色は無色透明のままなので、見分けがつかない,重さが違うので分離する,引火点が大幅に下がり、火災の危険が増す,4
+初級,荷卸し,21,遠方注油口のBOXの鍵の管理について、正しい文章を選べ,ローリードライバーが持っているので、店舗では管理していない,ローリードライバーが持ち出しやすい場所に保管する,荷卸しで必要な鍵なので、遠方注油口の近くなどに保管しておく,POSレジ内など、ローリードライバーが容易に持ち出せない場所に保管する,4
+中級,荷卸し,22,ローリー運転手による単独荷卸しを防ぐための対策として、バロン・パーク株式会社で導入した主な施策は何ですか？,鍵を全て統一ものに替え、店舗で保管管理する,遠方注油口の鍵を変更し、給油所で保管管理する,鍵を全て廃止し、電子ロックシステムを導入する,ローリー運転手が立ち会うまで荷卸しを開始しない,2
+初級,荷卸し,23,ホースの接続時にドライバーと相互確認する項目は？,油種クリップ・注油口ラベル,吐出口の開閉状況,タンク内の油面,荷卸しのスピード,1
+初級,荷卸し,24,ホース接続時の作業について、正しい文章を選べ,ドライバーが指差呼称したことを確認して、立会人はチェック表に記入する,ドライバーが指差呼称したことを確認して、立会人は「ヨシ」と相槌する,ドライバーがホースをつないだら、立会人が指差呼称する,ドライバーの指差呼称に合わせて、立会人も相互に声に出して指差呼称で確認する,4
+初級,荷卸し,25,吐出口のコックを開放する前に確認すべき項目は？,サイトグラスで油種の色を確認する,注油口の蓋が開いているか確認する,荷卸し開始時刻を確認する,タンクの圧力を確認する,1
+初級,荷卸し,26,サイトグラスの色確認時の作業について、正しい文章を選べ,ドライバーのみがチェックする,ドライバーが確認してOKなら、立会人が確認する必要ない,ドライバーと立会人が相互に声に出して指差呼称で確認する,暗くて色が見えない時は、確認する必要はない,3
+初級,荷卸し,27,灯油の色は何色ですか？,無色透明,橙色（赤色）,黒色,淡黄色,1
+初級,荷卸し,28,レギュラーの色は何色ですか？,無色透明,橙色（赤色）,黒色,淡黄色,2
+初級,荷卸し,29,軽油の色は何色ですか？,無色透明,橙色（赤色） ,黒色,淡黄色,4
+中級,荷卸し,30,サイトグラスの色確認時に、クリップの油種の色と異なる場合の対応について、正しい文章を選べ,上長に電話して指示を仰ぐ,積荷の一致確認はしているので、色が違っていてもそのまま荷卸しを継続する,ドライバーの指示に従い、再度、油種の色確認をする,荷卸しを中断し、手順の積荷の確認から再度行い、どこの手順で間違いがあったのか確認する,4
+中級,荷卸し,31,荷卸し作業中に異常が発生した場合の対応は？,ドライバーの指示に従い作業を進める,とりあえず様子を見る,すぐに荷卸しを停止し、原因を確認する,まずタンク内の油量を再確認する,3
+初級,荷卸し,32,荷卸し作業中の安全監視で確認すべき事項は？,油面計作動状況や通気管のべーパーの吹き出し状況,吐出口の開閉状況,荷卸しスピード,ドライバーの動き,1
+中級,荷卸し,33,荷卸し作業中に油面計のメーター等が正常に反応しない場合、どのような対応が求められますか？,そのまま荷卸しを継続する,荷卸しを中断し、メーター機器などに異常がないか確認する,ドライバーの指示に従う,手動で油量を確認する,2
+初級,荷卸し,34,荷卸し中に立会人がやむを得ず荷卸し場を離れる必要がある場合、取るべき行動は何ですか？,ドライバーに荷卸し継続を依頼する,吐出口コックを閉止し、荷卸しを一時中断する,監視カメラで遠隔監視を行う,周囲に人がいないことを確認する,2
+初級,荷卸し,35,荷卸し終了後、後尺を測定する目的は？,荷卸し数量の異常やコンタミを確認するため,注油口のラベルを確認するため,ホースの接続状態を確認するため,荷卸し中の売上数量を確認するため,1
+中級,荷卸し,36,後尺がどのようになったら異常ですか？,後尺数量が（前尺＋荷卸し数量）×101％よりも多い,後尺数量が（前尺＋荷卸し数量）×101％よりも少ない,後尺数量が、前尺数量より少ない,後尺数量と（前尺＋荷卸し数量）×100％が等しい,1
+初級,荷卸し,37,後尺について次の選択肢のうち、最も異常が考えられるのは？,前尺１０KLのところに４KL荷卸しし、後尺が１３．８KLであった,前尺１０KLのところに４KL荷卸しし、後尺が１４．０KLであった,前尺１０KLのところに４KL荷卸しし、後尺が１４．５KLであった,前尺１０KLのところに４KL荷卸しし、後尺が１３．０KLであった,3
+初級,荷卸し,38,後尺数量に異常がみられた場合、記載ミス等が無ければ、どのような可能性を疑い、どのような対応をすべきですか？,在庫不足の可能性があるので、追加発注する,後尺の異常はコンタミではなく、メーター機器の異常なので、修理業者を手配する,コンタミの可能性があるので、即販売停止し、上長へ連絡し指示を仰ぐ,誤差の範囲なので、様子を見る,3
+初級,荷卸し,39,荷卸し終了後の後尺確認において異常が認められた場合（特にコンタミの可能性）、最初に行うべき対応は何ですか？,すぐに上長に連絡する,再度、後尺を測定する,即座に販売停止し、上長と本社へ連絡する,顧客への販売を継続する,3
+初級,荷卸し,40,荷卸しチェック表の保管期間は、現在どのように定められていますか？,半年,1年,3年,定められていない,2
+初級,黒本・試買,41,黒本とは？,荷卸しのマニュアルが書かれた本,地下タンク在庫や出荷量、仕入れ量などを記したもの,油外実績表のこと,試験問題集のこと,2
+初級,黒本・試買,42,黒本を入力するのはいつですか？,毎朝6時,精算後、すぐに,夕方18時,入力できる人が出勤している時,2
+初級,黒本・試買,43,黒本で毎日入力する項目として、もっとも適切なものを選べ,当日増減量・当日増減率,累計増減量・累計増減率,受入数量・出荷数量・在庫数量,検知管の点検と実施者,3
+初級,黒本・試買,44,黒本を入力する意義について、もっとも適切な文章を選べ,毎日、どれだけ販売したか実績を管理するため,商品の発注のため,ローリーの配送表を作成するため,漏洩やコンタミなどを、できるだけ早く判別できるようにするため,4
+初級,黒本・試買,45,黒本の入力後、どのようになったら異常か？,「当日増減率」又は「累計増減率」のマスが赤色になったら,当日増減量のマスが赤色になったら,累計増減量のマスが赤色になったら,ブザー音が鳴ったら,1
+中級,黒本・試買,46,黒本の「当日増減率」について、正しい文章を選べ,これは昨日の販売数量と比較した増減量である,３日連続で１％を超えると「漏洩している」可能性が高いので、すぐに上長に連絡する,１％を超えると、「コンタミしている」可能性が高いので、すぐに上長に連絡する,１％を超えても問題はないので、様子を見る,3
+中級,黒本・試買,47,黒本の「累計増減率」について、正しい文章を選べ,3日連続で１％を超えたが品質に問題なさそうなので、上長に連絡せず様子を見る,月末は数値が大きくなる傾向がある,3日連続で１％を超えると、水コンタミ又は漏洩している可能性があるので、すぐに上長に連絡する,1週間連続で１％を超えたら上長に連絡する。,3
+中級,黒本・試買,48,黒本の数値に異常があった場合の対応について、正しい文章を選べ,黒本を入力しないので、対応方法について知らなくてもよい,入力ミスは無かったが、原因が分からないのでとりあえず様子をみる。,入力ミスを確認する前に、すぐに上長に電話して確認する。,コンタミの可能性があるので、すぐに上長に連絡して販売停止した。,4
+中級,黒本・試買,49,地下タンクに水分が混入した場合、黒本にはどのような異常が見られますか？,在庫量が微増する傾向がある,在庫量が急激に減少する,在庫量の変化がない,油種の色が変化する,1
+中級,黒本・試買,50,地下タンクへの水分混入が疑われるケースとして、誤っているものはどれですか？,集中豪雨や台風などによる大雨があった場合,黒本で連続して在庫量の減少が確認された場合,黒本で連続して在庫量の増加が確認された場合,お客様から給油直後のエンジン停止のクレームがあった場合,2
+中級,黒本・試買,51,黒本で在庫量の減少が見られた場合、どの異常が疑われますか？,引火点不適合,コンタミ,水分混入,漏洩,4
+中級,黒本・試買,52,黒本について、月初に累計増減率1％以上出やすい理由として、適切なものを選べ,月初は販売数量が多くなる傾向があるので、累計増減率も大きくなりやすい,月初は地下タンクの容量が少ないので、累計増減率が大きくなる,月初は累計販売量が少ないため、数リットルの増減量でも相対的に割合が大きくなり、累計増減率が大きくなりやすい,月初は販売数量が少ないので、累計増減率には影響しにくい,3
+初級,黒本・試買,53,試買について、間違っているものを選べ。,試買は、レギュラー・ハイオク・軽油・灯油を各１Lづつ行われる,試買は、原則として年１回、経済産業省の委託を受けた石油協会が行う,試買検査で品質に異常があっても、販売停止にはならない,長期間ホース内に滞留した燃料は、劣化している可能性があるので端切りする,3
+中級,黒本・試買,54,試買検査で規格不適合が判明した場合、経済産業局がSSに対し最初に行うことは何ですか？,罰金徴収,営業許可の取り消し,全ての燃料油の販売禁止,指導や立入検査の実施,4
+初級,黒本・試買,55,試買検査で規格不適合とならないために実施する対策のうち、誤っているものを選べ。,荷卸し立ち会い・黒本の入力,燃料の端切り,計量機ノズルの交換,検水,3
+初級,黒本・試買,56,「端切り」の主な目的は何ですか？,荷卸し時間を短縮するため,給油ホースの清掃のため,燃料油の規格不適合を防ぐため,計量機の故障を診断するため,3
+初級,黒本・試買,57,試買検査がある場合、端切りを検査直前に行うべき理由として最も適切なものは何ですか？,検査員に良い印象を与えるため,各油種の適正なサンプルを提出するため,検査時間を短縮するため,検査費用を削減するため,2
+中級,黒本・試買,58,灯油の「端切り」を、特に夏場に定期的に行うことが大切な理由は何ですか？,夏場は灯油に水分が混入しやすいから,夏場は灯油がホース内に長期間滞留しやすいため,夏場は計量機が故障しやすいため,夏場は端切りの作業がしやすいから,2
+中級,黒本・試買,59,灯油の品質悪化を防ぐ対策として、端切りが有効な理由は何ですか？,ゴムホースの劣化を直接修復するため,ゴムホースに含まれる成分が灯油に溶出するのを防ぐため,灯油の引火点を上昇させるため,地下タンク内の水分を除去するため,2`;
+
+        // Function to parse CSV data
+        function parseCSV(csv) {
+            const lines = csv.trim().split('\n');
+            const headers = lines[0].split(',');
+            const questions = [];
+
+            // Skip header row
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',');
+                if (values.length === headers.length) {
+                    const questionObj = {
+                        difficulty: values[0],
+                        genre: values[1],
+                        questionNumber: parseInt(values[2]),
+                        question: values[3],
+                        options: [values[4], values[5], values[6], values[7]],
+                        correctAnswer: values[8] // Keep as string (e.g., "3" or "1,2,3")
+                    };
+                    questions.push(questionObj);
+                }
+            }
+            return questions;
+        }
+
+        // Parse all CSV data (keeping duplicates as requested)
+        const allQuestions = parseCSV(csvData);
+
+        let currentQuestions = []; // Questions for the current quiz session
+        let currentQuestionIndex = 0;
+        let userAnswers = []; // To store user's selected option index (1-indexed string) for current quiz
+        let correctAnswersCount = 0; // Renamed to avoid conflict with `correctAnswers` in base site's `saveResults`
+        let userName = '';
+        let userStore = ''; // Renamed from storeName to match base site's variable
+        let currentTestCategory = ''; // New variable to store the selected category name
+
+        // Get DOM elements
+        const loginContainer = document.getElementById("login-container");
+        const categorySelectionContainer = document.getElementById("category-selection-container"); // Container for category buttons
+        const quizContainer = document.getElementById("quiz-container");
+        const questionElement = document.getElementById("question");
+        const optionsContainer = document.getElementById("options-container");
+        const prevQuestionButton = document.getElementById("prev-question");
+        const nextQuestionButton = document.getElementById("next-question");
+        const finishTestButton = document.getElementById("finish-test");
+        const completionContainer = document.getElementById("completion-container");
+        const showResultsButton = document.getElementById("show-results");
+        const resultsContainer = document.getElementById("results-container");
+        const resultsNameElement = document.getElementById("results-name");
+        const resultsStoreElement = document.getElementById("results-store");
+        const resultsCorrectElement = document.getElementById("results-correct");
+        const resultsTotalElement = document.getElementById("results-total");
+        const retakeTestButton = document.getElementById("retake-test");
+        const printResultsButton = document.getElementById("print-results");
+        const storeSelect = document.getElementById("store-name");
+        const nameInput = document.getElementById("name");
+        const feedbackElement = document.getElementById("feedback");
+        const resultsList = document.getElementById("results-list");
+        const resultsScoreRateElement = document.getElementById("results-score-rate");
+        const currentQuestionNumberDisplay = document.getElementById('current-question-number');
+        const totalQuestionsQuizDisplay = document.getElementById('total-questions-quiz');
+        const progressBarFill = document.getElementById('progress-fill');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const submissionStatus = document.getElementById('submission-status');
+
+        // Category buttons (get references directly)
+        const startBeginnerButton = document.getElementById('start-beginner');
+        const startIntermediateButton = document.getElementById('start-intermediate');
+        const startNioroshiButton = document.getElementById('start-nioroshi');
+        const startKurohonButton = document.getElementById('start-kurohon');
+        const startComprehensiveButton = document.getElementById('start-comprehensive');
+
+        // Question count display elements
+        const countBeginner = document.getElementById('count-beginner');
+        const countIntermediate = document.getElementById('count-intermediate');
+        const countNioroshi = document.getElementById('count-nioroshi');
+        const countKurohon = document.getElementById('count-kurohon');
+        const countComprehensive = document.getElementById('count-comprehensive');
+
+
+        // Event listener for custom modal OK button (defined globally)
+        document.getElementById('modal-ok-button').addEventListener('click', hideCustomModal);
+
+        // Function to enable/disable category buttons and update counts
+        function toggleCategoryButtonsState() {
+            const isStoreSelected = storeSelect.value !== "" && storeSelect.value !== "選択してください";
+            const isNameEntered = nameInput.value.trim() !== "";
+            const enableButtons = isStoreSelected && isNameEntered;
+
+            [
+                startBeginnerButton,
+                startIntermediateButton,
+                startNioroshiButton,
+                startKurohonButton,
+                startComprehensiveButton
+            ].forEach(button => {
+                button.disabled = !enableButtons;
+            });
+
+            // Update question counts
+            countBeginner.textContent = ` (${allQuestions.filter(q => q.difficulty === '初級').length}問)`;
+            countIntermediate.textContent = ` (${allQuestions.filter(q => q.difficulty === '中級').length}問)`;
+            countNioroshi.textContent = ` (${allQuestions.filter(q => q.genre === '荷卸し').length}問)`;
+            countKurohon.textContent = ` (${allQuestions.filter(q => q.genre === '黒本・試買').length}問)`;
+            countComprehensive.textContent = ` (${allQuestions.length}問)`;
+        }
+
+        // Function to start the quiz based on category
+        function startQuiz(category) {
+            userName = nameInput.value.trim();
+            userStore = storeSelect.value;
+
+            // This check is redundant if buttons are disabled, but good for robustness
+            if (!userStore || userStore === "選択してください" || !userName) {
+                showCustomModal('所属店舗と名前を入力してください。');
+                return;
+            }
+
+            // Set the current test category name
+            switch (category) {
+                case 'beginner':
+                    currentTestCategory = '初級編';
+                    currentQuestions = allQuestions.filter(q => q.difficulty === '初級');
+                    break;
+                case 'intermediate':
+                    currentTestCategory = '中上級編';
+                    currentQuestions = allQuestions.filter(q => q.difficulty === '中級');
+                    break;
+                case 'nioroshi':
+                    currentTestCategory = '荷卸し編';
+                    currentQuestions = allQuestions.filter(q => q.genre === '荷卸し');
+                    break;
+                case 'kurohon':
+                    currentTestCategory = '黒本・試買編';
+                    currentQuestions = allQuestions.filter(q => q.genre === '黒本・試買');
+                    break;
+                case 'comprehensive':
+                    currentTestCategory = '総合編';
+                    currentQuestions = [...allQuestions]; // Use all questions
+                    break;
+                default:
+                    currentTestCategory = '不明';
+                    currentQuestions = [...allQuestions];
+            }
+
+            // Do NOT shuffle the questions as per user request
+            // currentQuestions = shuffleArray(currentQuestions);
+
+            // Reset quiz state
+            currentQuestionIndex = 0;
+            userAnswers = new Array(currentQuestions.length).fill(null);
+            correctAnswersCount = 0;
+            // Reset _answeredCorrectly flag for all questions
+            currentQuestions.forEach(q => q._answeredCorrectly = false);
+
+
+            // Hide login/category screen, show quiz screen
+            loginContainer.classList.add("hidden");
+            quizContainer.classList.remove("hidden");
+            completionContainer.classList.add("hidden"); // Ensure completion is hidden
+            resultsContainer.classList.add("hidden"); // Ensure results is hidden
+
+            loadQuestion();
+        }
+
+        // Function to load and display a question
+        function loadQuestion() {
+            if (currentQuestions && currentQuestions.length > 0 && currentQuestions[currentQuestionIndex]) {
+                const currentQuestion = currentQuestions[currentQuestionIndex];
+                questionElement.textContent = currentQuestion.question;
+                optionsContainer.innerHTML = "";
+                feedbackElement.classList.add("hidden"); // Hide feedback for new question
+
+                currentQuestion.options.forEach((option, index) => {
+                    const optionElement = document.createElement("label");
+                    optionElement.className = "option";
+                    // Value is 1-indexed string to match base site's correct answer format
+                    optionElement.innerHTML = `
+                        <input type="radio" name="answer" value="${index + 1}">
+                        <span>${option}</span>
+                    `;
+                    optionsContainer.appendChild(optionElement);
+
+                    // Add event listener to each option for immediate feedback
+                    optionElement.querySelector('input[type="radio"]').addEventListener('change', (event) => {
+                        handleOptionSelection(event.target.value);
+                    });
+                });
+
+                // Update navigation buttons and progress bar
+                updateNavigationButtons();
+                updateProgressBar();
+
+                // If already answered, display feedback immediately and disable options
+                if (userAnswers[currentQuestionIndex] !== null) {
+                    const selectedOption = optionsContainer.querySelector(`input[value="${userAnswers[currentQuestionIndex]}"]`);
+                    if (selectedOption) {
+                        selectedOption.checked = true;
+                        handleOptionSelection(userAnswers[currentQuestionIndex], true); // Pass true to indicate it's a re-load
+                    }
+                }
+            } else {
+                // Handle case where no questions are loaded for the selected category
+                showCustomModal('このカテゴリには問題がありません。別のカテゴリを選択してください。');
+                loginContainer.classList.remove("hidden");
+                quizContainer.classList.add("hidden");
+            }
+        }
+
+        // Handles option selection and provides immediate feedback
+        function handleOptionSelection(selectedAnswer, isReload = false) {
+            if (!isReload) { // Only store answer if it's a new selection
+                userAnswers[currentQuestionIndex] = selectedAnswer;
+            }
+
+            const currentQuestion = currentQuestions[currentQuestionIndex];
+            // Correct answer can be a single number string or comma-separated numbers (e.g., "3" or "1,2,3")
+            const correctAnswersForQuestion = currentQuestion.correctAnswer.split(",");
+            const isCorrect = correctAnswersForQuestion.includes(selectedAnswer);
+
+            // Disable all radio buttons
+            Array.from(optionsContainer.querySelectorAll('input[name="answer"]')).forEach(radio => {
+                radio.disabled = true;
+            });
+
+            // Apply feedback styles to options
+            Array.from(optionsContainer.children).forEach(label => {
+                const radio = label.querySelector('input[type="radio"]');
+                const optionValue = radio.value;
+
+                label.classList.remove('selected', 'correct-answer', 'wrong-answer');
+
+                if (optionValue === selectedAnswer) {
+                    label.classList.add('selected');
+                }
+
+                if (correctAnswersForQuestion.includes(optionValue)) {
+                    label.classList.add('correct-answer');
+                } else if (optionValue === selectedAnswer && !correctAnswersForQuestion.includes(optionValue)) {
+                    label.classList.add('wrong-answer');
+                }
+            });
+
+            // Show feedback message
+            feedbackElement.classList.remove("hidden");
+            if (isCorrect) {
+                feedbackElement.textContent = "正解！";
+                feedbackElement.className = "feedback correct";
+            } else {
+                const correctAnswerTexts = correctAnswersForQuestion.map(ans => currentQuestion.options[parseInt(ans) - 1]).join("、");
+                feedbackElement.innerHTML = `不正解！<br>正解は「${correctAnswerTexts}」です。`;
+                feedbackElement.className = "feedback incorrect";
+            }
+
+            // Update correct answers count only on first correct selection for a question
+            // Ensure score is only incremented once per question
+            if (!isReload) {
+                // Check if this question was previously answered correctly
+                const wasPreviouslyCorrect = currentQuestion._answeredCorrectly === true;
+
+                if (isCorrect && !wasPreviouslyCorrect) {
+                    correctAnswersCount++;
+                    currentQuestion._answeredCorrectly = true; // Mark as answered correctly for this quiz session
+                } else if (!isCorrect && wasPreviouslyCorrect) {
+                    // If it was correct and now it's incorrect (user changed answer on prev/next), decrement score
+                    correctAnswersCount--;
+                    currentQuestion._answeredCorrectly = false;
+                }
+            }
+
+            // Show next or finish button
+            updateNavigationButtons();
+        }
+
+        // Function to update navigation button visibility
+        function updateNavigationButtons() {
+            prevQuestionButton.classList.toggle('hidden', currentQuestionIndex === 0);
+
+            // Hide both next and finish initially
+            nextQuestionButton.classList.add('hidden');
+            finishTestButton.classList.add('hidden');
+
+            if (userAnswers[currentQuestionIndex] !== null) { // Only show next/finish if an answer has been selected
+                if (currentQuestionIndex === currentQuestions.length - 1) {
+                    finishTestButton.classList.remove('hidden');
+                } else {
+                    nextQuestionButton.classList.remove('hidden');
+                }
+            }
+        }
+
+        // Function to update progress bar
+        function updateProgressBar() {
+            currentQuestionNumberDisplay.textContent = currentQuestionIndex + 1;
+            totalQuestionsQuizDisplay.textContent = currentQuestions.length;
+            const progress = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
+            progressBarFill.style.width = `${progress}%`;
+        }
+
+        // Event listeners for navigation
+        prevQuestionButton.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        });
+
+        nextQuestionButton.addEventListener('click', () => {
+            currentQuestionIndex++;
+            loadQuestion();
+        });
+
+        finishTestButton.addEventListener('click', () => {
+            saveResults();
+            quizContainer.classList.add("hidden");
+            completionContainer.classList.remove("hidden");
+        });
+
+        // Function to show results
+        function showResults() {
+            completionContainer.classList.add("hidden");
+            resultsContainer.classList.remove("hidden");
+            resultsNameElement.textContent = userName;
+            resultsStoreElement.textContent = userStore;
+            resultsCorrectElement.textContent = correctAnswersCount;
+            resultsTotalElement.textContent = currentQuestions.length;
+            resultsList.innerHTML = "";
+
+            const scoreRate = (correctAnswersCount / currentQuestions.length) * 100;
+            resultsScoreRateElement.textContent = `${scoreRate.toFixed(2)}%`;
+
+            // Display wrong answers
+            currentQuestions.forEach((questionData, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = questionData.correctAnswer.split(",").includes(userAnswer);
+                if (!isCorrect) {
+                    const listItem = document.createElement("li");
+                    listItem.className = "wrong-answer p-2 mb-2 rounded"; // Added some styling
+                    listItem.innerHTML = `
+                        <p class="font-semibold">${questionData.question}</p>
+                        <p>あなたの回答: ${questionData.options[parseInt(userAnswer) - 1] || "未回答"}</p>
+                        <p>正解: ${questionData.options[parseInt(questionData.correctAnswer.split(",")[0]) - 1]}`; // Display first correct answer if multiple
+                    if (questionData.correctAnswer.split(",").length > 1) {
+                        listItem.innerHTML += ` (その他: ${questionData.correctAnswer.split(",").slice(1).map(ans => questionData.options[parseInt(ans) - 1]).join("、")})`;
+                    }
+                    listItem.innerHTML += `</p>`;
+                    resultsList.appendChild(listItem);
+                }
+            });
+        }
+
+        // Function to save results (called when test finishes)
+        function saveResults() {
+            const scoreRate = (correctAnswersCount / currentQuestions.length) * 100;
+
+            const result = {
+                userName: userName,
+                userStore: userStore,
+                testCategory: currentTestCategory, // Add the selected test category
+                score: correctAnswersCount,
+                totalQuestions: currentQuestions.length,
+                scoreRate: scoreRate.toFixed(2),
+                userAnswers: userAnswers, // This array will be stringified in GAS
+                timestamp: new Date().toLocaleString('ja-JP', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                })
+            };
+            sendDataToGAS(result);
+        }
+
+        // Function to send data to Google Apps Script
+        async function sendDataToGAS(data) {
+            loadingIndicator.classList.remove('hidden');
+            submissionStatus.textContent = ''; // Clear previous status
+
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Required for simple requests to GAS without preflight
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                // Since mode is 'no-cors', we can't read the response directly.
+                // We assume success if no network error.
+                submissionStatus.textContent = '結果が正常に送信されました。';
+                submissionStatus.classList.remove('text-red-500');
+                submissionStatus.classList.add('text-green-600');
+
+            } catch (error) {
+                console.error('データ送信エラー:', error);
+                submissionStatus.textContent = '結果の送信中にエラーが発生しました。ネットワーク接続を確認してください。';
+                submissionStatus.classList.remove('text-green-600');
+                submissionStatus.classList.add('text-red-500');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+
+        // Event listener for restart button - returns to start screen
+        retakeTestButton.addEventListener('click', () => {
+            resultsContainer.classList.add("hidden");
+            loginContainer.classList.remove("hidden");
+            // Clear inputs for new user/session
+            storeSelect.value = ''; // Reset dropdown
+            nameInput.value = '';
+            submissionStatus.textContent = ''; // Clear submission status
+            toggleCategoryButtonsState(); // Disable buttons until new input
+        });
+
+        // Event listeners for input changes to enable/disable category buttons
+        storeSelect.addEventListener('change', toggleCategoryButtonsState);
+        nameInput.addEventListener('input', toggleCategoryButtonsState);
+
+        // Event listeners for category buttons to start quiz
+        startBeginnerButton.addEventListener('click', () => startQuiz('beginner'));
+        startIntermediateButton.addEventListener('click', () => startQuiz('intermediate'));
+        startNioroshiButton.addEventListener('click', () => startQuiz('nioroshi'));
+        startKurohonButton.addEventListener('click', () => startQuiz('kurohon'));
+        startComprehensiveButton.addEventListener('click', () => startQuiz('comprehensive'));
+
+        // Event listener for "テスト結果表示" button
+        showResultsButton.addEventListener("click", showResults);
+
+        // Event listener for print button
+        printResultsButton.addEventListener("click", () => {
+            window.print();
+        });
+
+        // Initial state: show login screen, hide others
+        loginContainer.classList.remove("hidden");
+        quizContainer.classList.add("hidden");
+        completionContainer.classList.add("hidden");
+        resultsContainer.classList.add("hidden");
+        toggleCategoryButtonsState(); // Set initial state of buttons
+
+        // Display current date/time on load (placed outside event listener to ensure it runs)
+        const currentDate = new Date();
+        const formattedDate = currentDate.toLocaleString('ja-JP', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit'
+        });
+        const revisionDateElement = document.createElement('p');
+        revisionDateElement.textContent = `テスト開始時刻：${formattedDate}`;
+        // Insert before login container, but ensure loginContainer exists
+        if (loginContainer && loginContainer.parentNode) {
+            loginContainer.parentNode.insertBefore(revisionDateElement, loginContainer);
+        } else {
+            document.querySelector('.container').appendChild(revisionDateElement); // Fallback
+        }
+    </script>
+</body>
+</html>
