@@ -114,8 +114,9 @@
             const messageElement = document.getElementById("message");
 
             if (usernameInput === correctUsername && passwordInput === correctPassword) {
-                messageElement.style.color = "green";
-                messageElement.textContent = "ログイン成功！";
+                // 成功時のメッセージを削除
+                // messageElement.style.color = "green";
+                // messageElement.textContent = "ログイン成功！";
 
                 // 「IDを記憶する」チェックボックスの状態に応じてlocalStorageに保存/削除
                 if (rememberMeCheckbox.checked) {
@@ -124,8 +125,8 @@
                     localStorage.removeItem('rememberedUsername');
                 }
 
-                // 成功時に指定されたURLへリダイレクト
-                window.location.href = "https://s98061ki.github.io/nioroshi/index2.html";
+                // 新しいURLへリダイレクト
+                window.location.href = "https://s98061ki.github.io/nioroshi/index2.html#dashboard";
             } else {
                 messageElement.style.color = "red";
                 messageElement.textContent = "IDまたはパスワードが間違っています。";
