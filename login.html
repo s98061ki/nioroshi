@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログインページ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+        h2 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+        .input-group input[type="text"],
+        .input-group input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+        .remember-me input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #message {
+            margin-top: 20px;
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>ログイン</h2>
+        <div class="input-group">
+            <label for="username">ID:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="input-group">
+            <label for="password">パスワード:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="remember-me">
+            <input type="checkbox" id="rememberMe">
+            <label for="rememberMe">IDを記憶する</label>
+        </div>
+        <button onclick="login()">ログイン</button>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        // ページ読み込み時にIDを記憶していれば入力欄に設定
+        window.onload = function() {
+            const rememberedUsername = localStorage.getItem('rememberedUsername');
+            if (rememberedUsername) {
+                document.getElementById('username').value = rememberedUsername;
+                document.getElementById('rememberMe').checked = true; // チェックボックスもチェック状態にする
+            }
+        };
+
+        function login() {
+            const correctUsername = "unyoil";
+            const correctPassword = "1131";
+
+            const usernameInput = document.getElementById("username").value;
+            const passwordInput = document.getElementById("password").value;
+            const rememberMeCheckbox = document.getElementById("rememberMe");
+            const messageElement = document.getElementById("message");
+
+            if (usernameInput === correctUsername && passwordInput === correctPassword) {
+                messageElement.style.color = "green";
+                messageElement.textContent = "ログイン成功！";
+
+                // 「IDを記憶する」チェックボックスの状態に応じてlocalStorageに保存/削除
+                if (rememberMeCheckbox.checked) {
+                    localStorage.setItem('rememberedUsername', usernameInput);
+                } else {
+                    localStorage.removeItem('rememberedUsername');
+                }
+
+                // 成功時に指定されたURLへリダイレクト
+                window.location.href = "https://s98061ki.github.io/nioroshi/";
+            } else {
+                messageElement.style.color = "red";
+                messageElement.textContent = "IDまたはパスワードが間違っています。";
+            }
+        }
+    </script>
+</body>
+</html>
