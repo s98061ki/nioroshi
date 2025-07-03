@@ -12,7 +12,6 @@
     <!-- Chosen Palette: Calm Professional (Background: stone-50, Cards: white/stone-100, Accent: sky-600, Warning: red-600) -->
     <!-- Application Structure Plan: 利用者の役割（品質管理者・新入社員）とタスクに基づいた、ダッシュボード中心の対話型構造を採用。ナビゲーションで「ダッシュボード」「日常点検」「品質規格」「緊急時対応」「学習モード」を切り替えることで、情報の検索性を高め、直感的な操作を実現。この設計は、資料の法的・形式的な構成をそのまま再現するのではなく、現場での使いやすさを最優先し、必要な情報へ迅速にアクセスできることを目的としています。 -->
     <!-- Visualization & Content Choices: 報告書情報：品質不適合の原因 -> 目標：原因の比較・理解 -> 表示方法：棒グラフ（Chart.js）-> 操作：ホバーで詳細表示 -> 理由：最も一般的な問題点を視覚的に示し、予防策への意識を高めるため。報告書情報：燃料油の品質規格 -> 目標：規格の参照・確認 -> 表示方法：対話型HTMLテーブル＋JSフィルタ -> 理由：PDFからの検索より遥かに高速で規格を確認できるため。報告書情報：緊急時対応手順 -> 目標：緊急時の行動支援 -> 表示方法：ステップ形式のウィザード（HTML/JS）-> 理由：危機的状況下での認知負荷を軽減し、正確な手順実行を確実にするため。 -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body { font-family: 'Noto JP', 'Inter', sans-serif; }
         /* 正楷書体は一般的なWebフォントではないため、代替として筆記体風のフォントを指定し、serifをフォールバックとします */
@@ -87,16 +86,130 @@
         .emergency-tab-content.active {
             display: block;
         }
+
+        /* Mobile Menu Specific Styles */
+        #mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 75%; /* Adjust as needed */
+            max-width: 300px; /* Max width for larger mobiles */
+            background-color: white;
+            z-index: 50;
+            transform: translateX(-100%); /* Initially hidden off-screen */
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            padding-top: 1rem; /* Space for close button */
+            overflow-y: auto; /* Enable scrolling for long menus */
+        }
+        #mobile-menu.active {
+            transform: translateX(0); /* Slide in */
+        }
+        #menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+            z-index: 40;
+            display: none; /* Hidden by default */
+        }
+        #menu-overlay.active {
+            display: block;
+        }
+        #menu-toggle {
+            display: block; /* Always show hamburger on mobile */
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s;
+        }
+        #menu-toggle:hover {
+            background-color: #e2e8f0; /* stone-200 */
+        }
+        #menu-toggle .line {
+            width: 24px;
+            height: 3px;
+            background-color: #4b5563; /* gray-700 */
+            margin: 4px 0;
+            border-radius: 2px;
+        }
+        #mobile-menu .nav-rows {
+            flex-direction: column; /* Stack rows vertically in mobile menu */
+            border-bottom: none; /* Remove border from nav rows inside mobile menu */
+        }
+        #mobile-menu .nav-row {
+            flex-direction: column; /* Stack items vertically in mobile menu */
+        }
+        #mobile-menu .nav-item {
+            width: 100%;
+            border-bottom: none; /* Remove bottom border from items */
+            border-left: 4px solid transparent; /* Add left border for active state */
+            padding: 0.75rem 1rem; /* Adjust padding for mobile */
+        }
+        #mobile-menu .nav-item.active {
+            background-color: #f0f9ff; /* sky-50 */
+            border-left-color: #0284c7; /* sky-600 */
+        }
+        #mobile-menu .nav-item:hover {
+            background-color: #f0f9ff; /* sky-50 */
+        }
+        #mobile-menu .nav-item span {
+            margin-right: 0.75rem; /* Adjust icon spacing */
+        }
+        #menu-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #4b5563; /* gray-700 */
+            z-index: 60; /* Ensure it's above menu content */
+        }
+
+        /* Hide desktop nav on mobile */
+        @media (max-width: 767px) {
+            nav.bg-white {
+                display: none; /* Hide the main nav bar on mobile */
+            }
+        }
+        /* Show desktop nav on desktop */
+        @media (min-width: 768px) {
+            #menu-toggle, #mobile-menu, #menu-overlay, #menu-close {
+                display: none !important; /* Hide mobile elements on desktop */
+            }
+            nav.bg-white {
+                display: block; /* Show the main nav bar on desktop */
+            }
+            #main-nav-row-1, #main-nav-row-2 {
+                flex-direction: row; /* Ensure rows are horizontal on desktop */
+            }
+            .nav-item {
+                border-bottom: 4px solid transparent; /* Restore desktop border */
+                border-left: none; /* Remove left border */
+                padding: 1rem; /* Restore desktop padding */
+            }
+        }
     </style>
 </head>
 <body class="bg-stone-50 text-stone-800">
     <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         <header class="mb-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                <div>
+                <div class="flex items-center w-full sm:w-auto justify-between">
                     <h1 class="text-3xl font-bold text-stone-900 flex items-center">
                         <span class="text-sky-600 mr-3">⛽</span> 品質管理・荷卸しポータル
                     </h1>
+                    <!-- Hamburger menu toggle button for mobile -->
+                    <button id="menu-toggle" class="md:hidden p-2 rounded-lg hover:bg-stone-200">
+                        <div class="line"></div>
+                        <div class="line"></div>
+                        <div class="line"></div>
+                    </button>
                 </div>
             </div>
             <p class="slogan-text mt-4">
@@ -104,19 +217,33 @@
             </p>
         </header>
 
-        <!-- Latest News Section (Moved above navigation) -->
-        <section id="latest-news-section" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg shadow-sm mb-6">
-            <h2 class="text-lg font-semibold mb-2 text-blue-800 flex items-center">
-                <span class="mr-2 text-xl">✨</span> 新着情報
-            </h2>
-            <ul class="list-disc list-inside text-sm text-blue-700 space-y-1">
-               <li><span class="font-bold">2025年6月26日:</span> 本社からの通知FAX「6月11日　荷卸し立会い優秀者」をアップしました。</li>
-                <li><span class="font-bold">2025年6月26日:</span> 資料「品確法教育用資料」「端切りの重要性と品確法」をアップしました。</li>
-                <li><span class="font-bold">2025年6月26日:</span> 学習モード　テスト内容をアップデートしました。</li>
-            </ul>
-        </section>
+        <!-- Mobile Menu (Off-canvas) -->
+        <div id="mobile-menu" class="md:hidden">
+            <button id="menu-close">✕</button>
+            <nav class="bg-white rounded-lg shadow-sm">
+                <div class="nav-rows">
+                    <ul id="main-nav-row-1" class="nav-row border-b border-stone-200">
+                        <li><a href="#dashboard" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📊</span>ダッシュボード</a></li>
+                        <li><a href="#daily-checks" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">✅</span>日常点検</a></li>
+                        <li><a href="#fax-notifications" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📠</span>本社からの通知FAX</a></li>
+                        <li><a href="#standards" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📋</span>品質規格</a></li>
+                    </ul>
+                    <ul id="main-nav-row-2" class="nav-row">
+                        <li><a href="#emergency" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">🚨</span>緊急時対応</a></li>
+                        <li><a href="https://s98061ki.github.io/nioroshi/index3.html" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">💡</span>学習モード</a></li>
+                        <li><a href="https://www.youtube.com/playlist?list=PLBXIDWHV_3_1W-3Byazg5ELS3LxmkLJL_" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">🎥</span>動画で見る</a></li>
+                        <li><a href="#documents" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📄</span>資料</a></li>
+                        <li><a href="#incident-assistant" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">💬</span>AI事故アシスタント</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
 
-        <nav class="bg-white rounded-lg shadow-sm mb-6 sticky top-0 z-10">
+        <!-- Overlay for mobile menu -->
+        <div id="menu-overlay" class="hidden md:hidden"></div>
+
+        <!-- Desktop Navigation (Hidden on mobile) -->
+        <nav class="bg-white rounded-lg shadow-sm mb-6 sticky top-0 z-10 hidden md:block">
             <div class="nav-rows">
                 <ul id="main-nav-row-1" class="nav-row border-b border-stone-200">
                     <li><a href="#dashboard" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📊</span>ダッシュボード</a></li>
@@ -126,7 +253,6 @@
                 </ul>
                 <ul id="main-nav-row-2" class="nav-row">
                     <li><a href="#emergency" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">🚨</span>緊急時対応</a></li>
-                    <!-- 学習モードのナビゲーションリンクを更新 -->
                     <li><a href="https://s98061ki.github.io/nioroshi/index3.html" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">💡</span>学習モード</a></li>
                     <li><a href="https://www.youtube.com/playlist?list=PLBXIDWHV_3_1W-3Byazg5ELS3LxmkLJL_" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">🎥</span>動画で見る</a></li>
                     <li><a href="#documents" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📄</span>資料</a></li>
@@ -136,6 +262,18 @@
         </nav>
 
         <main>
+            <!-- Latest News Section (Moved above navigation) -->
+            <section id="latest-news-section" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg shadow-sm mb-6">
+                <h2 class="text-lg font-semibold mb-2 text-blue-800 flex items-center">
+                    <span class="mr-2 text-xl">✨</span> 新着情報
+                </h2>
+                <ul class="list-disc list-inside text-sm text-blue-700 space-y-1">
+                   <li><span class="font-bold">2025年6月26日:</span> 本社からの通知FAX「6月11日　荷卸し立会い優秀者」をアップしました。</li>
+                    <li><span class="font-bold">2025年6月26日:</span> 資料「品確法教育用資料」「端切りの重要性と品確法」をアップしました。</li>
+                    <li><span class="font-bold">2025年7月3日:</span> 学習モード　テスト内容をアップデートしました。</li>
+                </ul>
+            </section>
+
             <!-- Dashboard Page -->
             <section id="dashboard-page" class="page">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -879,6 +1017,20 @@ JSONフォーマットの例:
                     }
                 },
 
+                // モバイルメニューの開閉を制御するメソッド
+                toggleMenu() {
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    const menuOverlay = document.getElementById('menu-overlay');
+                    mobileMenu.classList.toggle('active');
+                    menuOverlay.classList.toggle('active');
+                    // bodyのスクロールを制御
+                    if (mobileMenu.classList.contains('active')) {
+                        document.body.style.overflow = 'hidden'; // メニューが開いているときはスクロールを無効化
+                    } else {
+                        document.body.style.overflow = ''; // メニューが閉じているときはスクロールを有効化
+                    }
+                },
+
 
                 // 全ての初期化処理を実行するメソッド
                 init() {
@@ -900,6 +1052,16 @@ JSONフォーマットの例:
                             const targetId = link.getAttribute('href').substring(1);
                             this.navigateTo(targetId);
                         });
+                    });
+
+                    // モバイルメニューのイベントリスナー設定
+                    document.getElementById('menu-toggle').addEventListener('click', () => this.toggleMenu());
+                    document.getElementById('menu-close').addEventListener('click', () => this.toggleMenu());
+                    document.getElementById('menu-overlay').addEventListener('click', () => this.toggleMenu());
+
+                    // モバイルメニュー内のナビゲーションリンクがクリックされたらメニューを閉じる
+                    document.querySelectorAll('#mobile-menu .nav-item').forEach(link => {
+                        link.addEventListener('click', () => this.toggleMenu());
                     });
                 }
             };
