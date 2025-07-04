@@ -14,7 +14,11 @@
     <!-- Visualization & Content Choices: 報告書情報：品質不適合の原因 -> 目標：原因の比較・理解 -> 表示方法：棒グラフ（Chart.js）-> 操作：ホバーで詳細表示 -> 理由：最も一般的な問題点を視覚的に示し、予防策への意識を高めるため。報告書情報：燃料油の品質規格 -> 目標：規格の参照・確認 -> 表示方法：対話型HTMLテーブル＋JSフィルタ -> 理由：PDFからの検索より遥かに高速で規格を確認できるため。報告書情報：緊急時対応手順 -> 目標：緊急時の行動支援 -> 表示方法：ステップ形式のウィザード（HTML/JS）-> 理由：危機的状況下での認知負荷を軽減し、正確な手順実行を確実にするため。 -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
-        body { font-family: 'Noto JP', 'Inter', sans-serif; }
+        /* Base font size for the entire document */
+        body {
+            font-family: 'Noto JP', 'Inter', sans-serif;
+            font-size: 1.125rem; /* Base size for readability (text-lg equivalent) */
+        }
         /* 正楷書体は一般的なWebフォントではないため、代替として筆記体風のフォントを指定し、serifをフォールバックとします */
         @font-face {
             font-family: 'Kaisho';
@@ -24,7 +28,12 @@
         }
         .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
         @media (min-width: 768px) { .chart-container { height: 350px; } }
-        .nav-item { transition: all 0.2s ease-in-out; }
+
+        /* Navigation items font size */
+        .nav-item {
+            transition: all 0.2s ease-in-out;
+            font-size: 1.125rem; /* text-lg equivalent */
+        }
         .nav-item.active { border-bottom-color: #0284c7; color: #0284c7; font-weight: 600; }
         .page { display: none; }
         .page.active { display: block; }
@@ -33,10 +42,17 @@
         /* Flex container for navigation rows */
         .nav-rows { display: flex; flex-direction: column; }
         .nav-row { display: flex; flex-wrap: wrap; }
+
+        /* Headers font size adjustment */
+        h1 { font-size: 2.25rem; /* text-4xl equivalent */ }
+        h2 { font-size: 1.875rem; /* text-3xl equivalent */ }
+        h3 { font-size: 1.5rem; /* text-2xl equivalent */ }
+        h4 { font-size: 1.25rem; /* text-xl equivalent */ }
+
         /* 行動指針の表示調整 */
         .slogan-text {
             font-family: 'Kaisho', 'Noto JP', serif;
-            font-size: 1.125rem; /* text-lg */
+            font-size: 1.25rem; /* text-xl equivalent for desktop */
             font-weight: 500; /* font-medium */
             color: #57534e; /* text-stone-700 */
             text-align: center; /* 中央揃え */
@@ -47,7 +63,7 @@
         /* スマートフォン表示での行動指針のフォントサイズ調整 */
         @media (max-width: 640px) {
             .slogan-text {
-                font-size: 1rem; /* スマホで小さめに */
+                font-size: 1.125rem; /* text-lg equivalent for mobile */
             }
         }
         /* Emergency tab styles */
@@ -67,6 +83,7 @@
             border-bottom: 3px solid transparent;
             display: flex; /* アイコンとテキストを横並びにする */
             align-items: center; /* 垂直方向中央揃え */
+            font-size: 1.125rem; /* text-lg equivalent */
         }
         .emergency-tab-button span {
             margin-right: 0.5rem; /* アイコンとテキストの間にスペース */
@@ -185,6 +202,13 @@
             nav.desktop-nav { /* Use a specific class for desktop nav */
                 display: none; /* Hide the main nav bar on mobile */
             }
+            /* Adjust font sizes for mobile for better readability */
+            h1 { font-size: 2rem; /* text-3xl equivalent on mobile */ }
+            h2 { font-size: 1.5rem; /* text-2xl equivalent on mobile */ }
+            h3 { font-size: 1.25rem; /* text-xl equivalent on mobile */ }
+            h4 { font-size: 1.125rem; /* text-lg equivalent on mobile */ }
+            /* Ensure text-sm is still readable on mobile */
+            .text-sm { font-size: 0.9375rem; /* Slightly larger than default 0.875rem for text-sm */ }
         }
         /* Show desktop nav on desktop */
         @media (min-width: 768px) {
@@ -208,6 +232,7 @@
     </style>
 </head>
 <body class="bg-stone-50 text-stone-800">
+    <!-- Main Application Content -->
     <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         <header class="mb-6">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
@@ -222,6 +247,7 @@
                         <div class="line"></div>
                     </button>
                 </div>
+                <!-- ログアウトボタンを削除 -->
             </div>
             <p class="slogan-text mt-4">
                 バロン・パークグループ 行動指針<br>「安全・安心を第一に考え、信用・信頼される企業を目指します。」
@@ -231,20 +257,20 @@
         <!-- Mobile Menu (Off-canvas) -->
         <div id="mobile-menu" class="md:hidden">
             <button id="menu-close">✕</button>
-            <nav class="bg-white"> <!-- Removed rounded-lg and shadow-sm from here -->
+            <nav class="bg-white">
                 <div class="nav-rows">
                     <ul id="mobile-nav-row-1" class="nav-row border-b border-stone-200">
-                        <li><a href="#dashboard" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📊</span>ダッシュボード</a></li>
-                        <li><a href="#daily-checks" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">✅</span>日常点検</a></li>
-                        <li><a href="#fax-notifications" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📠</span>本社からの通知FAX</a></li>
-                        <li><a href="#standards" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📋</span>品質規格</a></li>
+                        <li><a href="#dashboard" class="nav-item p-4 block text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📊</span>ダッシュボード</a></li>
+                        <li><a href="#daily-checks" class="nav-item p-4 block text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">✅</span>日常点検</a></li>
+                        <li><a href="#fax-notifications" class="nav-item p-4 block text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📠</span>本社からの通知FAX</a></li>
+                        <li><a href="#standards" class="nav-item p-4 block text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📋</span>品質規格</a></li>
                     </ul>
                     <ul id="mobile-nav-row-2" class="nav-row">
-                        <li><a href="#emergency" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">🚨</span>緊急時対応</a></li>
-                        <li><a href="https://s98061ki.github.io/nioroshi/index3.html" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">💡</span>学習モード</a></li>
-                        <li><a href="https://www.youtube.com/playlist?list=PLBXIDWHV_3_1W-3Byazg5ELS3LxmkLJL_" target="_blank" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">🎥</span>動画で見る</a></li>
-                        <li><a href="#documents" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📄</span>資料</a></li>
-                        <li><a href="#incident-assistant" class="nav-item p-4 block border-b-4 border-transparent text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">💬</span>AI事故アシスタント</a></li>
+                        <li><a href="#emergency" class="nav-item p-4 block text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">🚨</span>緊急時対応</a></li>
+                        <li><a href="https://s98061ki.github.io/nioroshi/index3.html" target="_blank" class="nav-item p-4 block text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">💡</span>学習モード</a></li>
+                        <li><a href="https://www.youtube.com/playlist?list=PLBXIDWHV_3_1W-3Byazg5ELS3LxmkLJL_" target="_blank" class="nav-item p-4 block text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">🎥</span>動画で見る</a></li>
+                        <li><a href="#documents" class="nav-item p-4 block text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">📄</span>資料</a></li>
+                        <li><a href="#incident-assistant" class="nav-item p-4 block text-stone-600 hover:text-sky-600"><span class="mr-2 text-xl">💬</span>AI事故アシスタント</a></li>
                     </ul>
                 </div>
             </nav>
@@ -286,7 +312,7 @@
             </section>
 
             <!-- Dashboard Page -->
-            <section id="dashboard-page" class="page">
+            <section id="dashboard-page" class="page active">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm">
                         <h2 class="text-xl font-semibold mb-4 text-stone-800">品質不適合の主な原因</h2>
@@ -509,7 +535,7 @@
                         <!-- Fire Tab Content -->
                         <div class="emergency-tab-content" id="fire-content">
                             <h3 class="text-xl font-bold text-red-600 mb-3">火災発生時の対応</h3>
-                            <p class="text-sm text-stone-600 mb-4">SS内で火災が発生した場合の基本的な対応です。従業員と顧客の安全確保が最優先です。</p>
+                            <p class="text-sm">SS内で火災が発生した場合の基本的な対応です。従業員と顧客の安全確保が最優先です。</p>
                             <div class="space-y-4 text-stone-700">
                                 <div class="p-4 bg-white rounded-lg shadow-md">
                                     <h4 class="font-semibold text-stone-800 mb-1">1. 初期消火（可能な場合）</h4>
@@ -542,7 +568,7 @@
                         <!-- Nankai Trough Earthquake Tab Content -->
                         <div class="emergency-tab-content" id="earthquake-content">
                             <h3 class="text-xl font-bold text-red-600 mb-3">南海トラフ地震発生時の対応</h3>
-                            <p class="text-sm text-stone-600 mb-4">南海トラフ地震発生時の対応です。大規模災害に備え、迅速かつ冷静な行動が求められます。</p>
+                            <p class="text-sm">南海トラフ地震発生時の対応です。大規模災害に備え、迅速かつ冷静な行動が求められます。</p>
                             <div class="space-y-4 text-stone-700">
                                 <div class="p-4 bg-white rounded-lg shadow-md">
                                     <h4 class="font-semibold text-stone-800 mb-1">1. 身の安全確保（シェイクアウト）</h4>
@@ -581,91 +607,92 @@
                         </div>
                     </div>
                  </div>
-            </section>
+                </section>
 
-            <!-- Learning Page -->
-            <section id="learning-page" class="page">
-                 <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <h2 class="text-2xl font-bold mb-2 text-stone-800">学習モード</h2>
-                    <p class="text-stone-600 mb-6">品質管理の基本をクイズ形式で学びましょう。新入社員の教育や、知識の再確認にご活用ください。</p>
-                    <div class="text-center">
-                        <p class="text-stone-700 mb-4">以下のボタンをクリックして、学習サイトへ移動してください。</p>
-                        <a href="https://s98061ki.github.io/nioroshi/index3.html" target="_blank" class="inline-block bg-green-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-600 transition duration-200 text-lg">
-                            学習サイトへGO!
-                        </a>
+                <!-- Learning Page -->
+                <section id="learning-page" class="page">
+                     <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h2 class="text-2xl font-bold mb-2 text-stone-800">学習モード</h2>
+                        <p class="text-stone-600 mb-6">品質管理の基本をクイズ形式で学びましょう。新入社員の教育や、知識の再確認にご活用ください。</p>
+                        <div class="text-center">
+                            <p class="text-stone-700 mb-4">以下のボタンをクリックして、学習サイトへ移動してください。</p>
+                            <a href="https://s98061ki.github.io/nioroshi/index3.html" target="_blank" class="inline-block bg-green-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-600 transition duration-200 text-lg">
+                                学習サイトへGO!
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- Documents Page -->
-            <section id="documents-page" class="page">
-                 <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <h2 class="text-2xl font-bold mb-2 text-stone-800">資料</h2>
-                    <p class="text-stone-600 mb-6">品質管理に関連する重要な資料はこちらから参照できます。</p>
-                    <div class="space-y-4">
-                        <a href="https://drive.google.com/file/d/1UHO6SKxEOz2kWs8qQOAXXhSQbnDxCtD7/view?usp=sharing" target="_blank" class="flex items-center p-4 bg-stone-100 rounded-lg hover:bg-stone-200 transition duration-200">
-                            <span class="text-red-500 text-2xl mr-3">📄</span>
-                            <span class="font-medium text-stone-800">品確法教育用資料「給油所の運営にあたって」.pdf</span>
-                        </a>
-                        <a href="https://drive.google.com/file/d/1UGrY8OLCYYnKBcGPC05YijzyrWC8DdiG/view?usp=sharing" target="_blank" class="flex items-center p-4 bg-stone-100 rounded-lg hover:bg-stone-200 transition duration-200">
-                            <span class="text-red-500 text-2xl mr-3">📄</span>
-                            <span class="font-medium text-stone-800">端切りの重要性と品確法2025.pdf</span>
-                        </a>
+                <!-- Documents Page -->
+                <section id="documents-page" class="page">
+                     <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h2 class="text-2xl font-bold mb-2 text-stone-800">資料</h2>
+                        <p class="text-stone-600 mb-6">品質管理に関連する重要な資料はこちらから参照できます。</p>
+                        <div class="space-y-4">
+                            <a href="https://drive.google.com/file/d/1UHO6SKxEOz2kWs8qQOAXXhSQbnDxCtD7/view?usp=sharing" target="_blank" class="flex items-center p-4 bg-stone-100 rounded-lg hover:bg-stone-200 transition duration-200">
+                                <span class="text-red-500 text-2xl mr-3">📄</span>
+                                <span class="font-medium text-stone-800">品確法教育用資料「給油所の運営にあたって」.pdf</span>
+                            </a>
+                            <a href="https://drive.google.com/file/d/1UGrY8OLCYYnKBcGPC05YijzyrWC8DdiG/view?usp=sharing" target="_blank" class="flex items-center p-4 bg-stone-100 rounded-lg hover:bg-stone-200 transition duration-200">
+                                <span class="text-red-500 text-2xl mr-3">📄</span>
+                                <span class="font-medium text-stone-800">端切りの重要性と品確法2025.pdf</span>
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- FAX Notifications Page -->
-            <section id="fax-notifications-page" class="page">
-                <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <h2 class="text-2xl font-bold mb-2 text-stone-800">本社からの通知FAX</h2>
-                    <p class="text-stone-600 mb-6">本社から発信された品質管理に関するFAX通知を、日付の新しい順に確認できます。</p>
-                    <div id="fax-files-list" class="space-y-4">
-                        <!-- FAX files will be populated here by JS -->
+                <!-- FAX Notifications Page -->
+                <section id="fax-notifications-page" class="page">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h2 class="text-2xl font-bold mb-2 text-stone-800">本社からの通知FAX</h2>
+                        <p class="text-stone-600 mb-6">本社から発信された品質管理に関するFAX通知を、日付の新しい順に確認できます。</p>
+                        <div id="fax-files-list" class="space-y-4">
+                            <!-- FAX files will be populated here by JS -->
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- Incident Assistant Page -->
-            <section id="incident-assistant-page" class="page">
-                <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <h2 class="text-2xl font-bold mb-2 text-stone-800">AI事故アシスタント ✨</h2>
-                    <p class="text-stone-600 mb-6">品質に関する事故や異常が発生した際に、その状況を入力してください。AIが原因の可能性や、推奨される対応を提案します。</p>
-                    <div class="mb-4">
-                        <label for="incident-description" class="block text-stone-700 text-sm font-bold mb-2">事故の状況を具体的に入力してください:</label>
-                        <textarea id="incident-description" class="shadow appearance-none border rounded w-full py-3 px-4 text-stone-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-sky-500" rows="6" placeholder="例: お客様が給油後、エンジンの不調を訴えました。直前に大雨がありました。"></textarea>
-                        <div id="incident-input-message" class="mt-2 text-red-600 text-sm hidden"></div>
-                    </div>
-                    <button id="analyze-incident-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-200">
-                        ✨ 状況を分析する
-                    </button>
-                    <div id="incident-analysis-result" class="mt-6 p-4 bg-stone-100 rounded-lg shadow hidden">
-                        <p class="text-stone-500 text-center" id="analysis-loading-indicator">分析中...</p>
-                        <div id="analysis-content" class="hidden">
-                            <h3 class="text-xl font-semibold mb-3 text-stone-800">分析結果</h3>
-                            <div class="mb-4">
-                                <h4 class="font-semibold text-stone-700 mb-1">事象の要約:</h4>
-                                <p id="analysis-summary" class="text-stone-600"></p>
-                            </div>
-                            <div class="mb-4">
-                                <h4 class="font-semibold text-stone-700 mb-1">考えられる原因/確認事項:</h4>
-                                <ul id="analysis-causes" class="list-disc list-inside text-stone-600"></ul>
-                            </div>
-                            <div class="mb-4">
-                                <h4 class="font-semibold text-stone-700 mb-1">推奨される初動対応:</h4>
-                                <ul id="analysis-actions" class="list-disc list-inside text-stone-600">
-                                    <li>直ちに該当油種の販売を停止し、<a href="#emergency" class="text-sky-600 hover:underline nav-link-internal">緊急時対応手順</a>を参照してください。</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-stone-700 mb-1">追加で収集すべき情報:</h4>
-                                <ul id="analysis-info" class="list-disc list-inside text-stone-600"></ul>
+                <!-- Incident Assistant Page -->
+                <section id="incident-assistant-page" class="page">
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h2 class="text-2xl font-bold mb-2 text-stone-800">AI事故アシスタント ✨</h2>
+                        <p class="text-stone-600 mb-6">品質に関する事故や異常が発生した際に、その状況を入力してください。AIが原因の可能性や、推奨される対応を提案します。</p>
+                        <div class="mb-4">
+                            <label for="incident-description" class="block text-stone-700 text-base font-bold mb-2">事故の状況を具体的に入力してください:</label>
+                            <textarea id="incident-description" class="shadow appearance-none border rounded w-full py-3 px-4 text-stone-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-sky-500" rows="6" placeholder="例: お客様が給油後、エンジンの不調を訴えました。直前に大雨がありました。"></textarea>
+                            <div id="incident-input-message" class="mt-2 text-red-600 text-sm hidden"></div>
+                        </div>
+                        <button id="analyze-incident-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-200">
+                            ✨ 状況を分析する
+                        </button>
+                        <div id="incident-analysis-result" class="mt-6 p-4 bg-stone-100 rounded-lg shadow hidden">
+                            <p class="text-stone-500 text-center" id="analysis-loading-indicator">分析中...</p>
+                            <div id="analysis-content" class="hidden">
+                                <h3 class="text-xl font-semibold mb-3 text-stone-800">分析結果</h3>
+                                <div class="mb-4">
+                                    <h4 class="font-semibold text-stone-700 mb-1">事象の要約:</h4>
+                                    <p id="analysis-summary" class="text-stone-600"></p>
+                                </div>
+                                <div class="mb-4">
+                                    <h4 class="font-semibold text-stone-700 mb-1">考えられる原因/確認事項:</h4>
+                                    <ul id="analysis-causes" class="list-disc list-inside text-stone-600"></ul>
+                                </div>
+                                <div class="mb-4">
+                                    <h4 class="font-semibold text-stone-700 mb-1">推奨される初動対応:</h4>
+                                    <ul id="analysis-actions" class="list-disc list-inside text-stone-600">
+                                        <li>直ちに該当油種の販売を停止し、<a href="#emergency" class="text-sky-600 hover:underline nav-link-internal">緊急時対応手順</a>を参照してください。</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-stone-700 mb-1">追加で収集すべき情報:</h4>
+                                    <ul id="analysis-info" class="list-disc list-inside text-stone-600"></ul>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
-        </main>
+                </section>
+            </main>
+        </div>
     </div>
 
     <script>
@@ -673,6 +700,7 @@
             const app = {
                 state: {
                     currentPage: 'dashboard',
+                    // isAuthenticated: false, // ログイン機能削除のため不要
                 },
 
                 // FAXファイルデータはここに一元化
@@ -690,25 +718,6 @@
                     { date: '20250205', name: '20250205品質分析結果通知書の注意点.pdf', url: 'https://drive.google.com/file/d/1-eZR8ZqaoYrBc1bc8xr0ZdkgkXLl5xvu/view?usp=sharing' },
                     { date: '20250131', name: '20250131荷卸し立会い強化月間.pdf', url: 'https://drive.google.com/file/d/110ZbtZ1jtS7289Klhw6bG9ukUMrmCODt/view?usp=sharing' },
                 ],
-
-                // ルーティングを初期化するメソッド
-                initRouter() {
-                    const navLinks = document.querySelectorAll('.nav-item');
-                    navLinks.forEach(link => {
-                        // 外部リンクは対象外とする
-                        if (link.getAttribute('href').startsWith('http') || link.getAttribute('href').startsWith('https')) {
-                            return;
-                        }
-                        link.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            const pageId = link.getAttribute('href').substring(1); // #を除去
-                            this.navigateTo(pageId);
-                        });
-                    });
-                    // 初期のページをURLハッシュから取得、なければダッシュボード
-                    const initialPage = window.location.hash ? window.location.hash.substring(1) : 'dashboard';
-                    this.navigateTo(initialPage);
-                },
 
                 // ページ遷移を実行するメソッド
                 navigateTo(pageId) {
@@ -728,10 +737,10 @@
                     } else {
                         // ページが見つからない場合はダッシュボードを表示
                         document.getElementById('dashboard-page').classList.add('active');
+                        this.state.currentPage = 'dashboard';
                     }
 
                     // ナビゲーションアイテムのアクティブ状態を更新
-                    // デスクトップナビゲーションとモバイルメニューの両方のリンクを更新
                     document.querySelectorAll('.nav-item').forEach(link => {
                         // 外部リンクはアクティブ状態の管理対象外
                         if (link.getAttribute('href').startsWith('http') || link.getAttribute('href').startsWith('https')) {
@@ -760,7 +769,13 @@
 
                 // グラフを初期化するメソッド
                 initCharts() {
-                    const ctx = document.getElementById('causesChart').getContext('2d');
+                    // グラフ要素が存在するか確認してから初期化
+                    const causesChartCanvas = document.getElementById('causesChart');
+                    if (!causesChartCanvas) {
+                        console.warn("causesChart canvas not found. Skipping chart initialization.");
+                        return;
+                    }
+                    const ctx = causesChartCanvas.getContext('2d');
                     new Chart(ctx, {
                         type: 'bar',
                         data: this.causesData,
@@ -816,13 +831,25 @@
 
                 // 品質規格テーブルを初期化するメソッド
                 initStandardsTable() {
+                    // テーブル要素が存在するか確認してから初期化
+                    const fuelTypeSelector = document.getElementById('fuel-type-selector');
+                    const standardsTableBody = document.getElementById('standards-table-body');
+                    if (!fuelTypeSelector || !standardsTableBody) {
+                        console.warn("Fuel type selector or standards table body not found. Skipping standards table initialization.");
+                        return;
+                    }
                     // デフォルトで灯油の規格を表示
                     this.renderStandardsTable('kerosene');
+
+                    // イベントリスナーをここで設定
+                    fuelTypeSelector.addEventListener('change', (e) => this.renderStandardsTable(e.target.value));
                 },
 
                 // 品質規格テーブルを描画するメソッド
                 renderStandardsTable(fuelType) {
                     const tableBody = document.getElementById('standards-table-body');
+                    if (!tableBody) return; // 要素が存在しない場合は処理を中断
+
                     tableBody.innerHTML = ''; // テーブルの内容をクリア
 
                     const data = this.standardsData[fuelType] || []; // 選択された油種のデータを取得
@@ -846,6 +873,10 @@
                 // FAXファイルリストを初期化するメソッド
                 initFaxFilesList() {
                     const faxFilesListContainer = document.getElementById('fax-files-list');
+                    if (!faxFilesListContainer) {
+                        console.warn("FAX files list container not found. Skipping FAX list initialization.");
+                        return;
+                    }
                     faxFilesListContainer.innerHTML = ''; // コンテンツをクリア
 
                     // 日付の新しい順にソート (8桁の数字プレフィックスでソート)
@@ -877,6 +908,11 @@
                     const analysisCauses = document.getElementById('analysis-causes');
                     const analysisActions = document.getElementById('analysis-actions');
                     const analysisInfo = document.getElementById('analysis-info');
+
+                    if (!analyzeButton || !descriptionInput || !resultDiv) {
+                        console.warn("Incident assistant elements not found. Skipping AI incident assistant initialization.");
+                        return;
+                    }
 
                     analyzeButton.addEventListener('click', async () => {
                         const incidentDescription = descriptionInput.value.trim();
@@ -997,7 +1033,10 @@ JSONフォーマットの例:
                     const tabContainer = document.getElementById('emergency-tabs');
                     const tabContents = document.getElementById('emergency-tab-contents');
 
-                    if (!tabContainer || !tabContents) return;
+                    if (!tabContainer || !tabContents) {
+                        console.warn("Emergency tabs container or contents not found. Skipping emergency tabs initialization.");
+                        return;
+                    }
 
                     // 初期表示タブを設定（例：コンタミの疑い）
                     const defaultTabId = 'suspected-contamination';
@@ -1033,6 +1072,10 @@ JSONフォーマットの例:
                 toggleMenu() {
                     const mobileMenu = document.getElementById('mobile-menu');
                     const menuOverlay = document.getElementById('menu-overlay');
+                    if (!mobileMenu || !menuOverlay) {
+                        console.warn("Mobile menu or overlay not found. Skipping toggleMenu operation.");
+                        return;
+                    }
                     mobileMenu.classList.toggle('active');
                     menuOverlay.classList.toggle('active');
                     // bodyのスクロールを制御
@@ -1043,19 +1086,31 @@ JSONフォーマットの例:
                     }
                 },
 
-
                 // 全ての初期化処理を実行するメソッド
                 init() {
-                    this.initRouter(); // ルーティングの初期化
-                    this.renderPage(); // 初期ページの描画
-                    this.initCharts(); // グラフの初期化
-                    this.initStandardsTable(); // 品質規格テーブルの初期化
-                    this.initFaxFilesList(); // FAXファイルリストの初期化
-                    this.initIncidentAssistant(); // AI事故アシスタントの初期化
-                    this.initEmergencyTabs(); // 緊急時対応タブの初期化
+                    // 1. ルーティングの初期化
+                    const navLinks = document.querySelectorAll('.nav-item');
+                    navLinks.forEach(link => {
+                        if (link.getAttribute('href').startsWith('http') || link.getAttribute('href').startsWith('https')) {
+                            return;
+                        }
+                        link.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const pageId = link.getAttribute('href').substring(1);
+                            this.navigateTo(pageId);
+                        });
+                    });
 
-                    // 燃料油種セレクターの変更イベントリスナー
-                    document.getElementById('fuel-type-selector').addEventListener('change', (e) => this.renderStandardsTable(e.target.value));
+                    // 2. 初期ページの決定と描画
+                    const initialPage = window.location.hash ? window.location.hash.substring(1) : 'dashboard';
+                    this.navigateTo(initialPage);
+
+                    // 3. 各コンポーネントの初期化
+                    this.initCharts();
+                    this.initStandardsTable();
+                    this.initFaxFilesList();
+                    this.initIncidentAssistant();
+                    this.initEmergencyTabs();
 
                     // 内部ナビゲーションリンクに対するイベントリスナー（クイックアクセス用など）
                     document.querySelectorAll('.nav-link-internal').forEach(link => {
@@ -1067,9 +1122,13 @@ JSONフォーマットの例:
                     });
 
                     // モバイルメニューのイベントリスナー設定
-                    document.getElementById('menu-toggle').addEventListener('click', () => this.toggleMenu());
-                    document.getElementById('menu-close').addEventListener('click', () => this.toggleMenu());
-                    document.getElementById('menu-overlay').addEventListener('click', () => this.toggleMenu());
+                    const menuToggle = document.getElementById('menu-toggle');
+                    const menuClose = document.getElementById('menu-close');
+                    const menuOverlay = document.getElementById('menu-overlay');
+
+                    if (menuToggle) menuToggle.addEventListener('click', () => this.toggleMenu());
+                    if (menuClose) menuClose.addEventListener('click', () => this.toggleMenu());
+                    if (menuOverlay) menuOverlay.addEventListener('click', () => this.toggleMenu());
 
                     // モバイルメニュー内のナビゲーションリンクがクリックされたらメニューを閉じる
                     document.querySelectorAll('#mobile-menu .nav-item').forEach(link => {
