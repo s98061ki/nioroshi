@@ -1,0 +1,883 @@
+
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>荷卸しと黒本テスト</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+        .form-container {
+            background-color: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .question-container {
+            background-color: #fff;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: left;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .question {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1a202c;
+        }
+        .options {
+            margin-bottom: 1rem;
+        }
+        .option {
+            display: block;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            background-color: #edf2f7;
+            color: #1a202c;
+        }
+        .option:hover {
+            background-color: #e2e8f0;
+        }
+        .option input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            color: white;
+            background-color: #4a5568;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border: none;
+            font-size: 1rem;
+        }
+        .btn:hover {
+            background-color: #2d3748;
+        }
+        .btn.primary {
+            background-color: #68d391;
+        }
+        .btn.primary:hover {
+            background-color: #48bb78;
+        }
+        #results-container {
+            background-color: #f7fafc;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        #results-container h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #1a202c;
+        }
+        #results-container p {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            color: #4a5568;
+        }
+        #results-container button {
+            margin-top: 1rem;
+        }
+        .correct-answer {
+            background-color: #f0fdf4;
+            border-color: #68d391;
+            color: #1a202c;
+        }
+        .wrong-answer {
+            background-color: #fee2e2;
+            border-color: #f56565;
+            color: #1a202c;
+        }
+        .feedback {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .feedback.correct {
+            background-color: #f0fdf4;
+            border-color: #68d391;
+            color: #38a169;
+        }
+        .feedback.incorrect {
+            background-color: #fee2e2;
+            border-color: #f56565;
+            color: #e53e3e;
+        }
+        .completion-message {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #1a202c;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container">
+        <h1 class="text-2xl font-semibold text-gray-800 mb-4">荷卸しと黒本テスト</h1>
+
+        <div id="login-container" class="form-container">
+            <div class="mb-4">
+                <label for="store-name" class="block text-gray-700 text-sm font-bold mb-2">所属店舗名:</label>
+                <select id="store-name" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="" disabled selected>選択してください</option>
+                    <option value="緑ヶ丘">緑ヶ丘</option>
+                    <option value="花園">花園</option>
+                    <option value="八幡">八幡</option>
+                    <option value="長浦">長浦</option>
+                    <option value="高棚">高棚</option>
+                    <option value="豊明東">豊明東</option>
+                    <option value="羽根">羽根</option>
+                    <option value="東浦スタンド">東浦スタンド</option>
+                    <option value="東浦検査場">東浦検査場</option>
+                    <option value="大府スタンド">大府スタンド</option>
+                    <option value="大府検査場">大府検査場</option>
+                    <option value="幸田スタンド">幸田スタンド</option>
+                    <option value="三河検査場">三河検査場</option>
+                    <option value="常滑スタンド">常滑スタンド</option>
+                    <option value="常滑検査場">常滑検査場</option>
+                    <option value="豊明">豊明</option>
+                    <option value="稲穂">稲穂</option>
+                    <option value="東海長口">東海長口</option>
+                    <option value="豊田上丘">豊田上丘</option>
+                    <option value="岡崎定国">岡崎定国</option>
+                    <option value="三ヶ根">三ヶ根</option>
+                    <option value="日進">日進</option>
+                    <option value="阿久比">阿久比</option>
+                    <option value="刈谷">刈谷</option>
+                    <option value="西尾">西尾</option>
+                    <option value="トレーラー配送部">トレーラー配送部</option>
+                    <option value="本社事務所">本社事務所</option>
+                    <option value="レッカー">レッカー</option>
+                    <option value="ベンリー">ベンリー</option>
+                </select>
+            </div>
+            <div class="mb-6">
+                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">名前:</label>
+                <input type="text" id="name" placeholder="名前を入力してください" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <button id="start-test" class="btn primary">テスト開始</button>
+        </div>
+
+        <div id="quiz-container" class="hidden">
+            <div id="question-container" class="question-container">
+                <h2 class="question" id="question"></h2>
+                <div id="options-container" class="options">
+                    <label class="option">
+                        <input type="radio" name="answer" value="1">
+                        <span id="option-1"></span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="answer" value="2">
+                        <span id="option-2"></span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="answer" value="3">
+                        <span id="option-3"></span>
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="answer" value="4">
+                        <span id="option-4"></span>
+                    </label>
+                </div>
+                <div id="feedback" class="feedback hidden"></div>
+            </div>
+            <div class="actions">
+                <button id="next-question" class="btn primary hidden">次の問題</button>
+                <button id="finish-test" class="btn primary hidden">テスト終了</button>
+            </div>
+        </div>
+
+        <div id="completion-container" class="hidden form-container">
+            <h2 class="completion-message">お疲れ様でした。間違えた問題があれば、再度確認してください。</h2>
+            <button id="show-results" class="btn primary">テスト結果表示</button>
+        </div>
+
+        <div id="results-container" class="hidden">
+            <h2>テスト結果</h2>
+            <p>氏名: <span id="results-name"></span></p>
+            <p>所属店舗: <span id="results-store"></span></p>
+            <p>正解数: <span id="results-correct"></span> / <span id="results-total"></span></p>
+            <p>正解率: <span id="results-score-rate"></span></p>
+            <div id="results-details">
+                <h3>間違った問題</h3>
+                <ul id="results-list" class="text-left">
+                </ul>
+            </div>
+            <button id="retake-test" class="btn">もう一度受ける</button>
+            <button id="print-results" class="btn">この画面を印刷する</button>
+        </div>
+    </div>
+
+    <script>
+        // ★ここにGASデプロイ後のウェブアプリURLを入力してください
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzMc1CFw73jMuX5CNuHJc_mbpwZEJXSVl_z8dR6CSYiWJkBsF4txGM_ltdb3kX9cryEmw/exec";
+        const quizData = [
+            {
+                question: "1. 荷卸し中のハンディ（モバイルSSC）の使用について、正しい文章を選べ",
+                options: [
+                    "荷卸し立ち会い者は、ハンディを使用して給油監視しなければならない",
+                    "2名以上のシフトの時であっても、他の人が作業で忙しい時はハンディを使用して立会をする",
+                    "荷卸し立ち会い時に1名体制の時はハンディを使用するが、荷卸し優先なので、監視の必要はない",
+                    "ハンディを使用して給油許可する場合は、必ず目視又は監視カメラで確認する"
+                ],
+                correctAnswer: "4"
+            },
+            {
+                question: "2. 前尺について、正しい文章を選べ",
+                options: [
+                    "前尺は、毎朝７時の在庫である",
+                    "前日の夜にプリントしたものでも、販売数量が少なければ前尺として使用できる",
+                    "前尺は荷卸し直前のものであるか確認する",
+                    "前尺は、前回の荷卸し後の在庫量である"
+                ],
+                correctAnswer: "3"
+            },
+            {
+                question: "3. 積荷と吐出口の油種・数量の一致確認の手順は？",
+                options: [
+                    "積荷のラベルを確認する",
+                    "ドライバーから先に油種クリップを見せて立会人が確認する",
+                    "立会人が吐出口の油種クリップを声に出して確認し、ドライバーと一致確認する",
+                    "油種を試験紙で検査する"
+                ],
+                correctAnswer: "3"
+            },
+            {
+                question: "4. 積荷と吐出口の油種・数量の一致確認の際、違っていたらどうするべき？",
+                options: [
+                    "吐出口側の油種クリップに合わせて、ドライバーがハッチの油種クリップを変更する",
+                    "ハッチ側の油種クリップに合わせて、立会人が吐出口の油種クリップを変更する",
+                    "ドライバーが納品伝票と積荷の油種の色確認を行い、ハッチに付けた油種クリップと間違いがないか確認を行う。　その後、ハッチの油種クリップに合わせて、吐出口の油種クリップを変更する",
+                    "後で、サイトグラスで色を確認してから修正する"
+                ],
+                correctAnswer: "3"
+            },
+            {
+                question: "5. 荷卸し作業の順序で最初に荷卸しするのはどの油種ですか？",
+                options: [
+                    "レギュラー",
+                    "軽油",
+                    "灯油",
+                    "タンクの前側の油種"
+                ],
+                correctAnswer: "3"
+            },
+            {
+                question: "6. 荷卸し順序の決定で最も重要なポイントは？",
+                options: [
+                    "作業スピードを優先する",
+                    "灯油を最後にする",
+                    "油種のコンタミを防ぐために順番を守る",
+                    "荷卸し数量が多い油種から卸す"
+                ],
+                correctAnswer: "3"
+            },
+            {
+                question: "7. 荷卸し順序を決定する際、適切な順番は？",
+                options: [
+                    "軽油 → レギュラー → 灯油 → ハイオク",
+                    "灯油 → レギュラー → ハイオク → 軽油",
+                    "灯油 → ハイオク → レギュラー → 軽油",
+                    "レギュラー → 軽油 → ハイオク → 灯油"
+                ],
+                correctAnswer: "2"
+            },
+            {
+                question: "8. 前しぼりについて、正しい文章を選べ",
+                options: [
+                    "前しぼりは、前荷と積荷の油種が異なる場合にのみする",
+                    "前しぼりが不十分だと、灯油の引火点が大幅に下がることがある",
+                    "前しぼりをして、油種が分からない時は、レギュラータンクに入れる",
+                    "前しぼりした油は、ドライバーの指示するところへ卸す"
+                ],
+                correctAnswer: "2"
+            },
+            {
+                question: "9. 遠方注油口のBOXの鍵の管理について、正しい文章を選べ",
+                options: [
+                    "ローリードライバーが持っているので、店舗では管理していない",
+                    "ローリードライバーが持ち出しやすい場所に保管する",
+                    "荷卸しで必要な鍵なので、遠方注油口の近くなどに保管しておく",
+                    "POSレジ内など、ローリードライバーが容易に持ち出せない場所に保管する"
+                ],
+                correctAnswer: "4"
+            },
+            {
+                question: "10. 注油口を開けた時に行うべき確認事項は？",
+                options: [
+                    "タンクの温度を測定する",
+                    "油種クリップとラベルを確認する",
+                    "パッキンに異常がないか確認する",
+                    "注油口の蓋を交換する"
+                ],
+                correctAnswer: "3"
+            },
+            {
+                question: "11. ホースの接続時にドライバーと相互確認する項目は？",
+                options: [
+                    "油種クリップ・注油口ラベル",
+                    "吐出口の開閉状況",
+                    "タンク内の油面",
+                    "荷卸しのスピード"
+                ],
+                correctAnswer: "1"
+            },
+            {
+                question: "12. 荷卸しする油種の順序が（灯油→レギュラー→ハイオク→軽油）の順と異なる場合の対応は？",
+                options: [
+                    "この場合の対応方法は決まっていない",
+                    "立会人は、ドライバーに荷卸し順序の修正を指示する",
+                    "上長に電話して指示を仰ぐ",
+                    "吐出口と地下タンクの油種が一致していれば問題無いので、そのまま荷卸しを継続する"
+                ],
+                correctAnswer: "2"
+            },
+            {
+                question: "13. ホース接続時の作業について、正しい文章を選べ",
+                options: [
+                    "ドライバーが指差呼称したことを確認して、立会人はチェック表に記入する",
+                    "ドライバーが指差呼称したことを確認して、立会人は「ヨシ」と相槌する",
+                    "ドライバーがホースをつないだら、立会人が指差呼称する",
+                    "ドライバーの指差呼称に合わせて、立会人も相互に声に出して指差呼称で確認する"
+                ],
+                correctAnswer: "4"
+            },
+            {
+                question: "14. 吐出口のコックを開放する前に確認すべき項目は？",
+                options: [
+                    "サイトグラスで油種の色を確認する",
+                    "注油口の蓋が開いているか確認する",
+                    "油種クリップの色を変更する",
+                    "タンクの圧力を調整する"
+                ],
+                correctAnswer: "1"
+            },
+            {
+                question: "15. サイトグラスにて確認する事項は何ですか？",
+                options: [
+                    "油種の色",
+                    "タンクの温度",
+                    "油面の変化",
+                    "ホースの長さ"
+                ],
+                correctAnswer: "1"
+            },
+            {
+                question: "16. 灯油の色は何色ですか？",
+                options: [
+                    "無色透明",
+                    "橙色（赤色）",
+                    "黒色",
+                    "淡黄色"
+                ],
+                correctAnswer: "1"
+            },
+            {
+                question: "17. レギュラーの色は何色ですか？",
+                options: [
+                    "無色透明",
+                    "橙色（赤色）",
+                    "黒色",
+                    "淡黄色"
+                ],
+                correctAnswer: "2"
+            },
+            {
+                question: "18. ハイオクの色は何色ですか？",
+                options: [
+                    "無色透明",
+                    "橙色（赤色）",
+                    "黒色",
+                    "淡黄色"
+                ],
+                correctAnswer: "2"
+            },
+            {
+                question: "19. 軽油の色は何色ですか？",
+                options: [
+                    "無色透明",
+                    "橙色（赤色）",
+                    "黒色",
+                    "淡黄色"
+                ],
+                correctAnswer: "4"
+            },
+            {
+                question: "20. サイトグラスの色確認時の作業について、正しい文章を選べ",
+                options: [
+                    "ドライバーが指差呼称したことを確認して、立会人はチェック表に記入する",
+                    "ドライバーが指差呼称したことを確認して、立会人は「ヨシ」と相槌する",
+                    "暗くて色が見えない時は、確認する必要はない",
+                    "ドライバーの指差呼称に合わせて、立会人も相互に声に出して指差呼称で確認する"
+                ],
+                correctAnswer: "4"
+            },
+            {
+                question: "21. サイトグラスの色確認時に、クリップの油種の色と異なる場合の対応について、正しい文章を選べ",
+                options: [
+                    "上長に電話して指示を仰ぐ",
+                    "積荷の一致確認はしているので、色が違っていてもそのまま荷卸しを継続する",
+                    "ドライバーの指示に従い、再度、油種の色確認をする",
+                    "荷卸しを中断し、手順の積荷の確認から再度行い、どこの手順で間違いがあったのか確認する"
+                ],
+                correctAnswer: "4"
+            },
+            {
+                question: "22. 荷卸し開始時に確認すべき項目は？",
+                options: [
+                    "吐出口の開閉状況",
+                    "タンクの温度",
+                    "油漏れがないか",
+                    "ホースの長さ"
+                ],
+                correctAnswer: "3"
+            },
+            {
+                question: "23. 荷卸し作業中に異常が発生した場合の対応は？",
+                options: [
+                    "ドライバーの指示に従い作業を進める",
+                    "とりあえず様子を見る",
+                    "すぐに荷卸しを停止し、原因を確認する",
+                    "まずタンク内の油量を再確認する"
+                ],
+                correctAnswer: "3"
+            },
+            {
+                question: "24. 荷卸し作業中の安全監視で確認すべき事項は？",
+                options: [
+                    "油面計やべーパーの状況",
+                    "吐出口の開閉状況",
+                    "荷卸しスピード",
+                    "ドライバーの動き"
+                ],
+                correctAnswer: "1"
+            },
+            {
+                question: "25. 荷卸し中に場を離れる際、行うべき対応は？",
+                options: [
+                    "吐出口コックを閉止する",
+                    "タンクの蓋を閉める",
+                    "ホースを取り外す",
+                    "ドライバーに荷卸しを任せる"
+                ],
+                correctAnswer: "1"
+            },
+            {
+                question: "26. 荷卸し終了後、後尺を測定する目的は？",
+                options: [
+                    "荷卸し数量の異常やコンタミを確認するため",
+                    "注油口のラベルを確認するため",
+                    "ホースの接続状態を確認するため",
+                    "在庫を確認するため"
+                ],
+                correctAnswer: "1"
+            },
+            {
+                question: "27. 後尺の異常基準は？",
+                options: [
+                    "（前尺＋荷卸し数量）×101％＞後尺",
+                    "（荷卸し数量）×102％＞前尺",
+                    "（前尺＋荷卸し数量）×100％＞後尺",
+                    "（前尺＋荷卸し数量）×101％＜後尺"
+                ],
+                correctAnswer: "4"
+            },
+            {
+                question: "28. 荷卸し終了後にドライバーと相互に確認すべき内容は？",
+                options: [
+                    "荷卸し数量と油種の一致",
+                    "ホースの接続状態",
+                    "タンクの温度",
+                    "パッキンの状態"
+                ],
+                correctAnswer: "1"
+            },
+            {
+                question: "29. コンタミした場合の対応について、正しい文章を選べ",
+                options: [
+                    "本社に電話する",
+                    "上長に電話したがつながらないので、折り返し連絡を待つ",
+                    "上長に報告した後、指示に従う",
+                    "即販売停止する"
+                ],
+                correctAnswer: "4"
+            },
+            {
+                question: "30. 黒本とは？",
+                options: [
+                    "荷卸しのマニュアルが書かれた本",
+                    "地下タンク在庫や出荷量、仕入れ量などを記したもの",
+                    "油外実績表のこと",
+                    "試験問題集のこと"
+                ],
+                correctAnswer: "2"
+            },
+            {
+                question: "31. 黒本を入力するのはいつですか？",
+                options: [
+                    "毎朝6時",
+                    "精算後、すぐに",
+                    "夕方18時",
+                    "入力できる人が出勤している時"
+                ],
+                correctAnswer: "2"
+            },
+            {
+                question: "32. 黒本を入力する意味について、正しい文章を選べ",
+                options: [
+                    "毎日、どれだけ販売したか実績を管理するため",
+                    "在庫の発注のため",
+                    "ローリーの配送表を作成するため",
+                    "漏洩やコンタミなどを、できるだけ早く判別できるようにするため"
+                ],
+                correctAnswer: "4"
+            },
+            {
+                question: "33. 黒本の入力後、どのようになったら異常か？",
+                options: [
+                    "「当日増減率」又は「累計増減率」のマスが赤色になったら",
+                    "当日増減量のマスが赤色になったら",
+                    "累計増減量のマスが赤色になったら",
+                    "ブザー音が鳴ったら"
+                ],
+                correctAnswer: "1"
+            },
+            {
+                question: "34. 黒本の「当日増減率」について、正しい文章を選べ",
+                options: [
+                    "これは昨日の販売数量と比較した増減量である",
+                    "１％を超えると「漏洩している」可能性が高いので、すぐに上長に連絡する",
+                    "１％を超えると、「コンタミしている」可能性が高いので、すぐに上長に連絡する",
+                    "１％を超えても問題はないので、様子を見る"
+                ],
+                correctAnswer: "3"
+            },
+            {
+                question: "35. 黒本の「累計増減率」について、正しい文章を選べ",
+                options: [
+                    "3日連続で１％を超えたが品質に問題なさそうなので、上長に連絡せず様子を見る",
+                    "月末は数値が大きくなる傾向がある",
+                    "3日連続で１％を超えると、水コンタミ又は漏洩している可能性があるので、すぐに上長に連絡する",
+                    "1週間連続で１％を超えたら上長に連絡する。"
+                ],
+                correctAnswer: "3"
+            },
+            {
+                question: "36. 黒本の数値に異常があった場合の対応について、正しい文章を選べ",
+                options: [
+                    "黒本を入力しないので、対応方法について知らなくてもよい",
+                    "入力ミスは無かったが、原因が分からないのでとりあえず様子をみる。",
+                    "入力ミスを確認する前に、すぐに上長に電話して確認する。",
+                    "コンタミの可能性があるので、すぐに上長に連絡して販売停止した。"
+                ],
+                correctAnswer: "4"
+            },
+            {
+                question: "37. 問題の難易度はどうですか？",
+                options: [
+                    "難しい",
+                    "かんたん",
+                    "適切"
+                ],
+                correctAnswer: "1,2,3"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let userName = "";
+        let userStore = "";
+        let userAnswers = [];
+
+        let loginContainer = null;
+        let quizContainer = null;
+        let questionElement = null;
+        let optionsContainer = null;
+        let nextButton = null;
+        let finishButton = null;
+        let resultsContainer = null;
+        let resultsNameElement = null;
+        let resultsStoreElement = null;
+        let resultsCorrectElement = null;
+        let resultsTotalElement = null;
+        let retakeButton = null;
+        let storeSelect = null;
+        let nameInput = null;
+        let feedbackElement = null;
+        let resultsList = null;
+        let resultsScoreRateElement = null;
+        let completionContainer = null;
+        let showResultsButton = null;
+        let printButton = null;
+
+        window.addEventListener('load', () => {
+            const currentDate = new Date();
+            const formattedDate = currentDate.toLocaleString('ja-JP', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+            revisionDateElement = document.createElement('p');
+            revisionDateElement.textContent = `テスト開始時刻：${formattedDate}`;
+            document.querySelector('.container').appendChild(revisionDateElement);
+
+            loginContainer = document.getElementById("login-container");
+            quizContainer = document.getElementById("quiz-container");
+            questionElement = document.getElementById("question");
+            optionsContainer = document.getElementById("options-container");
+            nextButton = document.getElementById("next-question");
+            finishButton = document.getElementById("finish-test");
+            resultsContainer = document.getElementById("results-container");
+            resultsNameElement = document.getElementById("results-name");
+            resultsStoreElement = document.getElementById("results-store");
+            resultsCorrectElement = document.getElementById("results-correct");
+            resultsTotalElement = document.getElementById("results-total");
+            retakeButton = document.getElementById("retake-test");
+            storeSelect = document.getElementById("store-name");
+            nameInput = document.getElementById("name");
+            feedbackElement = document.getElementById("feedback");
+            resultsList = document.getElementById("results-list");
+            resultsScoreRateElement = document.getElementById("results-score-rate");
+            completionContainer = document.getElementById("completion-container");
+            showResultsButton = document.getElementById("show-results");
+            printButton = document.getElementById("print-results");
+
+            if (loginContainer) {
+                document.getElementById("start-test").addEventListener("click", () => {
+                    userName = nameInput.value.trim();
+                    userStore = storeSelect.value;
+
+                    if (!userStore) {
+                        alert("所属店舗を選択してください。");
+                        return;
+                    }
+                    if (!userName) {
+                        alert("名前を入力してください。");
+                        return;
+                    }
+
+                    loginContainer.classList.add("hidden");
+                    quizContainer.classList.remove("hidden");
+                    loadQuestion();
+                });
+            }
+
+            if (nextButton) {
+                nextButton.addEventListener("click", () => {
+                    const selectedOption = document.querySelector('input[name="answer"]:checked');
+                    if (!selectedOption) {
+                        alert("選択肢を選んでください。");
+                        return;
+                    }
+
+                    const selectedAnswer = selectedOption.value;
+                    userAnswers.push(selectedAnswer);
+                    const isCorrect = quizData[currentQuestionIndex].correctAnswer.split(",").includes(selectedAnswer);
+
+                    if (isCorrect) {
+                        correctAnswers++;
+                    }
+                    showFeedback(isCorrect);
+                });
+            }
+
+            if (finishButton) {
+                finishButton.addEventListener("click", () => {
+                    const selectedOption = document.querySelector('input[name="answer"]:checked');
+                    if (!selectedOption) {
+                        alert("選択肢を選んでください。");
+                        return;
+                    }
+
+                    const selectedAnswer = selectedOption.value;
+                    userAnswers.push(selectedAnswer);
+                    const isCorrect = quizData[currentQuestionIndex].correctAnswer.split(",").includes(selectedAnswer);
+
+                    if (isCorrect) {
+                        correctAnswers++;
+                    }
+                    showFeedback(isCorrect);
+                    saveResults();
+                    quizContainer.classList.add("hidden");
+                    completionContainer.classList.remove("hidden");
+                });
+            }
+
+            if (showResultsButton) {
+                showResultsButton.addEventListener("click", () => {
+                    completionContainer.classList.add("hidden");
+                    showResults();
+                });
+            }
+
+            if (retakeButton) {
+                retakeButton.addEventListener("click", () => {
+                    currentQuestionIndex = 0;
+                    correctAnswers = 0;
+                    userAnswers = [];
+                    resultsContainer.classList.add("hidden");
+                    quizContainer.classList.remove("hidden");
+                    loadQuestion();
+                    nextButton.classList.remove("hidden");
+                    finishButton.classList.add("hidden");
+                });
+            }
+
+            if (printButton) {
+                printButton.addEventListener("click", () => {
+                    window.print();
+                });
+            }
+
+            function loadQuestion() {
+                if(quizData && quizData[currentQuestionIndex]){
+                    const currentQuestion = quizData[currentQuestionIndex];
+                    questionElement.textContent = currentQuestion.question;
+                    optionsContainer.innerHTML = "";
+
+                    currentQuestion.options.forEach((option, index) => {
+                        const optionElement = document.createElement("label");
+                        optionElement.className = "option";
+                        optionElement.innerHTML = `
+                            <input type="radio" name="answer" value="${index + 1}">
+                            <span>${option}</span>
+                        `;
+                        optionsContainer.appendChild(optionElement);
+                    });
+
+                    nextButton.classList.add("hidden");
+                    finishButton.classList.add("hidden");
+                    feedbackElement.classList.add("hidden");
+
+                    if (currentQuestionIndex === quizData.length - 1) {
+                        finishButton.classList.remove("hidden");
+                        nextButton.classList.add("hidden");
+                    } else {
+                        nextButton.classList.remove("hidden");
+                        finishButton.classList.add("hidden");
+                    }
+                }
+            }
+
+            function showFeedback(isCorrect) {
+                feedbackElement.classList.remove("hidden");
+                let delay = isCorrect ? 500 : 1000;
+
+                if (isCorrect) {
+                    feedbackElement.textContent = "正解！";
+                    feedbackElement.className = "feedback correct";
+                } else {
+                    const correctAnswerIndex = parseInt(quizData[currentQuestionIndex].correctAnswer) - 1;
+                    const correctAnswerText = quizData[currentQuestionIndex].options[correctAnswerIndex];
+                    feedbackElement.innerHTML = `不正解！<br>正解は「${correctAnswerText}」です。`;
+                    feedbackElement.className = "feedback incorrect";
+                }
+
+                if (window.feedbackTimeout) {
+                    clearTimeout(window.feedbackTimeout);
+                }
+
+                window.feedbackTimeout = setTimeout(() => {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                    window.feedbackTimeout = null;
+                }, delay);
+            }
+
+            function showResults() {
+                quizContainer.classList.add("hidden");
+                resultsContainer.classList.remove("hidden");
+                resultsNameElement.textContent = userName;
+                resultsStoreElement.textContent = userStore;
+                resultsCorrectElement.textContent = correctAnswers;
+                resultsTotalElement.textContent = quizData.length;
+                resultsList.innerHTML = "";
+
+                const scoreRate = (correctAnswers / quizData.length) * 100;
+                resultsScoreRateElement.textContent = `${scoreRate.toFixed(2)}%`;
+
+                quizData.forEach((questionData, index) => {
+                    const userAnswer = userAnswers[index];
+                    const isCorrect = userAnswer === questionData.correctAnswer;
+                    if (!isCorrect) {
+                        const listItem = document.createElement("li");
+                        listItem.className = "wrong-answer";
+                        listItem.innerHTML = `
+                            <p>${questionData.question}</p>
+                            <p>あなたの回答: ${questionData.options[parseInt(userAnswer) - 1] || "未回答"}</p>
+                            <p>正解: ${questionData.options[parseInt(questionData.correctAnswer) - 1]}</p>
+                        `;
+                        resultsList.appendChild(listItem);
+                    }
+                });
+            }
+
+            function saveResults() {
+                const scoreRate = (correctAnswers / quizData.length) * 100;
+
+                const result = {
+                    userName: userName,
+                    userStore: userStore,
+                    correctAnswers: correctAnswers,
+                    totalQuestions: quizData.length,
+                    scoreRate: scoreRate.toFixed(2),
+                    userAnswers: userAnswers,
+                    timestamp: new Date().toLocaleString()
+                };
+                
+                sendDataToGAS(result);
+            }
+
+            function sendDataToGAS(data) {
+                // CORS対応のためno-corsモードを使用
+                fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    // no-corsモードでは response.json()が使えないため、成功として扱う
+                    console.log('データ送信完了');
+                })
+                .catch(error => {
+                    console.error('データ送信エラー:', error);
+                    alert('結果の保存に失敗しました。ネットワーク接続を確認してください。');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
