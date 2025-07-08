@@ -263,6 +263,17 @@
             font-size: 0.9em;
             color: rgba(255, 255, 255, 0.8);
         }
+        .old-version-link {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: #4a5568;
+            text-decoration: underline;
+            display: block; /* Make it a block element to take full width and center */
+            text-align: center;
+        }
+        .old-version-link:hover {
+            color: #2d3748;
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
@@ -333,6 +344,7 @@
                     総合編<span id="count-comprehensive" class="question-count"></span>
                 </button>
             </div>
+            <a href="https://s98061ki.github.io/nioroshi/index1.html" class="old-version-link">旧バージョンはこちら</a>
         </div>
 
         <div id="quiz-container" class="hidden">
