@@ -274,6 +274,158 @@
         .old-version-link:hover {
             color: #2d3748;
         }
+        /* New style for print question set button */
+        .btn.print-question-set-btn {
+            background-color: #3182ce; /* A blue color */
+            color: white;
+            margin-top: 1.5rem; /* Space from above elements */
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border: none;
+            font-size: 1rem;
+            display: inline-block; /* Make it behave like a button */
+            text-decoration: none; /* Remove underline */
+            text-align: center; /* Center text within button */
+            width: auto; /* Allow button to size to content */
+        }
+        .btn.print-question-set-btn:hover {
+            background-color: #2b6cb0; /* Darker blue on hover */
+        }
+
+        /* Styles for the printable document */
+        @media print {
+            @page {
+                size: A4 portrait; /* Set page size to A4 portrait */
+                margin: 1cm; /* Adjust overall page margin */
+            }
+            body > *:not(#printable-content) {
+                display: none !important; /* Hide everything except the printable content */
+            }
+            #printable-content {
+                display: block !important;
+                margin: 0;
+                padding: 0; /* Remove padding here as it's handled by @page margin */
+                font-family: 'Inter', sans-serif;
+                font-size: 11pt; /* Slightly larger text for readability */
+                line-height: 1.6; /* Increased line height */
+                color: black;
+            }
+            #printable-content h1 {
+                font-size: 18pt;
+                text-align: center;
+                margin-bottom: 0.8cm; /* Adjusted margin */
+            }
+            #printable-content .section-title {
+                font-size: 14pt;
+                margin-top: 0.8cm; /* Adjusted margin */
+                margin-bottom: 0.4cm; /* Adjusted margin */
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 0.15cm;
+            }
+            #printable-content h3 { /* Sub-genre titles */
+                font-size: 12pt;
+                margin-top: 0.6cm;
+                margin-bottom: 0.3cm;
+            }
+            #printable-content ul {
+                list-style: none;
+                padding: 0;
+            }
+            #printable-content li.question-item {
+                margin-bottom: 0.6cm; /* Adjusted margin */
+                page-break-inside: avoid; /* Prevent page break within a question */
+                border-bottom: 1px dashed #eee; /* Light separator */
+                padding-bottom: 0.4cm;
+            }
+            #printable-content li.question-item:last-child {
+                border-bottom: none; /* No border for the last item */
+            }
+            .question-number {
+                font-weight: bold;
+                margin-right: 0.5em;
+            }
+            .question-text {
+                font-weight: bold;
+                margin-bottom: 0.15cm; /* Adjusted margin */
+                font-size: 11.5pt; /* Slightly larger for question text */
+            }
+            .options-list {
+                list-style: lower-alpha; /* a, b, c, d */
+                margin-left: 1.5cm; /* Adjusted indent */
+                margin-top: 0.15cm;
+            }
+            .option-item {
+                margin-bottom: 0.05cm; /* Reduced margin */
+            }
+            .correct-answer-text {
+                font-weight: bold;
+                color: green; /* For print, simple green is fine */
+                margin-top: 0.2cm;
+                font-size: 10.5pt; /* Slightly smaller for answer text */
+            }
+            .question-info {
+                font-size: 0.85em;
+                color: #555;
+                margin-bottom: 0.15cm;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+            /* Styles for Answer Sheet */
+            .answer-sheet-header {
+                text-align: center;
+                margin-bottom: 1cm;
+            }
+            .answer-sheet-header p {
+                margin: 0.2cm 0;
+                font-size: 12pt;
+            }
+            .answer-sheet-field {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 0.3cm;
+                font-size: 11pt;
+            }
+            .answer-sheet-field span {
+                border-bottom: 1px solid black;
+                flex-grow: 1;
+                margin-left: 0.5cm;
+            }
+            .answer-grid {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr); /* 5 columns for answers */
+                gap: 0.5cm;
+                margin-top: 0.8cm;
+            }
+            .answer-grid-item {
+                display: flex;
+                align-items: baseline;
+                font-size: 11pt;
+            }
+            .answer-grid-item span {
+                margin-right: 0.2em;
+            }
+            .answer-blank {
+                border-bottom: 1px solid black;
+                flex-grow: 1;
+                min-width: 2em; /* Ensure some space for writing */
+            }
+            .signature-section {
+                margin-top: 2cm;
+                text-align: right;
+                font-size: 11pt;
+            }
+            .signature-line {
+                display: inline-block;
+                border-bottom: 1px solid black;
+                width: 5cm;
+                margin-left: 1cm;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
@@ -320,7 +472,6 @@
                 <input type="text" id="name" placeholder="名前を入力してください" class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>
 
-            <!-- Category selection buttons (always visible, but disabled initially) -->
             <h2 class="text-xl font-bold text-gray-800 mb-4 mt-6">テストの種類を選択してください</h2>
             <div id="category-selection-container">
                 <button id="start-beginner" class="btn category-1" disabled>
@@ -344,11 +495,11 @@
                     総合編<span id="count-comprehensive" class="question-count"></span>
                 </button>
             </div>
+            <button id="print-question-set" class="btn print-question-set-btn">問題集を印刷</button>
             <a href="https://s98061ki.github.io/nioroshi/index1.html" class="old-version-link">旧バージョンはこちら</a>
         </div>
 
         <div id="quiz-container" class="hidden">
-            <!-- Progress Bar -->
             <div class="mb-6">
                 <div class="text-sm text-gray-600 mb-2 text-center">
                     <span id="current-question-number">1</span> / <span id="total-questions-quiz"></span>
@@ -361,8 +512,7 @@
             <div id="question-container" class="question-container">
                 <h2 class="question" id="question"></h2>
                 <div id="options-container" class="options">
-                    <!-- Options will be dynamically loaded here -->
-                </div>
+                    </div>
                 <div id="feedback" class="feedback hidden"></div>
             </div>
             <div class="actions">
@@ -398,7 +548,6 @@
         </div>
     </div>
 
-    <!-- Custom Alert/Modal -->
     <div id="custom-modal" class="modal hidden">
         <div class="modal-content">
             <p id="modal-message" class="text-lg font-semibold text-gray-800 mb-6"></p>
@@ -564,6 +713,9 @@
         const countNioroshi = document.getElementById('count-nioroshi');
         const countKurohon = document.getElementById('count-kurohon');
         const countComprehensive = document.getElementById('count-comprehensive');
+
+        // Print question set button
+        const printQuestionSetButton = document.getElementById('print-question-set');
 
 
         // Event listener for custom modal OK button (defined globally)
@@ -892,6 +1044,315 @@
             }
         }
 
+        // Function to prepare and print all questions and an answer sheet
+        function printAllQuestions() {
+            let questionsHtml = `
+                <h1>荷卸し・黒本・品質管理テスト 問題集</h1>
+                <h2 class="section-title">問題</h2>
+                <ul>
+            `;
+            let answerSheetHtml = `
+                <div class="page-break"></div>
+                <h1>荷卸し・黒本・品質管理テスト 解答用紙</h1>
+                <div class="answer-sheet-header">
+                    <div class="answer-sheet-field">所属店舗: <span></span></div>
+                    <div class="answer-sheet-field">氏名: <span></span></div>
+                    <div class="answer-sheet-field">試験実施日: <span></span></div> <!-- Modified to be blank -->
+                </div>
+                <h2 class="section-title">解答欄</h2>
+                <div class="answer-grid">
+            `;
+            let answersHtml = `
+                <div class="page-break"></div>
+                <h1>荷卸し・黒本・品質管理テスト 正解</h1>
+                <h2 class="section-title">正解</h2>
+                <ul>
+            `;
+
+            let displayQuestionCounter = 1;
+
+            const genres = {
+                '荷卸し': [],
+                '黒本・試買': []
+            };
+
+            allQuestions.forEach(q => {
+                if (genres[q.genre]) {
+                    genres[q.genre].push(q);
+                }
+            });
+
+            for (const genre in genres) {
+                if (genres[genre].length > 0) {
+                    questionsHtml += `<li><h3>${genre}に関する問題</h3><ul>`;
+                    answersHtml += `<li><h3>${genre}に関する問題 - 正解</h3><ul>`;
+
+                    genres[genre].forEach((q) => {
+                        const correctAnswerIdx = parseInt(q.correctAnswer.split(",")[0]) - 1;
+                        const correctAnswerText = q.options[correctAnswerIdx];
+
+                        // Questions Section
+                        questionsHtml += `
+                            <li class="question-item">
+                                <p class="question-info">難易度: ${q.difficulty} | 問題番号: ${q.questionNumber}</p>
+                                <p class="question-text"><span class="question-number">${displayQuestionCounter}.</span> ${q.question}</p>
+                                <ol class="options-list">
+                        `;
+                        q.options.forEach((option, optIdx) => {
+                            questionsHtml += `<li class="option-item">${String.fromCharCode(97 + optIdx)}. ${option}</li>`;
+                        });
+                        questionsHtml += `
+                                </ol>
+                            </li>
+                        `;
+
+                        // Answer Sheet Section
+                        answerSheetHtml += `
+                            <div class="answer-grid-item">
+                                <span>${displayQuestionCounter}.</span> <span class="answer-blank"></span>
+                            </div>
+                        `;
+
+                        // Answers Section
+                        answersHtml += `
+                            <li class="question-item">
+                                <p class="question-info">難易度: ${q.difficulty} | 問題番号: ${q.questionNumber}</p>
+                                <p class="question-text"><span class="question-number">${displayQuestionCounter}.</span> ${q.question}</p>
+                                <p class="correct-answer-text">正解: ${correctAnswerIdx + 1}. ${correctAnswerText}</p>
+                            </li>
+                        `;
+                        displayQuestionCounter++;
+                    });
+                    questionsHtml += `</ul></li>`;
+                    answersHtml += `</ul></li>`;
+                }
+            }
+            answerSheetHtml += `</div><div class="signature-section">品質管理者確認サイン: <span class="signature-line"></span></div>`;
+
+            const finalPrintableHtml = `
+                <!DOCTYPE html>
+                <html lang="ja">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>荷卸し・黒本・品質管理テスト 問題集</title>
+                    <style>
+                        body {
+                            font-family: 'Inter', sans-serif;
+                            margin: 0;
+                            padding: 1cm;
+                            color: black;
+                            font-size: 10pt;
+                        }
+                        h1 {
+                            font-size: 18pt;
+                            text-align: center;
+                            margin-bottom: 1cm;
+                        }
+                        .section-title {
+                            font-size: 14pt;
+                            margin-top: 1cm;
+                            margin-bottom: 0.5cm;
+                            border-bottom: 1px solid #ccc;
+                            padding-bottom: 0.2cm;
+                        }
+                        h3 { /* Sub-genre titles */
+                            font-size: 12pt;
+                            margin-top: 0.6cm;
+                            margin-bottom: 0.3cm;
+                        }
+                        ul {
+                            list-style: none;
+                            padding: 0;
+                        }
+                        li.question-item {
+                            margin-bottom: 0.8cm;
+                            page-break-inside: avoid; /* Prevent page break within a question */
+                            border-bottom: 1px dashed #eee; /* Light separator */
+                            padding-bottom: 0.5cm;
+                        }
+                        li.question-item:last-child {
+                            border-bottom: none; /* No border for the last item */
+                        }
+                        .question-number {
+                            font-weight: bold;
+                            margin-right: 0.5em;
+                        }
+                        .question-text {
+                            font-weight: bold;
+                            margin-bottom: 0.2cm;
+                        }
+                        .options-list {
+                            list-style: lower-alpha; /* a, b, c, d */
+                            margin-left: 2cm; /* Indent options */
+                            margin-top: 0.2cm;
+                        }
+                        .option-item {
+                            margin-bottom: 0.1cm;
+                        }
+                        .correct-answer-text {
+                            font-weight: bold;
+                            color: green; /* For print, simple green is fine */
+                            margin-top: 0.2cm;
+                        }
+                        .question-info {
+                            font-size: 0.9em;
+                            color: #555;
+                            margin-bottom: 0.2cm;
+                        }
+                        .page-break {
+                            page-break-after: always;
+                        }
+                        @media print {
+                            @page {
+                                size: A4 portrait;
+                                margin: 1cm;
+                            }
+                            body > *:not(#printable-content) {
+                                display: none !important;
+                            }
+                            #printable-content {
+                                display: block !important;
+                                margin: 0;
+                                padding: 0;
+                                font-family: 'Inter', sans-serif;
+                                font-size: 11pt;
+                                line-height: 1.6;
+                                color: black;
+                            }
+                            #printable-content h1 {
+                                font-size: 18pt;
+                                text-align: center;
+                                margin-bottom: 0.8cm;
+                            }
+                            #printable-content .section-title {
+                                font-size: 14pt;
+                                margin-top: 0.8cm;
+                                margin-bottom: 0.4cm;
+                                border-bottom: 1px solid #ccc;
+                                padding-bottom: 0.15cm;
+                            }
+                            #printable-content h3 { /* Sub-genre titles */
+                                font-size: 12pt;
+                                margin-top: 0.6cm;
+                                margin-bottom: 0.3cm;
+                            }
+                            #printable-content ul {
+                                list-style: none;
+                                padding: 0;
+                            }
+                            #printable-content li.question-item {
+                                margin-bottom: 0.6cm;
+                                page-break-inside: avoid;
+                                border-bottom: 1px dashed #eee;
+                                padding-bottom: 0.4cm;
+                            }
+                            #printable-content li.question-item:last-child {
+                                border-bottom: none;
+                            }
+                            .question-number {
+                                font-weight: bold;
+                                margin-right: 0.5em;
+                            }
+                            .question-text {
+                                font-weight: bold;
+                                margin-bottom: 0.15cm;
+                                font-size: 11.5pt;
+                            }
+                            .options-list {
+                                list-style: lower-alpha;
+                                margin-left: 1.5cm;
+                                margin-top: 0.15cm;
+                            }
+                            .option-item {
+                                margin-bottom: 0.05cm;
+                            }
+                            .correct-answer-text {
+                                font-weight: bold;
+                                color: green;
+                                margin-top: 0.2cm;
+                                font-size: 10.5pt;
+                            }
+                            .question-info {
+                                font-size: 0.85em;
+                                color: #555;
+                                margin-bottom: 0.15cm;
+                            }
+                            .page-break {
+                                page-break-after: always;
+                            }
+                            /* Styles for Answer Sheet */
+                            .answer-sheet-header {
+                                text-align: center;
+                                margin-bottom: 1cm;
+                            }
+                            .answer-sheet-header p {
+                                margin: 0.2cm 0;
+                                font-size: 12pt;
+                            }
+                            .answer-sheet-field {
+                                display: flex;
+                                justify-content: space-between;
+                                margin-bottom: 0.3cm;
+                                font-size: 11pt;
+                            }
+                            .answer-sheet-field span {
+                                border-bottom: 1px solid black;
+                                flex-grow: 1;
+                                margin-left: 0.5cm;
+                            }
+                            .answer-grid {
+                                display: grid;
+                                grid-template-columns: repeat(5, 1fr); /* 5 columns for answers */
+                                gap: 0.5cm;
+                                margin-top: 0.8cm;
+                            }
+                            .answer-grid-item {
+                                display: flex;
+                                align-items: baseline;
+                                font-size: 11pt;
+                            }
+                            .answer-grid-item span {
+                                margin-right: 0.2em;
+                            }
+                            .answer-blank {
+                                border-bottom: 1px solid black;
+                                flex-grow: 1;
+                                min-width: 2em; /* Ensure some space for writing */
+                            }
+                            .signature-section {
+                                margin-top: 2cm;
+                                text-align: right;
+                                font-size: 11pt;
+                            }
+                            .signature-line {
+                                display: inline-block;
+                                border-bottom: 1px solid black;
+                                width: 5cm;
+                                margin-left: 1cm;
+                                text-align: center;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div id="printable-content">
+                        ${questionsHtml}
+                        ${answerSheetHtml}
+                        ${answersHtml}
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(finalPrintableHtml);
+            printWindow.document.close();
+            printWindow.focus(); // Focus the new window/tab
+            printWindow.print();
+            // printWindow.close(); // Closing immediately might prevent print dialog in some browsers
+        }
+
         // Event listener for restart button - returns to start screen
         retakeTestButton.addEventListener('click', () => {
             resultsContainer.classList.add("hidden");
@@ -914,10 +1375,13 @@
         startKurohonButton.addEventListener('click', () => startQuiz('kurohon'));
         startComprehensiveButton.addEventListener('click', () => startQuiz('comprehensive'));
 
+        // Event listener for "問題集を印刷" button
+        printQuestionSetButton.addEventListener('click', printAllQuestions);
+
         // Event listener for "テスト結果表示" button
         showResultsButton.addEventListener("click", showResults);
 
-        // Event listener for print button
+        // Event listener for print button (for results)
         printResultsButton.addEventListener("click", () => {
             window.print();
         });
